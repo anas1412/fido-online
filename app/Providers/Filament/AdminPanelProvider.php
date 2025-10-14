@@ -19,6 +19,8 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Filament\Support\Enums\Width;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\View\View;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -28,7 +30,23 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
-            ->login()
+            ->login() // This is the line we are modifying
+            
+            // 1. Add our Google Login button before the form
+            ->renderHook(
+                'panels::auth.login.form.before',
+                fn (): string => Blade::render('<x-google-login-button />')
+            )
+            
+            // 2. Add custom CSS to hide the original form
+            ->renderHook(
+                'panels::styles.after',
+                fn (): string => Blade::render('<style>
+                    form[wire\\:submit=\'authenticate\'] {
+                        display: none;
+                    }
+                </style>')
+            )
             ->spa()
             ->colors([
                 'primary' => Color::Blue,

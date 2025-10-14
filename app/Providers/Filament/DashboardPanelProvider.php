@@ -20,6 +20,8 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Filament\Support\Enums\Width;
 use App\Models\Tenant;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\View\View;
 
 class DashboardPanelProvider extends PanelProvider
 {
@@ -29,7 +31,23 @@ class DashboardPanelProvider extends PanelProvider
             ->default()
             ->id('dashboard')
             ->path('dashboard')
-            ->login()
+            ->login() // This is the line we are modifying
+            
+            // 1. Add our Google Login button before the form
+            ->renderHook(
+                'panels::auth.login.form.before',
+                fn (): string => Blade::render('<x-google-login-button />')
+            )
+            
+            // 2. Add custom CSS to hide the original form
+            ->renderHook(
+                'panels::styles.after',
+                fn (): string => Blade::render('<style>
+                    form[wire\\:submit=\'authenticate\'] {
+                        display: none;
+                    }
+                </style>')
+            )
             ->spa()
             ->colors([
                 'primary' => Color::Green,
