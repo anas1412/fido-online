@@ -6,7 +6,7 @@
 * Filament admin panel framework v4
 * MySQL (single database for all tenants)
 * Google-only authentication (via Socialite)
-* Multi-tenancy handled manually with `tenant_id` in tables
+* Multi-tenancy handled with a many-to-many relationship
 
 **Architecture:**
 
@@ -15,25 +15,23 @@
    * **Admin Panel:** For system admins to manage tenants, users, and invites
    * **User Dashboard Panel:** For normal users, restricted to their tenant data
 
-2. **Tenant Management:**
+2. **Tenant Management (Filament v4 Way):**
 
    * `tenants` table stores all tenant info, including **type** (`accounting` or `commercial`)
-   * `users` table has nullable `tenant_id` to assign users to a tenant
-   * Global query scopes enforce tenant-level data access
+   * A `tenant_user` pivot table manages the many-to-many relationship between users and tenants.
+   * The `User` model implements the `Filament\Models\Contracts\HasTenants` contract.
+   * Global query scopes enforce tenant-level data access automatically.
 
 3. **Google-only Login:**
 
    * Users login exclusively via Google OAuth
    * No password or normal login needed
-   * Filament login view customized to show only “Login with Google” (apprently there is a better way to do it - on hold)
+   * Filament login view customized to show only “Login with Google”
 
 4. **Tenant Onboarding Flow:**
 
-   * After login, if user has no `tenant_id`, redirect to tenant creation/join page
-   * Users can either:
-
-     * **Create a new tenant** → tenant assigned automatically
-     * **Join existing tenant via invite code or invite link** → tenant assigned automatically
+   * Filament's built-in `tenantRegistration()` feature will be used.
+   * After login, if a user has no tenants, they are redirected to a page to create or join a tenant.
 
 5. **Invite System:**
 
@@ -52,7 +50,7 @@
 
 **Outcome:**
 
-* Single database multi-tenancy without extra tenancy packages
+* Single database multi-tenancy aligned with Filament's recommended practices.
 * Secure, Google-only authentication
 * Smooth onboarding for users with dynamic tenant creation or invite joining
 * Clear separation of admin and tenant user interfaces

@@ -22,6 +22,8 @@ use Filament\Support\Enums\Width;
 use App\Models\Tenant;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\View\View;
+use App\Filament\Dashboard\Pages\Tenancy\RegisterTenant;
+use Filament\Actions\Action;
 
 class DashboardPanelProvider extends PanelProvider
 {
@@ -58,8 +60,16 @@ class DashboardPanelProvider extends PanelProvider
             ->tenant(
                 Tenant::class,
                 slugAttribute: 'slug', // Use the 'slug' column for tenant URLs
-                ownershipRelationship: 'tenant' // The name of the relationship on the User model
             )
+            ->tenantRegistration(RegisterTenant::class)
+            /* ->tenantProfile(EditCompanyProfile::class) */
+            ->tenantMenuItems([
+                'profile' => fn (Action $action) => $action->label('Edit team profile'),
+                'register' => fn (Action $action) => $action->label('Register new team'),
+                'billing' => fn (Action $action) => $action->label('Manage subscription'),
+            ])
+            /* ->tenantDomain('{tenant:slug}.fido.tn') */
+            /* ->tenantSlugInPath() */
             ->discoverResources(in: app_path('Filament/Dashboard/Resources'), for: 'App\Filament\Dashboard\Resources')
             ->discoverPages(in: app_path('Filament/Dashboard/Pages'), for: 'App\Filament\Dashboard\Pages')
             ->pages([
@@ -85,4 +95,5 @@ class DashboardPanelProvider extends PanelProvider
                 Authenticate::class,
             ]);
     }
+
 }

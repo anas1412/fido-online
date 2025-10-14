@@ -43,19 +43,12 @@ class GoogleController extends Controller
             // 1. Admins go to the admin panel
             if ($user->is_admin) {
                 \Log::info('Redirecting to admin panel.');
-                return redirect()->intended('/admin');
+                return redirect()->intended(filament()->getPanel('admin')->getUrl());
             }
 
-            // 2. Users with a tenant go to their dashboard
-            if ($user->tenant_id) {
-                \Log::info('Redirecting to dashboard.');
-                return redirect()->intended('/dashboard');
-            }
-
-            // 3. New users without a tenant go to the onboarding page
-            // We will create this page in the next step.
-            \Log::info('Redirecting to onboarding.');
-            return redirect()->route('onboarding');
+            // 2. All other users go to the dashboard panel. Filament's tenantRegistration will handle onboarding if no tenant is associated.
+            \Log::info('Redirecting to dashboard panel.');
+            return redirect()->intended(filament()->getPanel('dashboard')->getUrl());
 
         } catch (\Exception $e) {
             // Handle exceptions (e.g., user denies access)
