@@ -1,5 +1,5 @@
 <div class="my-8 text-center">
-    <a href="{{ route('login.google') }}"
+    <a href="{{ route('login') }}"
        class="fi-btn fi-btn-base fi-btn-color-primary fi-btn-size-lg inline-flex items-center justify-center gap-x-1 rounded-lg px-4 py-2.5 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-gray-950/5 dark:ring-white/20"
        style="background-color: #4285F4; border: none; width: 100%;"
     >
