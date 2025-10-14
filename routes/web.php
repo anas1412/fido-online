@@ -2,11 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\GoogleController;
-use App\Filament\Pages\Onboarding;
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('home');
 
 Route::get('/auth/google/redirect', [GoogleController::class, 'redirectToGoogle'])->name('login');
 Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);

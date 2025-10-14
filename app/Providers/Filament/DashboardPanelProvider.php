@@ -33,7 +33,10 @@ class DashboardPanelProvider extends PanelProvider
             ->default()
             ->id('dashboard')
             ->path('dashboard')
-            ->login() // This is the line we are modifying
+            ->login()
+            ->userMenuItems([
+                'logout' => fn (Action $action) => $action->label('Deconnexion'),
+            ])
             
             // 1. Add our Google Login button before the form
             ->renderHook(
