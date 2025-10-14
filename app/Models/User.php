@@ -7,6 +7,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+use Filament\Models\Contracts\HasTenants;
+use Filament\Panel;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Collection;
+
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
@@ -20,8 +26,26 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
-        'password',
+        /* 'password', */
+        'google_id', 
+        'tenant_id', 
+        'is_admin',
     ];
+
+    public function tenant(): BelongsTo
+    {
+        return $this->belongsTo(Tenant::class);
+    }
+
+    public function getTenants(Panel $panel): Collection
+    {
+        return collect([$this->tenant]);
+    }
+
+    public function canAccessTenant(Model $tenant): bool
+    {
+        return $this->tenant_id === $tenant->id;
+    }
 
     /**
      * The attributes that should be hidden for serialization.
@@ -29,7 +53,7 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $hidden = [
-        'password',
+        /* 'password', */
         'remember_token',
     ];
 
@@ -42,7 +66,7 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            /* 'password' => 'hashed', */
         ];
     }
 }
