@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Blade;
 use Illuminate\View\View;
 use App\Filament\Dashboard\Pages\Tenancy\RegisterTenant;
 use Filament\Actions\Action;
+use App\Filament\Dashboard\Pages\EditTenantProfile;
 
 class DashboardPanelProvider extends PanelProvider
 {
@@ -64,8 +65,10 @@ class DashboardPanelProvider extends PanelProvider
                 Tenant::class,
                 slugAttribute: 'slug', // Use the 'slug' column for tenant URLs
             )
+
+
             ->tenantRegistration(RegisterTenant::class)
-            /* ->tenantProfile(EditCompanyProfile::class) */
+            ->tenantProfile(EditTenantProfile::class)
             ->tenantMenuItems([
                 'profile' => fn (Action $action) => $action->label('Edit team profile'),
                 'register' => fn (Action $action) => $action->label('Register new team'),
