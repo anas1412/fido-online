@@ -25,6 +25,7 @@ use Illuminate\View\View;
 use App\Filament\Dashboard\Pages\Tenancy\RegisterTenant;
 use Filament\Actions\Action;
 use App\Filament\Dashboard\Pages\EditTenantProfile;
+use App\Filament\Dashboard\Pages\ManageInvites;
 
 class DashboardPanelProvider extends PanelProvider
 {
@@ -70,9 +71,10 @@ class DashboardPanelProvider extends PanelProvider
             ->tenantRegistration(RegisterTenant::class)
             ->tenantProfile(EditTenantProfile::class)
             ->tenantMenuItems([
-                'profile' => fn (Action $action) => $action->label('Edit team profile'),
-                'register' => fn (Action $action) => $action->label('Register new team'),
-                'billing' => fn (Action $action) => $action->label('Manage subscription'),
+                
+                'billing' => fn (Action $action) => $action->label('Facturation'),
+                'profile' => fn (Action $action) => $action->label('Modifier les paramètres'),
+                'register' => fn (Action $action) => $action->label('Ajouter une organisation'),
             ])
             /* ->tenantDomain('{tenant:slug}.fido.tn') */
             /* ->tenantSlugInPath() */
