@@ -27,6 +27,9 @@ use Filament\Actions\Action;
 use App\Filament\Dashboard\Pages\EditTenantProfile;
 use App\Filament\Dashboard\Pages\ManageInvites;
 use MartinPetricko\FilamentSentryFeedback\FilamentSentryFeedbackPlugin;
+use Filament\Navigation\MenuItem;
+
+
 
 class DashboardPanelProvider extends PanelProvider
 {
@@ -38,8 +41,12 @@ class DashboardPanelProvider extends PanelProvider
             ->path('dashboard')
             ->login()
             ->userMenuItems([
-                'logout' => fn (Action $action) => $action->label('Deconnexion'),
+                'admin_panel' => Action::make('admin_panel')
+                    ->label('Accéder au Admin Panel')
+                    ->url(url('/admin'))
+                    ->visible(fn (): bool => auth()->user()?->is_admin ?? false),
             ])
+            
             
             // 1. Add our Google Login button before the form
             ->renderHook(
@@ -56,10 +63,14 @@ class DashboardPanelProvider extends PanelProvider
                     }
                 </style>')
             )
-            ->spa()
+            ->brandName('Fido')
+            ->brandLogo(asset('images/logo.png'))
+            ->brandLogoHeight('3rem')
+            ->favicon(asset('images/logo.png'))
             ->colors([
                 'primary' => Color::Green,
             ])
+            ->spa()
             ->maxContentWidth(Width::Full)
             ->unsavedChangesAlerts()
             ->databaseTransactions()

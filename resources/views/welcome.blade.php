@@ -72,7 +72,7 @@
                     @auth
                         <a href="{{ url('/dashboard') }}" class="ml-4 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-md hover:bg-primary-dark transition-all duration-200">Dashboard</a>
                     @else
-                        <a href="{{ route('login') }}" class="ml-4 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-md hover:bg-primary-dark transition-all duration-200">Login</a>
+                        <a href="{{ url('/dashboard/login') }}" class="ml-4 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-md hover:bg-primary-dark transition-all duration-200">Login</a>
                     @endauth
                 </nav>
 
@@ -97,7 +97,7 @@
                      @auth
                         <a href="{{ url('/dashboard') }}" class="block w-full text-center rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-md hover:bg-primary-dark transition-all duration-200">Dashboard</a>
                     @else
-                        <a href="{{ route('login') }}" class="block w-full text-center rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-md hover:bg-primary-dark transition-all duration-200">Login</a>
+                        <a href="{{ url('/dashboard/login') }}" class="block w-full text-center rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-md hover:bg-primary-dark transition-all duration-200">Login</a>
                     @endauth
                 </div>
             </div>
@@ -121,7 +121,7 @@
                             Access Dashboard
                         </a>
                     @else
-                        <a href="{{ route('login') }}" class="transform rounded-lg bg-primary px-8 py-4 text-lg font-semibold text-white shadow-xl transition-transform duration-200 hover:-translate-y-1 hover:bg-primary-dark">
+                        <a href="{{ url('/dashboard/login') }}" class="transform rounded-lg bg-primary px-8 py-4 text-lg font-semibold text-white shadow-xl transition-transform duration-200 hover:-translate-y-1 hover:bg-primary-dark">
                             Start Your Journey
                         </a>
                     @endauth

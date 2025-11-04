@@ -21,18 +21,24 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Filament\Support\Enums\Width;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\View\View;
+use Filament\Actions\Action;
 use MartinPetricko\FilamentSentryFeedback\SentryUser;
+
 
 class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
         return $panel
-            ->default()
             ->id('admin')
             ->path('admin')
             ->login() // This is the line we are modifying
-            
+            ->userMenuItems([
+                'dashboard_panel' => Action::make('dashboard_panel')
+                    ->label('Accéder au Dashboard')
+                    ->url(url('/dashboard')), // directly point to the dashboard path
+            ])
+
             // 1. Add our Google Login button before the form
             ->renderHook(
                 'panels::auth.login.form.before',
@@ -47,11 +53,15 @@ class AdminPanelProvider extends PanelProvider
                         display: none;
                     }
                 </style>')
-            )   
-            ->spa()
+            )
+            ->brandName('Fido')
+            ->brandLogo(asset('images/logo.png'))
+            ->brandLogoHeight('3rem')
+            ->favicon(asset('images/logo.png'))
             ->colors([
                 'primary' => Color::Blue,
-            ])
+            ])   
+            ->spa()
             ->maxContentWidth(Width::Full)
             ->unsavedChangesAlerts()
             ->databaseTransactions()
@@ -84,6 +94,8 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ]);
+                \App\Http\Middleware\EnsureUserIsAdmin::class, // custom middleware
+            ])
+            ->viteTheme('resources/css/filament/admin/theme.css');
     }
 }

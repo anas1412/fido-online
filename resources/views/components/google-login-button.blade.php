@@ -1,14 +1,10 @@
 <div class="my-8 text-center">
     <a href="{{ route('login') }}"
-       class="fi-btn fi-btn-base fi-btn-color-primary fi-btn-size-lg inline-flex items-center justify-center gap-x-1 rounded-lg px-4 py-2.5 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-gray-950/5 dark:ring-white/20"
-       style="background-color: #4285F4; border: none; width: 100%;"
+       class="fi-btn fi-btn-base fi-btn-color-primary fi-btn-size-lg inline-flex items-center justify-center gap-x-1 rounded-lg px-4 py-2.5 text-sm font-semibold shadow-sm ring-1 ring-inset ring-gray-950/5 dark:ring-white/20"
+       style="background-color: white; border: none; width: 100%; color: black;"
     >
-        <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
-            <path fill="#4285F4" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C12.955 4 4 12.955 4 24s8.955 20 20 20s20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"></path>
-            <path fill="#FFC107" d="M3.059 31.039C1.154 28.158 0 24.059 0 20h4c0 3.163 1.026 6.136 2.806 8.528l-3.747 3.511z"></path>
-            <path fill="#34A853" d="M48 24c0-1.341-.138-2.65-.389-3.917H24v8h11.303C33.649 32.657 29.22 36 24 36c-5.268 0-9.046-2.053-11.485-5.039l-5.657 5.657C10.954 41.947 16.732 44 22 44c11.045 0 20-8.955 20-20z"></path>
-            <path fill="#EA4335" d="M12.515 14.961l5.657-5.657C16.954 6.053 12.176 4 8 4c-5.163 0-9.136 2.026-11.916 5.464l3.747 3.511C2.826 10.136 5.864 8 8 8c1.941 0 3.72.784 5.039 2.039z"></path>
-        </svg>
-        <span>Sign in with Google</span>
+        <svg class="w-5 h-5 mr-2" width="20" height="20" viewBox="-3 0 262 262" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M255.878 133.451c0-10.734-.871-18.567-2.756-26.69H130.55v48.448h71.947c-1.45 12.04-9.283 30.172-26.69 42.356l-.244 1.622 38.755 30.023 2.685.268c24.659-22.774 38.875-56.282 38.875-96.027" fill="#4285F4"></path><path d="M130.55 261.1c35.248 0 64.839-11.605 86.453-31.622l-41.196-31.913c-11.024 7.688-25.82 13.055-45.257 13.055-34.523 0-63.824-22.773-74.269-54.25l-1.531.13-40.298 31.187-.527 1.465C35.393 231.798 79.49 261.1 130.55 261.1" fill="#34A853"></path><path d="M56.281 156.37c-2.756-8.123-4.351-16.827-4.351-25.82 0-8.994 1.595-17.697 4.206-25.82l-.073-1.73L15.26 71.312l-1.335.635C5.077 89.644 0 109.517 0 130.55s5.077 40.905 13.925 58.602l42.356-32.782" fill="#FBBC05"></path><path d="M130.55 50.479c24.514 0 41.05 10.589 50.479 19.438l36.844-35.974C195.245 12.91 165.798 0 130.55 0 79.49 0 35.393 29.301 13.925 71.947l42.211 32.783c10.59-31.477 39.891-54.251 74.414-54.251" fill="#EB4335"></path></g></svg>
+        <span>Se connecter avec Google</span>
     </a>
+    
 </div>

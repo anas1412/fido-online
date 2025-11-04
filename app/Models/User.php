@@ -27,6 +27,7 @@ class User extends Authenticatable implements HasTenants
         /* 'password', */
         'google_id',
         'is_admin',
+        'is_moderator',
     ];
 
     public function tenants(): BelongsToMany
