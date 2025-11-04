@@ -26,6 +26,7 @@ use App\Filament\Dashboard\Pages\Tenancy\RegisterTenant;
 use Filament\Actions\Action;
 use App\Filament\Dashboard\Pages\EditTenantProfile;
 use App\Filament\Dashboard\Pages\ManageInvites;
+use MartinPetricko\FilamentSentryFeedback\FilamentSentryFeedbackPlugin;
 
 class DashboardPanelProvider extends PanelProvider
 {
@@ -88,6 +89,17 @@ class DashboardPanelProvider extends PanelProvider
                 AccountWidget::class,
                 FilamentInfoWidget::class,
             ])
+            ->plugins([
+                \MartinPetricko\FilamentSentryFeedback\FilamentSentryFeedbackPlugin::make()
+                    ->showName(true)
+                    ->isNameRequired(true)
+                    ->showEmail(true)
+                    ->isEmailRequired(true)
+                    ->enableScreenshot(true)
+                    ->sentryUser(function (): ?SentryUser {
+                        return new SentryUser("anas", "anas@gmail.com");
+                    }), 
+            ])
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
@@ -103,5 +115,4 @@ class DashboardPanelProvider extends PanelProvider
                 Authenticate::class,
             ]);
     }
-
 }

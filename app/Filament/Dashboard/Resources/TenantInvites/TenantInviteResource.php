@@ -55,7 +55,7 @@ class TenantInviteResource extends Resource
                 TextInput::make('expires_at')
                     ->label('Expire le')
                     ->required()
-                    ->default(fn () => now()->addWeeks(2))
+                    ->default(fn () => now()->addWeeks(1))
                     ->readOnly()
                     ->hiddenOn('edit'),
 

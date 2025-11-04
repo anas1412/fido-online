@@ -21,6 +21,7 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Filament\Support\Enums\Width;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\View\View;
+use MartinPetricko\FilamentSentryFeedback\SentryUser;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -46,7 +47,7 @@ class AdminPanelProvider extends PanelProvider
                         display: none;
                     }
                 </style>')
-            )
+            )   
             ->spa()
             ->colors([
                 'primary' => Color::Blue,
@@ -64,6 +65,12 @@ class AdminPanelProvider extends PanelProvider
                 AccountWidget::class,
                 FilamentInfoWidget::class,
             ])
+            /* ->plugins([
+                \MartinPetricko\FilamentSentryFeedback\FilamentSentryFeedbackPlugin::make()
+                    ->sentryUser(function (): ?SentryUser {
+                        return new SentryUser(auth()->user()->name, auth()->user()->email);
+                    }),
+            ]) */
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
