@@ -28,7 +28,7 @@ use App\Filament\Dashboard\Pages\EditTenantProfile;
 use App\Filament\Dashboard\Pages\ManageInvites;
 use MartinPetricko\FilamentSentryFeedback\FilamentSentryFeedbackPlugin;
 use Filament\Navigation\MenuItem;
-
+use App\Filament\Dashboard\Pages\LeaveTenant;
 
 
 class DashboardPanelProvider extends PanelProvider
@@ -90,13 +90,18 @@ class DashboardPanelProvider extends PanelProvider
             ->tenantRegistration(RegisterTenant::class)
             ->tenantProfile(EditTenantProfile::class)
             ->tenantMenuItems([
+                'leave_tenant' => fn () => \App\Filament\Dashboard\Pages\LeaveTenant::leaveAction()
                 
-                'billing' => fn (Action $action) => $action->label('Facturation'),
-                'profile' => fn (Action $action) => $action->label('Modifier les paramètres'),
+                ->label(fn () => 'Quitter ' . filament()->getTenant()?->name)
+                ->icon('heroicon-o-arrow-left-on-rectangle'),
+                'billing' => fn (Action $action) => $action->label('Facturation')->visible(fn (): bool => auth()->user()?->is_mod ?? false),
+                'profile' => fn (Action $action) => $action->label('Modifier les paramètres')->visible(fn (): bool => auth()->user()?->is_mod ?? false),
                 'register' => fn (Action $action) => $action->label('Ajouter une organisation'),
+                
             ])
             /* ->tenantDomain('{tenant:slug}.fido.tn') */
             /* ->tenantSlugInPath() */
+            ->tenantBillingRouteSlug('payement')
             ->discoverResources(in: app_path('Filament/Dashboard/Resources'), for: 'App\Filament\Dashboard\Resources')
             ->discoverPages(in: app_path('Filament/Dashboard/Pages'), for: 'App\Filament\Dashboard\Pages')
             ->pages([
