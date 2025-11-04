@@ -11,7 +11,9 @@ use Filament\Schemas\Schema;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\Action;
 use Filament\Actions\EditAction;
+use Filament\Notifications\Notification;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -19,6 +21,8 @@ use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Str;
 use UnitEnum;
 use BackedEnum;
+use Webbingbrasil\FilamentCopyActions\Tables\CopyableTextColumn;
+use Webbingbrasil\FilamentCopyActions\Actions\CopyAction;
 
 class TenantInviteResource extends Resource
 {
@@ -29,29 +33,34 @@ class TenantInviteResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'code';
 
-    // Correct type for navigation group
-    protected static UnitEnum|string|null $navigationGroup = 'Tenant Management';
+    protected static ?string $pluralModelLabel = 'Invitations';
 
-    protected static ?string $navigationLabel = 'Invites';
+    // Correct type for navigation group
+    protected static UnitEnum|string|null $navigationGroup = 'Gestion Administrative';
+
+    protected static ?string $navigationLabel = 'Invitations';
 
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->schema([
                 TextInput::make('code')
+                    ->label('Code')
                     ->required()
                     ->maxLength(255)
-                    ->default(fn () => (string) Str::uuid())
+                    ->default(fn () => (string) Str::random(10))
                     ->readOnly()
                     ->hiddenOn('edit'),
 
                 TextInput::make('expires_at')
+                    ->label('Expire le')
                     ->required()
-                    ->default(fn () => now()->addDays(7))
+                    ->default(fn () => now()->addWeeks(2))
                     ->readOnly()
                     ->hiddenOn('edit'),
 
                 TextInput::make('tenant_id')
+                    ->label('ID du Locataire')
                     ->required()
                     ->numeric()
                     ->default(fn () => filament()->getTenant()->id)
@@ -59,6 +68,7 @@ class TenantInviteResource extends Resource
                     ->hiddenOn('edit'),
 
                 TextInput::make('used_by')
+                    ->label('Utilisé par l\'utilisateur ID')
                     ->numeric()
                     ->readOnly()
                     ->hiddenOn('create'),
@@ -68,27 +78,47 @@ class TenantInviteResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->recordUrl(null)
             ->columns([
-                TextColumn::make('code'),
-                TextColumn::make('expires_at')->dateTime(),
-                TextColumn::make('used_by')
-                    ->label('Used By User ID')
-                    ->default('Not Used'),
-                TextColumn::make('created_at')->dateTime(),
+                CopyableTextColumn::make('code')
+                    ->copyMessage('Code d\'invitation copié')
+                    ->label('Code'),
+                TextColumn::make('expires_at')
+                    ->label('Expire le')
+                    ->dateTime(),
+                TextColumn::make('user.name')
+                    ->label('Utilisé par')
+                    ->default('Non utilisé'),
+                TextColumn::make('creator.name')
+                    ->label('Créé par')
+                    ->default('Inconnu'),
+                TextColumn::make('created_at')
+                    ->label('Créé le')
+                    ->dateTime(),
             ])
             ->filters([
                 //
             ])
             ->actions([
-                EditAction::make(),
-                DeleteAction::make(),
+                CopyAction::make('copyCode')
+                    ->label('Copier le code')
+                    ->copyable(fn ($record) => $record->code)
+                    ->icon('heroicon-o-clipboard-document')
+                    ->successNotificationTitle('Code copié!'),
+                CopyAction::make('copyLink')
+                    ->label('Copier le lien')
+                    ->copyable(fn ($record) => route('invite', ['code' => $record->code]))
+                    ->icon('heroicon-o-link')
+                    ->successNotificationTitle('Lien copié!'),
+                DeleteAction::make()
+                    ->label('Supprimer'),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
             ])
-            ->emptyStateHeading('No invites found');
+            ->emptyStateHeading('Aucune invitation trouvée');
     }
 
     public static function getRelations(): array
@@ -102,7 +132,6 @@ class TenantInviteResource extends Resource
     {
         return [
             'index' => ListTenantInvites::route('/'),
-            'create' => CreateTenantInvite::route('/create'),
             'edit' => EditTenantInvite::route('/{record}/edit'),
         ];
     }

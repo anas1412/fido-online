@@ -17,7 +17,12 @@ class RegisterTenant extends BaseRegisterTenant
 {
     public static function getLabel(): string
     {
-        return 'Register or Join Company';
+        return 'Créer une nouvelle entreprise';
+    }
+
+    public function getTitle(): string
+    {
+        return 'Créer ou rejoindre une nouvelle entreprise';
     }
 
     public function form(Schema $schema): Schema
@@ -25,16 +30,17 @@ class RegisterTenant extends BaseRegisterTenant
         return $schema
             ->components([
                 TextInput::make('name')
-                    ->label('Company Name')
+                    ->label('Nom de l\'entreprise')
                     ->required()
                     ->maxLength(255),
                 Select::make('type')
-                    ->label('Company Type')
+                    ->label('Type d\'entreprise')
                     ->options([
-                        'accounting' => 'Accounting',
-                        'commercial' => 'Commercial',
+                        'accounting' => 'Société Comptable',
+                        'commercial' => 'Société Commerciale',
                     ])
-                    ->required(),
+                    ->required()
+                    ->placeholder('Sélectionnez une option'),
             ]);
     }
 
@@ -57,12 +63,12 @@ class RegisterTenant extends BaseRegisterTenant
     public function getFormActions(): array
     {
         $joinAction = Action::make('join')
-            ->label('Join an Existing Company')
+            ->label('Rejoignez une entreprise existante')
             ->color('gray')
             ->modalWidth('md')
             ->schema([
                 TextInput::make('invite_code')
-                    ->label('Invite Code')
+                    ->label('Code d\'invitation')
                     ->required(),
             ])
             ->action(function (array $data) {
@@ -74,14 +80,14 @@ class RegisterTenant extends BaseRegisterTenant
                     ->first();
 
                 if (! $tenantInvite) {
-                    Notification::make()->title('Invalid or used invite code.')->danger()->send();
+                    Notification::make()->title('Code d\'invitation invalide ou déjà utilisé.')->danger()->send();
                     $this->halt();
                 }
 
                 $user->tenants()->attach($tenantInvite->tenant_id);
                 $tenantInvite->update(['used_by' => $user->id]);
 
-                Notification::make()->title('Successfully joined company!')->success()->send();
+                Notification::make()->title('Intégration réussie à l\'entreprise !')->success()->send();
                 
                 $tenant = Tenant::find($tenantInvite->tenant_id);
                 
@@ -90,7 +96,7 @@ class RegisterTenant extends BaseRegisterTenant
             });
 
         return [
-            parent::getRegisterFormAction(),
+            parent::getRegisterFormAction()->label('Créer une nouvelle entreprise'),
             $joinAction,
         ];
     }
