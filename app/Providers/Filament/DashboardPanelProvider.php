@@ -40,7 +40,14 @@ class DashboardPanelProvider extends PanelProvider
             ->id('dashboard')
             ->path('dashboard')
             ->login()
+            ->profile()
+            /* ->userMenu(position: UserMenuPosition::Sidebar) */
             ->userMenuItems([
+                'profile' => fn (Action $action) => $action->label(fn (): string => auth()->user()?->name ?? 'Utilisateur')->icon('heroicon-o-cog-6-tooth'),
+                /* 'edit_profile' => Action::make('profile')
+                    ->label('Modifier profil')
+                    ->url(url('/dashboard/profile'))
+                    ->icon('heroicon-o-cog-6-tooth'), */
                 'admin_panel' => Action::make('admin_panel')
                     ->label('Accéder au Admin Panel')
                     ->url(url('/admin'))
