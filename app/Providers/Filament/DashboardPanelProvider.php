@@ -91,14 +91,14 @@ class DashboardPanelProvider extends PanelProvider
             ])
             ->plugins([
                 \MartinPetricko\FilamentSentryFeedback\FilamentSentryFeedbackPlugin::make()
+                    /* ->sentryUser(function (): ?SentryUser {
+                            return new SentryUser(auth()->user()->name, auth()->user()->email);
+                        }) */
                     ->showName(true)
                     ->isNameRequired(true)
                     ->showEmail(true)
                     ->isEmailRequired(true)
-                    ->enableScreenshot(true)
-                    ->sentryUser(function (): ?SentryUser {
-                        return new SentryUser("anas", "anas@gmail.com");
-                    }), 
+                    ->enableScreenshot(true),
             ])
             ->middleware([
                 EncryptCookies::class,
