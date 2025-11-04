@@ -4,12 +4,12 @@ namespace App\Filament\Dashboard\Pages\Tenancy;
 
 use App\Models\Tenant;
 use App\Models\TenantInvite;
-use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Notifications\Notification;
 use Filament\Pages\Tenancy\RegisterTenant as BaseRegisterTenant;
 use Filament\Schemas\Schema;
+use Filament\Actions\Action;
+use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
@@ -22,82 +22,86 @@ class RegisterTenant extends BaseRegisterTenant
 
     public function getTitle(): string
     {
-        return 'Créer ou rejoindre une nouvelle entreprise';
+        return 'Créer une nouvelle entreprise';
     }
 
     public function form(Schema $schema): Schema
     {
-        return $schema
-            ->components([
-                TextInput::make('name')
-                    ->label('Nom de l\'entreprise')
-                    ->required()
-                    ->maxLength(255),
-                Select::make('type')
-                    ->label('Type d\'entreprise')
-                    ->options([
-                        'accounting' => 'Société Comptable',
-                        'commercial' => 'Société Commerciale',
-                    ])
-                    ->required()
-                    ->placeholder('Sélectionnez une option'),
-            ]);
+        return $schema->components([
+            TextInput::make('name')
+                ->label('Nom de l\'entreprise')
+                ->required()
+                ->maxLength(255),
+
+            Select::make('type')
+                ->label('Type d\'entreprise')
+                ->options([
+                    'accounting' => 'Société comptable',
+                    'commercial' => 'Société commerciale',
+                ])
+                ->required()
+                ->placeholder('Sélectionnez un type'),
+        ]);
     }
 
-    // This override is no longer needed because the parent logic is sufficient
-    // once we fix the slug issue correctly. We will use handleRegistration instead.
-    
     protected function handleRegistration(array $data): Tenant
     {
         $data['slug'] = Str::slug($data['name'] . '-' . Str::random(5));
-        
+
         $tenant = Tenant::create($data);
 
-        $user = Auth::user();
-        $user->tenants()->attach($tenant);
+        Auth::user()->tenants()->attach($tenant);
 
         return $tenant;
     }
 
-
-    public function getFormActions(): array
+    protected function getFormActions(): array
     {
-        $joinAction = Action::make('join')
-            ->label('Rejoignez une entreprise existante')
-            ->color('gray')
-            ->modalWidth('md')
-            ->schema([
-                TextInput::make('invite_code')
-                    ->label('Code d\'invitation')
-                    ->required(),
-            ])
-            ->action(function (array $data) {
-                $inviteCode = $data['invite_code'];
-                $user = Auth::user();
-
-                $tenantInvite = TenantInvite::where('code', $inviteCode)
-                    ->whereNull('used_by')
-                    ->first();
-
-                if (! $tenantInvite) {
-                    Notification::make()->title('Code d\'invitation invalide ou déjà utilisé.')->danger()->send();
-                    $this->halt();
-                }
-
-                $user->tenants()->attach($tenantInvite->tenant_id);
-                $tenantInvite->update(['used_by' => $user->id]);
-
-                Notification::make()->title('Intégration réussie à l\'entreprise !')->success()->send();
-                
-                $tenant = Tenant::find($tenantInvite->tenant_id);
-                
-                // The redirect is the only thing needed to switch the tenant context.
-                $this->redirect(filament()->getUrl(tenant: $tenant));
-            });
-
         return [
+            // Primary action: create a new company
             parent::getRegisterFormAction()->label('Créer une nouvelle entreprise'),
-            $joinAction,
+
+            // Secondary action: join existing company via modal
+            Action::make('join')
+                ->label('Rejoindre une entreprise existante')
+                ->color('gray')
+                ->modalWidth('md')
+                ->form([
+                    TextInput::make('invite_code')
+                        ->label('Code d\'invitation')
+                        ->required(),
+                ])
+                ->action(function (array $data) {
+                    $inviteCode = $data['invite_code'];
+                    $user = Auth::user();
+
+                    $invite = TenantInvite::where('code', $inviteCode)
+                        ->whereNull('used_by')
+                        ->where('expires_at', '>', now())
+                        ->first();
+
+                    if (! $invite) {
+                        Notification::make()
+                            ->title('Code d\'invitation invalide ou déjà utilisé.')
+                            ->danger()
+                            ->send();
+                        return;
+                    }
+
+                    // Attach user to tenant
+                    $user->tenants()->syncWithoutDetaching([$invite->tenant_id]);
+
+                    // Mark invite as used
+                    $invite->update(['used_by' => $user->id]);
+
+                    Notification::make()
+                        ->title('Vous avez rejoint l\'entreprise avec succès !')
+                        ->success()
+                        ->send();
+
+                    // Redirect to tenant dashboard
+                    $this->redirect(filament()->getUrl(tenant: $invite->tenant));
+                }),
         ];
     }
 }

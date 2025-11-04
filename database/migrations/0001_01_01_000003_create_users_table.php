@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('google_id')->nullable();
-            $table->foreignId('tenant_id')->nullable()->constrained()->onDelete('set null');
+
             $table->boolean('is_admin')->default(false);
             /* $table->string('password'); */
             $table->rememberToken();

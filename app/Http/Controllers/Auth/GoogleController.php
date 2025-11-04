@@ -38,17 +38,8 @@ class GoogleController extends Controller
             Auth::login($user);
             \Log::info('User logged in:', ['user_id' => $user->id]);
 
-            // REDIRECTION LOGIC: This is key to your app flow
-            
-            // 1. Admins go to the admin panel
-            if ($user->is_admin) {
-                \Log::info('Redirecting to admin panel.');
-                return redirect()->intended(filament()->getPanel('admin')->getUrl());
-            }
-
-            // 2. All other users go to the dashboard panel. Filament's tenantRegistration will handle onboarding if no tenant is associated.
-            \Log::info('Redirecting to dashboard panel.');
-            return redirect()->intended(filament()->getPanel('dashboard')->getUrl());
+            // Redirect to the intended URL, or the default dashboard if no intended URL is set.
+            return redirect()->intended(filament()->getUrl());
 
         } catch (\Exception $e) {
             // Handle exceptions (e.g., user denies access)

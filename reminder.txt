@@ -1,2 +1,3 @@
 always run 
 php artisan icons:cache
+npm run build
