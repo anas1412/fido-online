@@ -23,6 +23,8 @@ use Illuminate\Support\Facades\Blade;
 use Illuminate\View\View;
 use Filament\Actions\Action;
 use MartinPetricko\FilamentSentryFeedback\SentryUser;
+use Filament\Navigation\MenuItem;
+use App\Http\Middleware\EnsureUserIsAdmin;
 
 
 class AdminPanelProvider extends PanelProvider
@@ -32,11 +34,19 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             ->id('admin')
             ->path('admin')
-            ->login() // This is the line we are modifying
+            ->login()
+            ->profile()
+            /* ->userMenu(position: UserMenuPosition::Sidebar) */
             ->userMenuItems([
-                'dashboard_panel' => Action::make('dashboard_panel')
-                    ->label('Accéder au Dashboard')
-                    ->url(url('/dashboard')), // directly point to the dashboard path
+                'profile' => fn (Action $action) => $action->label(fn (): string => auth()->user()?->name ?? 'Utilisateur')->icon('heroicon-o-cog-6-tooth'),
+                /* 'edit_profile' => Action::make('profile')
+                    ->label('Modifier profil')
+                    ->url(url('/dashboard/profile'))
+                    ->icon('heroicon-o-cog-6-tooth'), */
+                'admin_panel' => Action::make('admin_panel')
+                    ->label('Accéder au Admin Panel')
+                    ->url(url('/admin'))
+                    ->visible(fn (): bool => auth()->user()?->is_admin ?? false),
             ])
 
             // 1. Add our Google Login button before the form
@@ -94,7 +104,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-                \App\Http\Middleware\EnsureUserIsAdmin::class, // custom middleware
+                EnsureUserIsAdmin::class,
             ])
             ->viteTheme('resources/css/filament/admin/theme.css');
     }
