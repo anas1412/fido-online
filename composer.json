@@ -8,7 +8,7 @@
     "require": {
         "php": "^8.2",
         "devonab/filament-easy-footer": "^2.1",
-        "filament/filament": "4.0",
+        "filament/filament": "4.1",
         "lara-zeus/popover": "^2.0",
         "lara-zeus/qr": "^2.0",
         "laravel/framework": "^12.0",

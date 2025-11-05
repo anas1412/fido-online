@@ -79,11 +79,12 @@ class DashboardPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Green,
             ])
-            
+            ->topbar(false)
             ->spa()
             ->maxContentWidth(Width::Full)
             ->unsavedChangesAlerts()
             ->databaseTransactions()
+            
             ->tenant(
                 Tenant::class,
                 slugAttribute: 'slug', // Use the 'slug' column for tenant URLs
@@ -125,6 +126,7 @@ class DashboardPanelProvider extends PanelProvider
                     ->showEmail(true)
                     ->isEmailRequired(true)
                     ->enableScreenshot(true),
+
                 EasyFooterPlugin::make()
                 ->withBorder()
                 ->withFooterPosition('footer')
