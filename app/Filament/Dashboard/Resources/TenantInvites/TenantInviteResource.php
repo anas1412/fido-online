@@ -24,6 +24,7 @@ use BackedEnum;
 use Webbingbrasil\FilamentCopyActions\Tables\CopyableTextColumn;
 use Webbingbrasil\FilamentCopyActions\Actions\CopyAction;
 use LaraZeus\Popover\Tables\PopoverColumn;
+use Illuminate\Support\Facades\Auth;
 
 class TenantInviteResource extends Resource
 {
@@ -44,6 +45,30 @@ class TenantInviteResource extends Resource
     public static function getNavigationBadge(): ?string
     {
         return static::getModel()::count();
+    }
+
+    public static function canViewAny(): bool
+    {
+        $currentUser = Auth::user();
+        $currentTenant = filament()->getTenant();
+
+        if (!$currentUser || !$currentTenant) {
+            return false;
+        }
+
+        // System admin can view any resource
+        if ($currentUser->is_admin) {
+            return true;
+        }
+
+        // Check if current user is owner or mod of the current tenant
+        $currentUserTenantPivot = $currentUser->tenants()->where('tenant_id', $currentTenant->id)->first()->pivot ?? null;
+
+        if ($currentUserTenantPivot && ($currentUserTenantPivot->is_owner || $currentUserTenantPivot->is_mod)) {
+            return true;
+        }
+
+        return false;
     }
 
     public static function form(Schema $schema): Schema
