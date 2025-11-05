@@ -98,8 +98,7 @@ class DashboardPanelProvider extends PanelProvider
                 
                 ->label(fn () => 'Quitter ' . filament()->getTenant()?->name)
                 ->icon('heroicon-o-arrow-left-on-rectangle'),
-                'billing' => fn (Action $action) => $action->label('Facturation')->visible(fn (): bool => auth()->user()?->is_mod ?? false),
-                'profile' => fn (Action $action) => $action->label('Modifier les paramètres')->visible(fn (): bool => auth()->user()?->is_mod ?? false),
+                'profile' => fn (Action $action) => $action->label('Modifier les paramètres'),
                 'register' => fn (Action $action) => $action->label('Ajouter une organisation'),
                 
             ])

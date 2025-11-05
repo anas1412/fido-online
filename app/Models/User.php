@@ -24,15 +24,23 @@ class User extends Authenticatable implements HasTenants
     protected $fillable = [
         'name',
         'email',
-        /* 'password', */
         'google_id',
         'is_admin',
-        'is_moderator',
     ];
 
     public function tenants(): BelongsToMany
     {
-        return $this->belongsToMany(Tenant::class);
+        return $this->belongsToMany(Tenant::class)->withPivot('is_owner', 'is_mod');
+    }
+
+    public function isOwnerOfTenant(Tenant $tenant): bool
+    {
+        return $this->tenants()->where('tenant_id', $tenant->id)->wherePivot('is_owner', true)->exists();
+    }
+
+    public function isModeratorOfTenant(Tenant $tenant): bool
+    {
+        return $this->tenants()->where('tenant_id', $tenant->id)->wherePivot('is_mod', true)->exists();
     }
 
     public function getTenants(Panel $panel): Collection
@@ -51,8 +59,6 @@ class User extends Authenticatable implements HasTenants
      * @var list<string>
      */
     protected $hidden = [
-        /* 'password', */
-        'remember_token',
     ];
 
     /**
@@ -64,7 +70,6 @@ class User extends Authenticatable implements HasTenants
     {
         return [
             'email_verified_at' => 'datetime',
-            /* 'password' => 'hashed', */
         ];
     }
 }

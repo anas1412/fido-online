@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('tenant_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->boolean('is_owner')->default(false);
+            $table->boolean('is_mod')->default(false);
             $table->timestamps();
         });
     }

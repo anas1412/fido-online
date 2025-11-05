@@ -50,7 +50,7 @@ class RegisterTenant extends BaseRegisterTenant
 
         $tenant = Tenant::create($data);
 
-        Auth::user()->tenants()->attach($tenant);
+        Auth::user()->tenants()->attach($tenant, ['is_owner' => true, 'is_mod' => true]);
 
         return $tenant;
     }
