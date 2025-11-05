@@ -14,37 +14,51 @@ class LeaveTenant extends Page
 
     public static function leaveAction(): Action
     {
-        return Action::make('leaveTenant')
-            ->label(fn () => 'Quitter ' . (filament()->getTenant()?->name ?? 'l\'organisation'))
-            ->icon('heroicon-o-arrow-left-on-rectangle')
-            ->color('danger')
-            ->requiresConfirmation()
-            ->modalHeading(fn () => 'Quitter ' . (filament()->getTenant()?->name ?? 'l\'organisation') . ' ?')
-            ->modalSubheading('Cette action retirera votre accès à cette organisation.')
-            ->modalButton('Oui, quitter')
-            ->action(function () {
-                $user = Auth::user();
-                $tenant = filament()->getTenant();
+        $user = Auth::user();
+        $tenant = filament()->getTenant();
+        $isOwner = $user->tenants()->where('tenant_id', $tenant->id)->wherePivot('is_owner', true)->exists();
 
-                if (! $user || ! $tenant) {
+        if ($isOwner) {
+            // If owner, return an action that redirects to the profile page
+            return Action::make('deleteTenantRedirect')
+                ->label('Supprimer ' . ($tenant?->name ?? "l'organisation"))
+                ->icon('heroicon-o-trash')
+                ->url(\App\Filament\Dashboard\Pages\EditTenantProfile::getUrl())
+                ->color('danger');
+        } else {
+            // If not owner, return the leave action with confirmation
+            return Action::make('leaveTenant')
+                ->label('Quitter ' . ($tenant?->name ?? "l'organisation"))
+                ->icon('heroicon-o-arrow-left-on-rectangle')
+                ->color('danger')
+                ->requiresConfirmation()
+                ->modalHeading('Quitter ' . ($tenant?->name ?? "l'organisation") . ' ?')
+                ->modalSubheading('Cette action retirera votre accès à cette organisation.')
+                ->modalButton('Oui, quitter')
+                ->action(function () {
+                    $user = Auth::user();
+                    $tenant = filament()->getTenant();
+
+                    if (! $user || ! $tenant) {
+                        Notification::make()
+                            ->title('Erreur')
+                            ->body("Impossible de quitter l'organisation.")
+                            ->danger()
+                            ->send();
+
+                        return redirect(filament()->getPanel('dashboard')->getUrl());
+                    }
+
+                    $user->tenants()->detach($tenant->id);
+
                     Notification::make()
-                        ->title('Erreur')
-                        ->body('Impossible de quitter l\'organisation.')
-                        ->danger()
+                        ->title('Succès')
+                        ->body("Vous avez quitté l'organisation {$tenant->name}.")
+                        ->success()
                         ->send();
 
                     return redirect(filament()->getPanel('dashboard')->getUrl());
-                }
-
-                $user->tenants()->detach($tenant->id);
-
-                Notification::make()
-                    ->title('Succès')
-                    ->body("Vous avez quitté l'organisation {$tenant->name}.")
-                    ->success()
-                    ->send();
-
-                return redirect(filament()->getPanel('dashboard')->getUrl());
-            });
+                });
+        }
     }
 }

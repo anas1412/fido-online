@@ -31,6 +31,7 @@ use Filament\Navigation\MenuItem;
 use App\Filament\Dashboard\Pages\LeaveTenant;
 use Devonab\FilamentEasyFooter\EasyFooterPlugin;
 use Illuminate\Support\HtmlString;
+use Illuminate\Support\Facades\Auth;
 
 
 class DashboardPanelProvider extends PanelProvider
@@ -94,9 +95,18 @@ class DashboardPanelProvider extends PanelProvider
             ->tenantProfile(EditTenantProfile::class)
             ->tenantMenuItems([
                 'leave_tenant' => fn () => \App\Filament\Dashboard\Pages\LeaveTenant::leaveAction()
-                
-                ->label(fn () => 'Quitter ' . filament()->getTenant()?->name)
-                ->icon('heroicon-o-arrow-left-on-rectangle'),
+                ->label(function () {
+                    $user = Auth::user();
+                    $tenant = filament()->getTenant();
+                    $isOwner = $user->tenants()->where('tenant_id', $tenant->id)->wherePivot('is_owner', true)->exists();
+                    return $isOwner ? 'Supprimer ' . ($tenant?->name ?? 'l\'organisation') : 'Quitter ' . ($tenant?->name ?? 'l\'organisation');
+                })
+                ->icon(function () {
+                    $user = Auth::user();
+                    $tenant = filament()->getTenant();
+                    $isOwner = $user->tenants()->where('tenant_id', $tenant->id)->wherePivot('is_owner', true)->exists();
+                    return $isOwner ? 'heroicon-o-trash' : 'heroicon-o-arrow-left-on-rectangle';
+                }),
                 'profile' => fn (Action $action) => $action->label('Modifier les paramètres'),
                 'register' => fn (Action $action) => $action->label('Ajouter une organisation'),
                 

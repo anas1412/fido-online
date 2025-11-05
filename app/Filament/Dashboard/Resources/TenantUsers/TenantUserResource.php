@@ -65,9 +65,25 @@ class TenantUserResource extends Resource
                         $record->update(['is_mod' => $state]);
                     })
                     ->disabled(function (TenantUserPivot $record) {
+                        $currentUser = Auth::user();
                         $tenantId = $record->tenant_id;
-                        $user = Auth::user();
-                        return !$user->tenants()->where('tenant_id', $tenantId)->wherePivot('is_owner', true)->exists();
+
+                        // Check if the current authenticated user is the owner of this tenant
+                        $currentUserIsOwner = $currentUser->tenants()->where('tenant_id', $tenantId)->wherePivot('is_owner', true)->exists();
+
+                        // If the current authenticated user is not an owner, disable the toggle
+                        if (!$currentUserIsOwner) {
+                            return true;
+                        }
+
+                        // If the current authenticated user IS an owner, and the record being displayed is for THEM,
+                        // then disable the toggle (because an owner is implicitly a mod)
+                        if ($currentUserIsOwner && $record->user_id === $currentUser->id) {
+                            return true;
+                        }
+
+                        // Otherwise, allow the toggle (owner can change other members' mod status)
+                        return false;
                     }),
             ])
             ->actions([
@@ -83,25 +99,29 @@ class TenantUserResource extends Resource
                         $currentUser = Auth::user();
                         $tenantId = $record->tenant_id;
 
-                        // Check if current user is owner or mod of this tenant
-                        $currentUserTenantPivot = $currentUser->tenants()->where('tenant_id', $tenantId)->first()->pivot ?? null;
+                        // Rule: is_admin can never be kicked.
+                        if ($record->user->is_admin) {
+                            return false;
+                        }
 
+                        // Rule: is_owner can never be kicked from his tenant.
+                        if ($record->is_owner) {
+                            return false;
+                        }
+
+                        // Rule: Only is_owner or is_mod can see the action.
+                        $currentUserTenantPivot = $currentUser->tenants()->where('tenant_id', $tenantId)->first()->pivot ?? null;
                         if (!$currentUserTenantPivot || (!$currentUserTenantPivot->is_owner && !$currentUserTenantPivot->is_mod)) {
                             return false; // Current user is neither owner nor mod
                         }
 
-                        // Constraint 1: is_mod cannot remove is_admin
-                        if ($currentUserTenantPivot->is_mod && $record->user->is_admin) {
-                            return false;
-                        }
-
-                        // Constraint 2: is_admin cannot remove himself
+                        // Rule: is_admin cannot remove himself (system admin).
                         if ($currentUser->is_admin && $record->user->id === $currentUser->id) {
                             return false;
                         }
 
-                        // Constraint 3: is_mod cannot kick themselves
-                        if ($currentUserTenantPivot->is_mod && $record->user->id === $currentUser->id) {
+                        // Rule: Tenant owner or mod cannot kick themselves.
+                        if (($currentUserTenantPivot->is_owner || $currentUserTenantPivot->is_mod) && $record->user->id === $currentUser->id) {
                             return false;
                         }
 
