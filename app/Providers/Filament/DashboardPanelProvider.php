@@ -32,7 +32,7 @@ use App\Filament\Dashboard\Pages\LeaveTenant;
 use Devonab\FilamentEasyFooter\EasyFooterPlugin;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\Facades\Auth;
-
+use Filament\Navigation\NavigationItem;
 
 class DashboardPanelProvider extends PanelProvider
 {
@@ -85,7 +85,18 @@ class DashboardPanelProvider extends PanelProvider
             ->maxContentWidth(Width::Full)
             ->unsavedChangesAlerts()
             ->databaseTransactions()
-            
+            ->collapsibleNavigationGroups(false)
+            ->sidebarCollapsibleOnDesktop()
+
+            /* ->navigationItems([
+                NavigationItem::make('Analytics')
+                    ->url('https://filament.pirsch.io', shouldOpenInNewTab: true)
+                    ->icon('heroicon-o-presentation-chart-line')
+                    ->group('Reports')
+                    ->sort(3),
+            ]) */
+
+
             ->tenant(
                 Tenant::class,
                 slugAttribute: 'slug', // Use the 'slug' column for tenant URLs

@@ -49,7 +49,6 @@ class AdminPanelProvider extends PanelProvider
                     ->icon('heroicon-o-home')
                     ->url(url('/dashboard')),
             ])
-
             // 1. Add our Google Login button before the form
             ->renderHook(
                 'panels::auth.login.form.before',

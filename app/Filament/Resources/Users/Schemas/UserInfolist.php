@@ -25,18 +25,18 @@ class UserInfolist
                 TextEntry::make('owned_tenants')
                     ->label('Organisations possédées')
                     ->formatStateUsing(function (string $state, \App\Models\User $record) {
-                        $record->loadMissing(['tenants' => function ($query) {
-                            $query->withPivot('is_owner', 'is_mod');
-                        }]);
+                        if ($record->tenants->isEmpty()) {
+                            return 'Aucune';
+                        }
                         $ownedTenants = $record->tenants->filter(fn ($tenant) => $tenant->pivot->is_owner);
                         return $ownedTenants->pluck('name')->join(', ');
                     }),
                 TextEntry::make('member_tenants')
                     ->label('Membre des organisations')
                     ->formatStateUsing(function (string $state, \App\Models\User $record) {
-                        $record->loadMissing(['tenants' => function ($query) {
-                            $query->withPivot('is_owner', 'is_mod');
-                        }]);
+                        if ($record->tenants->isEmpty()) {
+                            return 'Aucune';
+                        }
                         return $record->tenants->pluck('name')->join(', ');
                     }),
                 TextEntry::make('created_at')
