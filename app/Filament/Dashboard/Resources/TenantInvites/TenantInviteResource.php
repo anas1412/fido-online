@@ -23,6 +23,7 @@ use UnitEnum;
 use BackedEnum;
 use Webbingbrasil\FilamentCopyActions\Tables\CopyableTextColumn;
 use Webbingbrasil\FilamentCopyActions\Actions\CopyAction;
+use LaraZeus\Popover\Tables\PopoverColumn;
 
 class TenantInviteResource extends Resource
 {

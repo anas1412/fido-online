@@ -29,6 +29,8 @@ use App\Filament\Dashboard\Pages\ManageInvites;
 use MartinPetricko\FilamentSentryFeedback\FilamentSentryFeedbackPlugin;
 use Filament\Navigation\MenuItem;
 use App\Filament\Dashboard\Pages\LeaveTenant;
+use Devonab\FilamentEasyFooter\EasyFooterPlugin;
+use Illuminate\Support\HtmlString;
 
 
 class DashboardPanelProvider extends PanelProvider
@@ -77,6 +79,7 @@ class DashboardPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Green,
             ])
+            
             ->spa()
             ->maxContentWidth(Width::Full)
             ->unsavedChangesAlerts()
@@ -122,6 +125,19 @@ class DashboardPanelProvider extends PanelProvider
                     ->showEmail(true)
                     ->isEmailRequired(true)
                     ->enableScreenshot(true),
+                EasyFooterPlugin::make()
+                ->withBorder()
+                ->withFooterPosition('footer')
+                /* ->withGithub(showLogo: true, showUrl: true) */
+                /* ->withLoadTime('Cette page a été chargée en') */
+                ->withLogo(asset('images/logo.png'))
+                ->withLinks([
+                    ['title' => 'À propos', 'url' => 'https://example.com/about'],
+                    ['title' => 'Mentions légales', 'url' => 'https://example.com/legal'],
+                    ['title' => 'Politique de confidentialité', 'url' => 'https://example.com/privacy-policy'],
+                ])
+                ->hiddenFromPages([ 'dashboard/login', 'dashboard/new', 'dashboard/profile' ])
+                ->hiddenFromPagesEnabled(),
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -136,6 +152,7 @@ class DashboardPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ]);
+            ])
+            ->viteTheme('resources/css/filament/dashboard/theme.css');
     }
 }

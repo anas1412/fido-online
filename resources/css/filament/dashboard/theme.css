@@ -1,0 +1,5 @@
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+
+@source '../../../../app/Filament/Dashboard/**/*';
+@source '../../../../resources/views/filament/dashboard/**/*';
+@source '../../../../vendor/devonab/filament-easy-footer/resources/views/**/*';
