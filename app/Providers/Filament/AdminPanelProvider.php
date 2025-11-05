@@ -36,6 +36,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->profile()
+            ->topNavigation()
             /* ->userMenu(position: UserMenuPosition::Sidebar) */
             ->userMenuItems([
                 'profile' => fn (Action $action) => $action->label(fn (): string => auth()->user()?->name ?? 'Utilisateur')->icon('heroicon-o-cog-6-tooth'),
@@ -43,10 +44,10 @@ class AdminPanelProvider extends PanelProvider
                     ->label('Modifier profil')
                     ->url(url('/dashboard/profile'))
                     ->icon('heroicon-o-cog-6-tooth'), */
-                'admin_panel' => Action::make('admin_panel')
-                    ->label('Accéder au Admin Panel')
-                    ->url(url('/admin'))
-                    ->visible(fn (): bool => auth()->user()?->is_admin ?? false),
+                'dashboard_panel' => Action::make('dashboard_panel')
+                    ->label('Accéder au Dashboard')
+                    ->icon('heroicon-o-home')
+                    ->url(url('/dashboard')),
             ])
 
             // 1. Add our Google Login button before the form
@@ -64,8 +65,8 @@ class AdminPanelProvider extends PanelProvider
                     }
                 </style>')
             )
-            ->brandName('Fido')
-            ->brandLogo(asset('images/logo.png'))
+            ->brandName('Administration')
+            /* ->brandLogo(asset('images/logo.png')) */
             ->brandLogoHeight('3rem')
             ->favicon(asset('images/logo.png'))
             ->colors([
@@ -105,7 +106,6 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
                 EnsureUserIsAdmin::class,
-            ])
-            ->viteTheme('resources/css/filament/admin/theme.css');
+            ]);
     }
 }

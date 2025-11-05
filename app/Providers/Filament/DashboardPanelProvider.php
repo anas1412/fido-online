@@ -53,6 +53,7 @@ class DashboardPanelProvider extends PanelProvider
                 'admin_panel' => Action::make('admin_panel')
                     ->label('Accéder au Admin Panel')
                     ->url(url('/admin'))
+                    ->icon('heroicon-o-shield-check')
                     ->visible(fn (): bool => auth()->user()?->is_admin ?? false),
             ])
             
@@ -125,15 +126,15 @@ class DashboardPanelProvider extends PanelProvider
                 FilamentInfoWidget::class,
             ])
             ->plugins([
-                \MartinPetricko\FilamentSentryFeedback\FilamentSentryFeedbackPlugin::make()
+                /* \MartinPetricko\FilamentSentryFeedback\FilamentSentryFeedbackPlugin::make()
                     /* ->sentryUser(function (): ?SentryUser {
                             return new SentryUser(auth()->user()->name, auth()->user()->email);
-                        }) */
+                        }) 
                     ->showName(true)
                     ->isNameRequired(true)
                     ->showEmail(true)
                     ->isEmailRequired(true)
-                    ->enableScreenshot(true),
+                    ->enableScreenshot(true), */
 
                 EasyFooterPlugin::make()
                 ->withBorder()
