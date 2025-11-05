@@ -46,7 +46,7 @@ class RegisterTenant extends BaseRegisterTenant
 
     protected function handleRegistration(array $data): Tenant
     {
-        $data['slug'] = Str::slug($data['name'] . '-' . Str::random(5));
+        $data['slug'] = Str::slug($data['name']);
 
         $tenant = Tenant::create($data);
 

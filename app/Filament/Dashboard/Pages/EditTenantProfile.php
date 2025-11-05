@@ -10,6 +10,8 @@ use Illuminate\Support\Str;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Fieldset;
 
 class EditTenantProfile extends BaseEditTenantProfile
 {
@@ -70,22 +72,47 @@ class EditTenantProfile extends BaseEditTenantProfile
 
     public static function getLabel(): string
     {
-        return 'Tenant Profile';
+        return 'Profil de l\'organisation';
     }
 
-    public function form(Schema $schema): Schema
-    {
-        return $schema
-            ->schema([
-                TextInput::make('name')
-                    ->live()
-                    ->afterStateUpdated(fn (string $operation, $state, Set $set) => $set('slug', Str::slug($state))),
-                TextInput::make('slug')
-                    ->readOnly(),
-                TextInput::make('type')
-                    ->disabled(), // Display tenant type, but don't allow editing
-            ]);
-    }
+        public function form(Schema $schema): Schema
+        {
+            return $schema
+                ->schema([
+
+                    Fieldset::make('Paramètres généraux')
+                        ->columns([
+                            'default' => 1,
+                            'md' => 2,
+                            'xl' => 3,
+                        ])
+                        ->schema([
+
+                            TextInput::make('name')
+                                ->label('Nom de l\'organisation')
+                                ->required()
+                                ->live()
+                                ->afterStateUpdated(fn (string $operation, $state, Set $set) => $set('slug', Str::slug($state))),
+                            TextInput::make('slug')
+                                ->label('Identifiant lisible')
+                                ->readOnly(),
+                            TextInput::make('type')
+                                ->label('Type d\'organisation')
+                                ->disabled()
+                                ->afterStateHydrated(function ($component, $state) {
+                                    $component->state(
+                                        match($state) {
+                                            'commercial' => 'Société Commerciale',
+                                            'accounting' => 'Société Comptabilité',
+                                            default => $state,
+                                        }
+                                    );
+                                }),
+
+                        ]),
+                    ]);
+
+        }
 
     protected function getRedirectUrl(): string
     {
