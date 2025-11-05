@@ -29,7 +29,7 @@ class EditTenantProfile extends BaseEditTenantProfile
 
                     Notification::make()
                         ->title('Succès')
-                        ->body("L\'organisation {$this->tenant->name} a été supprimée.")
+                        ->body("L'organisation {$this->tenant->name} a été supprimée.")
                         ->success()
                         ->send();
 
