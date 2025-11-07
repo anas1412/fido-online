@@ -83,7 +83,12 @@ class TenantUserResource extends Resource
                         }
 
                         // Otherwise, allow the toggle (owner can change other members' mod status)
-                        return false;
+                        // Explicitly enable if current user is owner and target is another user
+                        if ($currentUserIsOwner && $record->user_id !== $currentUser->id) {
+                            return false;
+                        }
+
+                        return true;
                     }),
             ])
             ->actions([

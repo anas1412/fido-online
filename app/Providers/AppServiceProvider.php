@@ -10,6 +10,7 @@ use Filament\Auth\Http\Responses\Contracts\LogoutResponse as LogoutResponseContr
 
 class AppServiceProvider extends ServiceProvider
 {
+
     /**
      * Register any application services.
      */
