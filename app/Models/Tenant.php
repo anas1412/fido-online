@@ -15,7 +15,7 @@ class Tenant extends Model implements HasName
 
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class);
+        return $this->belongsToMany(User::class)->withPivot('is_owner', 'is_mod');
     }
 
     public function getFilamentName(): string

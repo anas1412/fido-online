@@ -13,7 +13,7 @@ class ViewUser extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            DeleteAction::make()->label('Exclure l\'utilisateur'), // Translated
+            DeleteAction::make()->label('Supprimer l\'utilisateur')->icon('heroicon-o-trash'),
         ];
     }
 }

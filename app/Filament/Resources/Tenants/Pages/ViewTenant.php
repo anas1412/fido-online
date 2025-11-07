@@ -13,7 +13,7 @@ class ViewTenant extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            DeleteAction::make(),
+            DeleteAction::make()->label('Supprimer l\'organisation')->icon('heroicon-o-trash'),
         ];
     }
 }

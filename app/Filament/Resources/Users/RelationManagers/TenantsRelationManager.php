@@ -1,26 +1,20 @@
 <?php
 
-namespace App\Filament\Resources\Tenants\RelationManagers;
+namespace App\Filament\Resources\Users\RelationManagers;
 
-use App\Filament\Resources\Users\UserResource;
-
+use App\Filament\Resources\Tenants\TenantResource;
 use Filament\Actions\CreateAction;
-
 use Filament\Resources\RelationManagers\RelationManager;
-
 use Filament\Tables\Table;
 
 use Filament\Tables\Columns\TextColumn;
-
 use Filament\Tables\Columns\IconColumn;
 
-
-
-class UsersRelationManager extends RelationManager
+class TenantsRelationManager extends RelationManager
 {
-    protected static string $relationship = 'users';
+    protected static string $relationship = 'tenants';
 
-    protected static ?string $relatedResource = UserResource::class;
+    protected static ?string $relatedResource = TenantResource::class;
 
     public function table(Table $table): Table
     {
@@ -28,11 +22,11 @@ class UsersRelationManager extends RelationManager
             ->recordTitleAttribute('name')
             ->columns([
                 TextColumn::make('name')
-                    ->label('Nom')
+                    ->label('Nom de l\'organisation')
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('email')
-                    ->label('Email')
+                TextColumn::make('type')
+                    ->label('Type')
                     ->sortable()
                     ->searchable(),
                 IconColumn::make('pivot.is_owner')
