@@ -72,7 +72,17 @@ class RegisterTenant extends BaseRegisterTenant
                         ->required(),
                 ])
                 ->action(function (array $data) {
-                    $inviteCode = $data['invite_code'];
+                    $rawInput = $data['invite_code'];
+
+                    // Extract code from URL if it's a URL
+                    if (filter_var($rawInput, FILTER_VALIDATE_URL)) {
+                        $path = parse_url($rawInput, PHP_URL_PATH);
+                        $segments = explode('/', $path);
+                        $inviteCode = end($segments);
+                    } else {
+                        $inviteCode = $rawInput;
+                    }
+
                     $user = Auth::user();
 
                     $invite = TenantInvite::where('code', $inviteCode)

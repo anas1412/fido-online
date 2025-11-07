@@ -32,10 +32,15 @@ Route::get('/invite/{code}', function (string $code) {
         return view('invite.invalid', ['code' => $code]);
     }
 
-    // If user is not logged in, redirect to login/registration
+    $tenant = $invite->tenant;
+
+    // If user is not logged in, store invite code and show join/cancel page
     if (! Auth::check()) {
-        session(['url.intended' => url("/invite/{$code}")]);
-        return redirect()->route('login'); // or your registration page
+        session(['invite_code' => $code]);
+        return view('invite.valid', [
+            'code' => $code,
+            'tenant' => $tenant,
+        ]);
     }
 
     $tenant = $invite->tenant;
@@ -55,30 +60,6 @@ Route::get('/invite/{code}', function (string $code) {
 // Handle Join action
 Route::post('/invite/{code}/join', function (string $code) {
 
-    if (! Auth::check()) {
-        session(['url.intended' => url("/invite/{$code}")]);
-        return redirect()->route('login'); // force login first
-    }
-
-    $invite = TenantInvite::where('code', $code)
-        ->whereNull('used_by')
-        ->where('expires_at', '>', now())
-        ->first();
-
-    if (! $invite) {
-        return view('invite.invalid', ['code' => $code]);
-    }
-
-    $user = Auth::user();
-
-    // Attach user to tenant
-    $user->tenants()->syncWithoutDetaching([$invite->tenant_id]);
-
-    // Mark invite as used
-    $invite->update(['used_by' => $user->id]);
-
-    $tenant = $invite->tenant;
-
-    // Redirect to tenant dashboard
-    return redirect(Filament::getPanel('dashboard')->getUrl(tenant: $tenant));
+    session(['invite_code' => $code]);
+            return redirect('/dashboard/login');
 })->name('invite.join');
