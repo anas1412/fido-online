@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\ServiceProvider;
 /* use App\Filament\Dashboard\Pages\Auth\LoginResponse; */
 use App\Filament\Dashboard\Pages\Auth\LogoutResponse;
@@ -22,8 +23,8 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-    public function boot(): void
+    public function boot(Schedule $schedule): void
     {
-        //
+        $schedule->command('invites:cleanup')->daily();
     }
 }

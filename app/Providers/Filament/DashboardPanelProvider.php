@@ -154,9 +154,9 @@ class DashboardPanelProvider extends PanelProvider
                 /* ->withLoadTime('Cette page a été chargée en') */
                 ->withLogo(asset('images/logo.png'))
                 ->withLinks([
-                    ['title' => 'À propos', 'url' => 'https://example.com/about'],
-                    ['title' => 'Mentions légales', 'url' => 'https://example.com/legal'],
-                    ['title' => 'Politique de confidentialité', 'url' => 'https://example.com/privacy-policy'],
+                    ['title' => 'À propos', 'url' => url('/about')],
+                    ['title' => 'Mentions légales', 'url' => url('/legal')],
+                    ['title' => 'Politique de confidentialité', 'url' => url('/privacy-policy')],
                 ])
                 ->hiddenFromPages([ 'dashboard/login', 'dashboard/new', 'dashboard/profile' ])
                 ->hiddenFromPagesEnabled(),

@@ -15,6 +15,7 @@ class TenantForm
                 TextInput::make('name')
                     ->required(),
                 TextInput::make('slug')
+                    ->label('Identifiant unique')
                     ->required(),
                 Select::make('type')
                     ->options(['accounting' => 'Accounting', 'commercial' => 'Commercial'])

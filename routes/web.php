@@ -63,3 +63,7 @@ Route::post('/invite/{code}/join', function (string $code) {
     session(['invite_code' => $code]);
             return redirect('/dashboard/login');
 })->name('invite.join');
+
+Route::view('/about', 'pages.about')->name('about');
+Route::view('/legal', 'pages.legal')->name('legal');
+Route::view('/privacy-policy', 'pages.privacy')->name('privacy-policy');

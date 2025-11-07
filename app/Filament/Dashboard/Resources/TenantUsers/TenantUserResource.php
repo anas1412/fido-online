@@ -20,7 +20,7 @@ class TenantUserResource extends Resource
 {
     protected static ?string $model = TenantUserPivot::class;
 
-    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-users';
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUserGroup;
 
     protected static ?string $recordTitleAttribute = 'user.name';
 
