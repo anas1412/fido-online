@@ -2,6 +2,8 @@
 
 namespace App\Filament\Dashboard\Resources\Invoices\Schemas;
 
+use App\Filament\Dashboard\Resources\Clients\ClientResource;
+use App\Models\Invoice;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
@@ -16,7 +18,8 @@ class InvoiceInfolist
                 ->schema([
                     TextEntry::make('client.name')
                         ->label('Client')
-                        ->columnSpan(1),
+                        ->columnSpan(1)
+                        ->url(fn (Invoice $record): string => ClientResource::getUrl('view', ['record' => $record->client->id])),
                     TextEntry::make('invoice_number')
                         ->label('Numéro de Facture')
                         ->columnSpan(1),

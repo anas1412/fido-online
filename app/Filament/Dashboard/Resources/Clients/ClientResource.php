@@ -2,6 +2,7 @@
 
 namespace App\Filament\Dashboard\Resources\Clients;
 
+use App\Filament\Dashboard\Resources\Clients\RelationManagers\InvoicesRelationManager;
 use App\Filament\Dashboard\Resources\Clients\Pages\CreateClient;
 use App\Filament\Dashboard\Resources\Clients\Pages\EditClient;
 use App\Filament\Dashboard\Resources\Clients\Pages\ListClients;
@@ -57,7 +58,7 @@ class ClientResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            InvoicesRelationManager::class,
         ];
     }
 

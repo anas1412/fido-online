@@ -35,11 +35,11 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
-            ->profile()
+            /* ->profile() */
             ->topNavigation()
             /* ->userMenu(position: UserMenuPosition::Sidebar) */
             ->userMenuItems([
-                'profile' => fn (Action $action) => $action->label(fn (): string => auth()->user()?->name ?? 'Utilisateur')->icon('heroicon-o-cog-6-tooth'),
+                /* 'profile' => fn (Action $action) => $action->label(fn (): string => auth()->user()?->name ?? 'Utilisateur')->icon('heroicon-o-cog-6-tooth'), */
                 /* 'edit_profile' => Action::make('profile')
                     ->label('Modifier profil')
                     ->url(url('/dashboard/profile'))

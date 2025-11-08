@@ -2,8 +2,9 @@
 
 **Tech Stack:**
 
-* Laravel 12 / PHP 8.3
-* Filament admin panel framework v4
+* Laravel Framework 12.37.0
+* PHP 8.3.24
+* Filament admin panel framework v4.1
 * MySQL (single database for all tenants)
 * Google-only authentication (via Socialite)
 * Multi-tenancy handled with a many-to-many relationship
@@ -55,3 +56,8 @@
 * Smooth onboarding for users with dynamic tenant creation or invite joining
 * Clear separation of admin and tenant user interfaces
 * Tenant types allow for role-specific dashboards and features
+
+---
+## Filament Resources Documentation
+
+Full documentation for Filament Resources can be found in `docs/resource.md`.
