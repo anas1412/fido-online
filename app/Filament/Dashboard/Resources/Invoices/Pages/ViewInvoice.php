@@ -16,7 +16,7 @@ class ViewInvoice extends ViewRecord
     {
         return [
             Action::make('printInvoice')
-                ->label('Imprimer')
+                ->label('Imprimer (WIP)')
                 ->icon(Heroicon::OutlinedPrinter)
                 ->color('info')
                 ->action(fn () => $this->js('window.print()')),

@@ -49,7 +49,12 @@ class InvoiceInfolist
                         ->schema([
                             TextEntry::make('product.name')
                                 ->label('Produit')
-                                ->columnSpan(2),
+                                ->columnSpan(2)
+                                ->visible(fn (\App\Models\InvoiceItem $record): bool => filled($record->product_id)),
+                            TextEntry::make('name')
+                                ->label('Produit')
+                                ->columnSpan(2)
+                                ->visible(fn (\App\Models\InvoiceItem $record): bool => filled($record->name) && !filled($record->product_id)),
                             TextEntry::make('quantity')
                                 ->label('Quantité')
                                 ->columnSpan(1),
