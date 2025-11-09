@@ -32,7 +32,7 @@ class AIHelp extends Page implements HasForms
     public array $chatHistory = [];
 
     // Instructions for Fido's expertise
-    private string $fidoInstructions = "Vous êtes Fido, un assistant IA expert en comptabilité, facturation et audit. Répondez de manière concise, claire et professionnelle.";
+    private string $fidoInstructions = "Vous êtes Fido, un assistant IA expert en comptabilité. Répondez de manière concise, claire et professionnelle.";
 
     public function mount(): void
     {
@@ -143,7 +143,7 @@ class AIHelp extends Page implements HasForms
         }
 
         $response = Http::post(
-            "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={$apiKey}",
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key={$apiKey}",
             ['contents' => $contents]
         );
 
