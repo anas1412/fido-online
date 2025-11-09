@@ -40,6 +40,7 @@ class ClientResource extends Resource
 
     protected static ?string $tenantOwnershipRelationshipName = 'tenant';
 
+
     public static function form(Schema $schema): Schema
     {
         return ClientForm::configure($schema);

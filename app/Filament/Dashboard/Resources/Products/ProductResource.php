@@ -39,6 +39,12 @@ class ProductResource extends Resource
 
     protected static ?string $tenantOwnershipRelationshipName = 'tenant';
 
+    public static function canViewAny(): bool
+    {
+        $tenant = filament()->getTenant();
+        return $tenant && $tenant->type === 'commercial';
+    }
+
     public static function form(Schema $schema): Schema
     {
         return ProductForm::configure($schema);
