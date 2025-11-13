@@ -35,10 +35,12 @@ class InvoiceInfolist
                         ->label("Date d'Échéance")
                         ->date()
                         ->columnSpan(1),
-                    
+                    TextEntry::make('currency')
+                        ->label('Devise')
+                        ->columnSpan(1),
                     TextEntry::make('total_amount')
                         ->label('Montant Total')
-                        ->numeric()
+                        ->money(fn (Invoice $record) => $record->currency)
                         ->columnSpan(1),
                 ])
                 ->columns(3)
@@ -63,11 +65,11 @@ class InvoiceInfolist
                                 ->columnSpan(1),
                             TextEntry::make('unit_price')
                                 ->label('Prix Unitaire')
-                                ->numeric()
+                                ->money(fn (InvoiceItem $record) => $record->invoice->currency)
                                 ->columnSpan(1),
                             TextEntry::make('total')
                                 ->label('Total')
-                                ->numeric()
+                                ->money(fn (InvoiceItem $record) => $record->invoice->currency)
                                 ->columnSpan(1),
                         ])
                         ->columns(5)

@@ -84,6 +84,14 @@ class InvoiceForm
                                 ->label('Statut')
                                 ->required()
                                 ->default('pending'),
+                            Select::make('currency')
+                                ->options([
+                                    'TND' => 'Dinar tunisien (TND)',
+                                    'EUR' => 'Euro (EUR)',
+                                    'USD' => 'Dollar américain (USD)',
+                                ])
+                                ->label('Devise par défaut')
+                                ->default(fn () => filament()->getTenant()->currency),
                         ]),
 
                     Step::make('Invoice Items')
@@ -147,14 +155,16 @@ class InvoiceForm
                                         ->afterStateUpdated(function ($state, $set, $get) {
                                             $quantity = $get('quantity') ?? 1;
                                             $set('total', ($state ?? 0) * $quantity);
-                                        }),
+                                        })
+                                        ->prefix(fn ($get) => $get('currency')),
 
                                     TextInput::make('total')
                                         ->label('Total')
                                         ->numeric()
                                         ->disabled()
                                         ->dehydrated(true)
-                                        ->reactive(),
+                                        ->reactive()
+                                        ->prefix(fn ($get) => $get('currency')),
                                 ]),
                         ]),
 
@@ -166,7 +176,8 @@ class InvoiceForm
                                 ->disabled() // prevents editing but updates reactively
                                 ->dehydrated(true)
                                 ->reactive()
-                                ->default(0.0),
+                                ->default(0.0)
+                                ->prefix(fn ($get) => $get('currency')),
                         ]),
                 ])->columnSpan('full'),
         ]);

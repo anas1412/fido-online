@@ -21,6 +21,9 @@ class TenantsTable
                     ->searchable(),
                 TextColumn::make('type')
                     ->badge(),
+                TextColumn::make('currency')
+                    ->label('Devise')
+                    ->searchable(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

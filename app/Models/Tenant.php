@@ -11,7 +11,7 @@ class Tenant extends Model implements HasName
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'slug', 'type'];
+    protected $fillable = ['name', 'slug', 'type', 'currency'];
 
     public function users(): BelongsToMany
     {

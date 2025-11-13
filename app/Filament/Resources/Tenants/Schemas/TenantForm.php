@@ -20,6 +20,9 @@ class TenantForm
                 Select::make('type')
                     ->options(['accounting' => 'Accounting', 'commercial' => 'Commercial'])
                     ->required(),
+                Select::make('currency')
+                    ->options(['TND' => 'TND', 'EUR' => 'EUR', 'USD' => 'USD'])
+                    ->required(),
             ]);
     }
 }

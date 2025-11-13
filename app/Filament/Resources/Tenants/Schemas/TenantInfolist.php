@@ -23,6 +23,8 @@ class TenantInfolist
                     TextEntry::make('type')
                         ->label('Type')
                         ->badge(),
+                    TextEntry::make('currency')
+                        ->label('Devise'),
                     TextEntry::make('created_at')
                         ->label('Créé le')
                         ->dateTime()

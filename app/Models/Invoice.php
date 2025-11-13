@@ -20,6 +20,7 @@ class Invoice extends Model
         'due_date',
         'status',
         'total_amount',
+        'currency',
     ];
 
     public function tenant(): BelongsTo

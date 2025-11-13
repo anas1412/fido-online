@@ -16,13 +16,12 @@ class InvoicesTable
     {
         return $table
             ->columns([
-
-                TextColumn::make('client.name')
-                    ->label('Client')
-                    ->sortable(),
                 TextColumn::make('invoice_number')
                     ->label('Numéro de Facture')
                     ->searchable(),
+                TextColumn::make('client.name')
+                    ->label('Client')
+                    ->sortable(),
                 TextColumn::make('issue_date')
                     ->label('Date d\'Émission')
                     ->date()
@@ -36,8 +35,11 @@ class InvoicesTable
                     ->searchable(),
                 TextColumn::make('total_amount')
                     ->label('Montant Total')
-                    ->numeric()
+                    ->money(fn ($record) => $record->currency)
                     ->sortable(),
+                TextColumn::make('currency')
+                    ->label('Devise')
+                    ->searchable(),
                 TextColumn::make('created_at')
                     ->label('Créé le')
                     ->dateTime()

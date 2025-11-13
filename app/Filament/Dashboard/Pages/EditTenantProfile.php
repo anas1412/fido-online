@@ -11,6 +11,7 @@ use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
 use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\Select;
 use Filament\Schemas\Components\Fieldset;
 
 class EditTenantProfile extends BaseEditTenantProfile
@@ -108,7 +109,13 @@ class EditTenantProfile extends BaseEditTenantProfile
                                         }
                                     );
                                 }),
-
+                            Select::make('currency')
+                                ->options([
+                                    'TND' => 'Dinar tunisien (TND)',
+                                    'EUR' => 'Euro (EUR)',
+                                    'USD' => 'Dollar américain (USD)',
+                                ])
+                                ->label('Devise par défaut'),
                         ]),
                     ]);
 
