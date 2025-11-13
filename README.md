@@ -1,60 +1,107 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Fido Online: Laravel + Filament Multi-Tenant App
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Project Description
 
-## About Laravel
+Fido Online is a multi-tenant application built with Laravel and Filament, designed to provide a robust platform with Google-only authentication and a flexible tenant management system. It features separate admin and user dashboards, a smooth onboarding process for new users, and an invite system for tenant collaboration.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Tech Stack
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+*   **Laravel Framework:** 12.37.0
+*   **PHP:** 8.3.24
+*   **Filament Admin Panel Framework:** v4.1
+*   **Database:** MySQL (single database for all tenants)
+*   **Authentication:** Google-only (via Socialite)
+*   **Multi-tenancy:** Handled with a many-to-many relationship between users and tenants, utilizing Filament's `HasTenants` contract and global query scopes.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Architecture
 
-## Learning Laravel
+1.  **Two Filament Panels:**
+    *   **Admin Panel:** For system administrators to manage tenants, users, and invites.
+    *   **User Dashboard Panel:** For normal users, with data restricted to their assigned tenant(s).
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+2.  **Tenant Management:**
+    *   `tenants` table stores tenant information, including `type` (`accounting` or `commercial`).
+    *   A `tenant_user` pivot table manages the many-to-many relationship between users and tenants.
+    *   The `User` model implements `Filament\Models\Contracts\HasTenants` for automatic tenant-level data access enforcement.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+3.  **Google-only Login:**
+    *   Users authenticate exclusively via Google OAuth.
+    *   Customized Filament login view to show only "Login with Google".
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+4.  **Tenant Onboarding Flow:**
+    *   Utilizes Filament's built-in `tenantRegistration()` feature.
+    *   After login, users without an assigned tenant are redirected to a page to create a new tenant or join an existing one.
 
-## Laravel Sponsors
+5.  **Invite System:**
+    *   Admins generate unique per-user invite codes.
+    *   `tenant_invites` table stores codes with a `used_by` field.
+    *   Invite links (`/invite/{code}`) automatically assign users to a tenant after login, ensuring one invite per user.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Key Features
 
-### Premium Partners
+*   Automatic tenant context applied to all tenant-owned data.
+*   Admin panel provides super-admin access without tenant restrictions.
+*   Seamless onboarding for users via dynamic tenant creation or invite joining.
+*   Clear separation of admin and tenant user interfaces.
+*   Tenant types (`accounting` or `commercial`) enable role-specific dashboards and features.
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## Installation
+
+To get Fido Online up and running on your local machine, follow these steps:
+
+1.  **Clone the repository:**
+    ```bash
+    git clone <repository_url>
+    cd fido-online
+    ```
+
+2.  **Install PHP dependencies:**
+    ```bash
+    composer install
+    ```
+
+3.  **Install Node.js dependencies:**
+    ```bash
+    npm install
+    ```
+
+4.  **Copy the environment file:**
+    ```bash
+    cp .env.example .env
+    ```
+
+5.  **Generate an application key:**
+    ```bash
+    php artisan key:generate
+    ```
+
+6.  **Configure your database:**
+    Edit the `.env` file and set your MySQL database credentials.
+
+7.  **Run database migrations:**
+    ```bash
+    php artisan migrate
+    ```
+
+8.  **Set up Google OAuth:**
+    *   Create a Google OAuth client ID and secret in the Google API Console.
+    *   Add `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` to your `.env` file.
+    *   Ensure your Google OAuth redirect URI is correctly configured to `YOUR_APP_URL/oauth/google/callback`.
+
+9.  **Serve the application:**
+    ```bash
+    php artisan serve
+    ```
+    The application will typically be available at `http://127.0.0.1:8000`.
+
+## Usage
+
+*   **Admin Panel:** Access the admin panel at `/admin` (after creating an admin user manually or via a seeder).
+*   **User Dashboard Panel:** Users will be redirected to their dashboard after logging in with Google.
 
 ## Contributing
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Contributions are welcome! Please feel free to fork the repository, make your changes, and submit a pull request.
 
 ## License
 
