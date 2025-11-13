@@ -32,6 +32,8 @@ class InvoiceResource extends Resource
 
     protected static UnitEnum|string|null $navigationGroup = 'Gestion Commerciale';
 
+    protected static ?int $navigationSort = 2;
+
     public static function getNavigationBadge(): ?string
     {
         return static::getModel()::count();

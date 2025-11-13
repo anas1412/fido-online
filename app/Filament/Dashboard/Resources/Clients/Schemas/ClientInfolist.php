@@ -11,59 +11,61 @@ class ClientInfolist
     public static function configure(Schema $schema): Schema
     {
         return $schema->components([
+            // General Information
             Section::make('Informations Générales')
-                ->schema([
+                ->columns(3) // 3-column layout
+                ->components([
                     TextEntry::make('name')
-                        ->label('Nom du Client')
-                        ->columnSpan(1),
-                    TextEntry::make('contact_person')
-                        ->label('Personne de contact')
-                        ->placeholder('-')
-                        ->columnSpan(1),
-                    TextEntry::make('email')
-                        ->label('Adresse e-mail')
-                        ->placeholder('-')
-                        ->columnSpan(1),
-                    TextEntry::make('phone')
-                        ->label('Téléphone')
-                        ->placeholder('-')
-                        ->columnSpan(1),
+                        ->label('Nom du Client'),
                     TextEntry::make('address')
                         ->label('Adresse')
                         ->placeholder('-'),
                     TextEntry::make('status')
                         ->label('Statut')
-                        ->badge()
-                        ->columnSpan(1),
-                ])
-                ->columns(3)
-                ->columnSpanFull(),
+                        ->badge(),
+                    TextEntry::make('contact_person')
+                        ->label('Personne de contact')
+                        ->placeholder('-'),
+                    TextEntry::make('email')
+                        ->label('Adresse e-mail')
+                        ->placeholder('-'),
+                    TextEntry::make('phone')
+                        ->label('Téléphone')
+                        ->placeholder('-'),
 
+                    
+                ])
+                ->columnSpan('full')
+                ->compact(),
+
+            // Notes
             Section::make('Notes')
-                ->schema([
+                ->columns(1)
+                ->components([
                     TextEntry::make('notes')
                         ->label('Notes Internes')
                         ->placeholder('-')
                         ->markdown()
-                        ->columnSpanFull(),
+                        ->columnSpan('full'),
                 ])
-                ->columnSpanFull(),
+                ->columnSpan('full')
+                ->compact(),
 
+            // Tracking & Metadata
             Section::make('Suivi et Métadonnées')
-                ->schema([
+                ->columns(2)
+                ->components([
                     TextEntry::make('created_at')
                         ->label('Créé le')
                         ->dateTime()
-                        ->placeholder('-')
-                        ->columnSpan(1),
+                        ->placeholder('-'),
                     TextEntry::make('updated_at')
                         ->label('Mis à jour le')
                         ->dateTime()
-                        ->placeholder('-')
-                        ->columnSpan(1),
+                        ->placeholder('-'),
                 ])
-                ->columns(2)
-                ->columnSpanFull(),
+                ->columnSpan('full')
+                ->compact(),
         ]);
     }
 }

@@ -30,6 +30,8 @@ class TenantUserResource extends Resource
 
     protected static UnitEnum|string|null $navigationGroup = 'Gestion Administrative';
 
+    protected static ?int $navigationSort = 11;
+
     public static function getNavigationBadge(): ?string
     {
         return static::getModel()::count();

@@ -2,11 +2,14 @@
 
 namespace App\Filament\Dashboard\Resources\Invoices\Schemas;
 
+use App\Models\Client;
 use App\Models\Product;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
+use Filament\Notifications\Notification; // Add this line
 use Filament\Schemas\Components\Wizard;
 use Filament\Schemas\Components\Wizard\Step;
 use Filament\Schemas\Schema;
@@ -24,7 +27,46 @@ class InvoiceForm
                                 ->label('Client')
                                 ->relationship('client', 'name')
                                 ->searchable()
-                                ->required(),
+                                ->required()
+                                ->createOptionForm([
+                                    TextInput::make('name')
+                                        ->label('Nom du client')
+                                        ->required()
+                                        ->maxLength(255),
+                                    TextInput::make('contact_person')
+                                        ->label('Personne à contacter')
+                                        ->maxLength(255),
+                                    TextInput::make('email')
+                                        ->label('Adresse e-mail')
+                                        ->email()
+                                        ->maxLength(255),
+                                    TextInput::make('phone')
+                                        ->label('Téléphone')
+                                        ->tel()
+                                        ->maxLength(255),
+                                    Textarea::make('address')
+                                        ->label('Adresse')
+                                        ->columnSpanFull(),
+                                    Textarea::make('notes')
+                                        ->label('Notes')
+                                        ->columnSpanFull(),
+                                    TextInput::make('status')
+                                        ->label('Statut')
+                                        ->required()
+                                        ->default('active')
+                                        ->maxLength(255),
+                                ])
+                                ->createOptionUsing(function (array $data): int {
+                                    $data['tenant_id'] = filament()->getTenant()->id;
+                                    $client = Client::create($data);
+
+                                    Notification::make()
+                                        ->title('Client créé')
+                                        ->success()
+                                        ->send();
+
+                                    return $client->getKey();
+                                }),
 
                             TextInput::make('invoice_number')
                                 ->label('Numéro de Facture')
@@ -126,7 +168,7 @@ class InvoiceForm
                                 ->reactive()
                                 ->default(0.0),
                         ]),
-                ]),
+                ])->columnSpan('full'),
         ]);
     }
 }

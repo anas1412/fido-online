@@ -4,6 +4,7 @@ namespace App\Filament\Dashboard\Resources\Invoices\Schemas;
 
 use App\Filament\Dashboard\Resources\Clients\ClientResource;
 use App\Models\Invoice;
+use App\Models\InvoiceItem;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
@@ -23,6 +24,9 @@ class InvoiceInfolist
                     TextEntry::make('invoice_number')
                         ->label('Numéro de Facture')
                         ->columnSpan(1),
+                    TextEntry::make('status')
+                        ->label('Statut')
+                        ->columnSpan(1),
                     TextEntry::make('issue_date')
                         ->label("Date d'Émission")
                         ->date()
@@ -31,16 +35,15 @@ class InvoiceInfolist
                         ->label("Date d'Échéance")
                         ->date()
                         ->columnSpan(1),
-                    TextEntry::make('status')
-                        ->label('Statut')
-                        ->columnSpan(1),
+                    
                     TextEntry::make('total_amount')
                         ->label('Montant Total')
                         ->numeric()
                         ->columnSpan(1),
                 ])
                 ->columns(3)
-                ->columnSpanFull(),
+                ->columnSpanFull()
+                ->compact(),
 
             Section::make('Articles de la Facture')
                 ->schema([
@@ -50,11 +53,11 @@ class InvoiceInfolist
                             TextEntry::make('product.name')
                                 ->label('Produit')
                                 ->columnSpan(2)
-                                ->visible(fn (\App\Models\InvoiceItem $record): bool => filled($record->product_id)),
+                                ->visible(fn (InvoiceItem $record): bool => filled($record->product_id)),
                             TextEntry::make('name')
                                 ->label('Produit')
                                 ->columnSpan(2)
-                                ->visible(fn (\App\Models\InvoiceItem $record): bool => filled($record->name) && !filled($record->product_id)),
+                                ->visible(fn (InvoiceItem $record): bool => filled($record->name) && !filled($record->product_id)),
                             TextEntry::make('quantity')
                                 ->label('Quantité')
                                 ->columnSpan(1),
@@ -69,7 +72,7 @@ class InvoiceInfolist
                         ])
                         ->columns(5)
                         ->columnSpanFull(),
-                ])
+                ])->compact()
                 ->columnSpanFull(),
 
             Section::make('Suivi et Métadonnées')
@@ -86,7 +89,7 @@ class InvoiceInfolist
                         ->columnSpan(1),
                 ])
                 ->columns(2)
-                ->columnSpanFull(),
+                ->columnSpanFull()->compact(),
         ]);
     }
 }

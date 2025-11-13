@@ -40,6 +40,8 @@ class TenantInviteResource extends Resource
     // Correct type for navigation group
     protected static UnitEnum|string|null $navigationGroup = 'Gestion Administrative';
 
+    protected static ?int $navigationSort = 10;
+
     protected static ?string $navigationLabel = 'Invitations';
 
     public static function getNavigationBadge(): ?string

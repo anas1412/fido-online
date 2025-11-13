@@ -6,6 +6,7 @@ use App\Models\Category;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Select;
+use Filament\Notifications\Notification; // Add this line
 use Filament\Schemas\Schema;
 
 class ProductForm
@@ -48,6 +49,11 @@ class ProductForm
                     ->createOptionUsing(function (array $data): int {
                         $data['tenant_id'] = filament()->getTenant()->id;
                         $category = Category::create($data);
+
+                        Notification::make()
+                            ->title('Catégorie créée')
+                            ->success()
+                            ->send();
 
                         return $category->getKey();
                     }),
