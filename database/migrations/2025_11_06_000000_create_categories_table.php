@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('invoice_items', function (Blueprint $table) {
-            $table->foreignId('product_id')->nullable()->change();
+        Schema::create('categories', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('tenant_id')->constrained()->cascadeOnDelete();
+            $table->string('name');
+            $table->timestamps();
         });
     }
 
@@ -21,9 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('invoice_items', function (Blueprint $table) {
-            // Revert to non-nullable, assuming it was originally non-nullable
-            $table->foreignId('product_id')->change();
-        });
+        Schema::dropIfExists('categories');
     }
 };

@@ -27,7 +27,7 @@ class ProductInfolist
                 TextEntry::make('current_stock')
                     ->label('Stock Actuel')
                     ->numeric(),
-                TextEntry::make('category')
+                TextEntry::make('category.name')
                     ->label('Catégorie')
                     ->placeholder('-'),
                 TextEntry::make('created_at')

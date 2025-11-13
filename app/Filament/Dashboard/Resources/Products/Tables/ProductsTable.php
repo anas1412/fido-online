@@ -30,7 +30,7 @@ class ProductsTable
                     ->label('Stock Actuel')
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('category')
+                TextColumn::make('category.name')
                     ->label('Catégorie')
                     ->searchable(),
                 TextColumn::make('created_at')

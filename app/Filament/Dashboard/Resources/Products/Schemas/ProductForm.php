@@ -2,8 +2,10 @@
 
 namespace App\Filament\Dashboard\Resources\Products\Schemas;
 
+use App\Models\Category;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\Select;
 use Filament\Schemas\Schema;
 
 class ProductForm
@@ -31,8 +33,24 @@ class ProductForm
                     ->required()
                     ->numeric()
                     ->default(0),
-                TextInput::make('category')
-                    ->label('Catégorie'),
+                Select::make('category_id')
+                    ->label('Catégorie')
+                    ->relationship('category', 'name')
+                    ->searchable()
+                    ->nullable()
+                    ->preload()
+                    ->createOptionForm([
+                        TextInput::make('name')
+                            ->label('Nom')
+                            ->required()
+                            ->maxLength(255),
+                    ])
+                    ->createOptionUsing(function (array $data): int {
+                        $data['tenant_id'] = filament()->getTenant()->id;
+                        $category = Category::create($data);
+
+                        return $category->getKey();
+                    }),
             ]);
     }
 }
