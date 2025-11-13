@@ -68,10 +68,6 @@ class InvoiceForm
                                     return $client->getKey();
                                 }),
 
-                            TextInput::make('invoice_number')
-                                ->label('Numéro de Facture')
-                                ->required(),
-
                             DatePicker::make('issue_date')
                                 ->label('Date d\'Émission')
                                 ->required(),

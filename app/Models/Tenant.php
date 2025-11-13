@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Filament\Models\Contracts\HasName;
 
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
 class Tenant extends Model implements HasName
 {
     use HasFactory;
@@ -16,6 +18,11 @@ class Tenant extends Model implements HasName
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class)->withPivot('is_owner', 'is_mod');
+    }
+
+    public function invoices(): HasMany
+    {
+        return $this->hasMany(Invoice::class);
     }
 
     public function getFilamentName(): string

@@ -8,10 +8,14 @@ use App\Models\Traits\HasFiscalYearScope; // Add this line
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Services\InvoiceNumberService;
+use Carbon\Carbon;
+
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Invoice extends Model
 {
-    use HasFiscalYearScope; // Add this line
+    use HasFiscalYearScope, SoftDeletes; // Add this line
 
     protected $fillable = [
         'client_id',
@@ -22,6 +26,15 @@ class Invoice extends Model
         'total_amount',
         'currency',
     ];
+
+    protected static function booted()
+    {
+        static::creating(function ($invoice) {
+            if (empty($invoice->invoice_number)) {
+                $invoice->invoice_number = (new InvoiceNumberService())->generate($invoice->tenant, Carbon::parse($invoice->issue_date));
+            }
+        });
+    }
 
     public function tenant(): BelongsTo
     {

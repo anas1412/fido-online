@@ -3,18 +3,32 @@
 namespace App\Filament\Dashboard\Resources\Invoices\Tables;
 
 use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\RestoreAction;
+use Filament\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use App\Filament\Dashboard\Filters\FiscalYearFilter; // Add this line
+
+use Filament\Tables\Filters\TrashedFilter;
+
+use App\Filament\Dashboard\Resources\Invoices\InvoiceResource;
 
 class InvoicesTable
 {
     public static function configure(Table $table): Table
     {
         return $table
+            ->recordUrl(
+                fn ($record) => !$record->trashed()
+                    ? InvoiceResource::getUrl('view', ['record' => $record])
+                    : null
+            )
             ->columns([
                 TextColumn::make('invoice_number')
                     ->label('Numéro de Facture')
@@ -53,14 +67,20 @@ class InvoicesTable
             ])
             ->filters([
                 FiscalYearFilter::make('fiscal_year'),
+                TrashedFilter::make(),
             ])
             ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
+                ViewAction::make()->visible(fn ($record) => !$record->trashed()),
+                EditAction::make()->visible(fn ($record) => !$record->trashed()),
+                DeleteAction::make(),
+                RestoreAction::make(),
+                ForceDeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
+                    ForceDeleteBulkAction::make(),
+                    RestoreBulkAction::make(),
                 ]),
             ]);
     }
