@@ -16,6 +16,15 @@ class User extends Authenticatable implements HasTenants
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
+
+    protected static function booted()
+    {
+        static::creating(function ($user) {
+            if (static::count() === 0) {
+                $user->is_admin = 1;
+            }
+        });
+    }
     /**
      * The attributes that are mass assignable.
      *
