@@ -8,6 +8,7 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use App\Filament\Dashboard\Filters\FiscalYearFilter; // Add this line
 
 class InvoicesTable
 {
@@ -49,7 +50,7 @@ class InvoicesTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                FiscalYearFilter::make('fiscal_year'),
             ])
             ->recordActions([
                 ViewAction::make(),
