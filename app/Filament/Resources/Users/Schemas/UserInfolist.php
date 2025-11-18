@@ -23,7 +23,7 @@ class UserInfolist
                 ->columnSpan('full')
                 ->compact(),
 
-            Section::make('Organisations')
+            /* Section::make('Organisations')
                 ->columns(2)
                 ->components([
                     TextEntry::make('owned_tenants')
@@ -38,7 +38,7 @@ class UserInfolist
                         ),
                 ])
                 ->columnSpan('full')
-                ->compact(),
+                ->compact(), */
 
             Section::make('Timestamps')
                 ->columns(2)
