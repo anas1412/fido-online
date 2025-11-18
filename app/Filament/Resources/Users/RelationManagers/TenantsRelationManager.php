@@ -32,7 +32,7 @@ class TenantsRelationManager extends RelationManager
                 IconColumn::make('pivot.is_owner')
                     ->label('Propriétaire')
                     ->boolean()
-                    ->trueIcon('heroicon-o-star')
+                    ->trueIcon('heroicon-o-key')
                     ->falseIcon('heroicon-o-user')
                     ->trueColor('warning')
                     ->falseColor('gray'),

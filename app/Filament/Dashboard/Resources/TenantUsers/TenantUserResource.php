@@ -46,7 +46,7 @@ class TenantUserResource extends Resource
                 IconColumn::make('is_owner') 
                     ->label('') 
                     ->boolean() 
-                    ->trueIcon(Heroicon::OutlinedStar) 
+                    ->trueIcon(Heroicon::OutlinedKey) 
                     ->falseIcon(Heroicon::OutlinedUser)
                     ->trueColor('warning')
                     ->falseColor('primary'),
