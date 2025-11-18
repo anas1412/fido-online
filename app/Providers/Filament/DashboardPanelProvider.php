@@ -78,7 +78,7 @@ class DashboardPanelProvider extends PanelProvider
             ->brandLogoHeight('3rem')
             ->favicon(asset('images/logo.png'))
             ->colors([
-                'primary' => Color::Green,
+                'primary' => '#6fbf44',
             ])
             ->topbar(false)
             ->spa()

@@ -1,26 +1,22 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" style="scroll-behavior: smooth;">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ config('app.name', 'Fido Online') }} - Streamlined Business Solutions</title>
+    <title>{{ config('app.name', 'Fido') }} - Gestion d'entreprise simplifiée</title>
+    <link rel="icon" href="{{ asset('images/favicon.ico') }}">
+    
+    <!-- SEO -->
+    <meta name="description" content="La solution idéale pour la gestion multi-organisations, la comptabilité et l'administration d'entreprise en Tunisie.">
 
-    <!-- Meta Tags for SEO -->
-    <meta name="description" content="Fido Online offers an intuitive platform for multi-tenant management, secure Google authentication, and comprehensive business oversight.">
-    <meta name="keywords" content="multi-tenant, saas, business solutions, google authentication, admin panel, fido online">
-
-    <!-- Favicon -->
-    {{-- <link rel="icon" href="/favicon.ico" type="image/x-icon"> --}}
-
-    <!-- Scripts & Styles (CDN) -->
+    <!-- Scripts & Styles -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <script>
-        // Define custom color palette for Tailwind CSS CDN
         tailwind.config = {
             theme: {
                 extend: {
@@ -28,188 +24,424 @@
                         sans: ['Inter', 'sans-serif'],
                     },
                     colors: {
-                        primary: {
-                            DEFAULT: '#10B981', // Professional Green (Emerald)
-                            dark: '#059669'    // Darker Emerald
+                        brand: {
+                            50: '#f4fcf1',
+                            100: '#e2f7db',
+                            500: '#6fbf44', // Sushi Green
+                            600: '#5ea33a',
+                            900: '#2d4f1e',
                         },
-                        secondary: {
-                            DEFAULT: '#2C3E50', // Dark Slate Gray
-                            light: '#34495E'   // Lighter Slate Gray
-                        },
-                        light: '#ECF0F1',     // Light Gray BG
-                        muted: '#7F8C8D'     // Grayish Blue Text
+                        dark: {
+                            800: '#1e293b', // Slate 800
+                            900: '#0f172a', // Slate 900
+                        }
                     }
                 }
             }
         }
     </script>
     <style>
-        /* Smooth scroll margin for fixed header */
-        [id] {
-            scroll-margin-top: 80px;
-        }
+        [x-cloak] { display: none !important; }
     </style>
 </head>
 
-<body x-data="{ isMenuOpen: false }" class="bg-gray-50 font-sans text-secondary antialiased">
+<body class="bg-slate-50 font-sans text-slate-600 antialiased selection:bg-brand-500 selection:text-white">
 
-    <!-- Header -->
-    <header class="fixed z-50 w-full bg-white/80 backdrop-blur-sm shadow-md transition-all">
-        <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="flex h-20 items-center justify-between">
-                <!-- Logo -->
-                <a href="/" class="flex items-center text-2xl font-bold text-secondary">
-                    <svg class="h-8 w-8 text-primary mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
-                    </svg>
-                    <span>{{ config('app.name', 'Fido Online') }}</span>
+    <!-- Navbar -->
+    <header x-data="{ mobileMenuOpen: false }" class="fixed top-0 z-50 w-full bg-white/90 backdrop-blur-md border-b border-slate-200 transition-all duration-300">
+        <nav class="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
+            
+            <!-- Logo Container -->
+            <div class="flex lg:flex-1">
+                <a href="/" class="-m-1.5 p-1.5 flex items-center gap-x-2">
+                    <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-8 w-auto">
+                    <span class="font-bold text-xl text-slate-900 tracking-tight">{{ config('app.name', 'Fido') }}</span>
                 </a>
+            </div>
 
-                <!-- Desktop Navigation -->
-                <nav class="hidden items-center space-x-8 md:flex">
-                    <a href="#features" class="text-muted hover:text-primary transition-colors duration-200">Features</a>
-                    <a href="#contact" class="text-muted hover:text-primary transition-colors duration-200">Contact</a>
-                    @auth
-                        <a href="{{ url('/dashboard') }}" class="ml-4 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-md hover:bg-primary-dark transition-all duration-200">Dashboard</a>
-                    @else
-                        <a href="{{ url('/dashboard/login') }}" class="ml-4 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-md hover:bg-primary-dark transition-all duration-200">Login</a>
-                    @endauth
-                </nav>
+            <!-- Desktop Menu -->
+            <div class="hidden lg:flex lg:gap-x-12">
+                <a href="#features" class="text-sm font-medium leading-6 text-slate-900 hover:text-brand-600 transition">Fonctionnalités</a>
+                <a href="#pricing" class="text-sm font-medium leading-6 text-slate-900 hover:text-brand-600 transition">Tarifs</a>
+                <a href="#security" class="text-sm font-medium leading-6 text-slate-900 hover:text-brand-600 transition">Sécurité</a>
+                <a href="#contact" class="text-sm font-medium leading-6 text-slate-900 hover:text-brand-600 transition">Contact</a>
+            </div>
 
-                <!-- Mobile Menu Button -->
-                <div class="flex items-center md:hidden">
-                    <button @click="isMenuOpen = !isMenuOpen" aria-label="Open Menu">
-                        <svg class="h-7 w-7 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path x-show="!isMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
-                            <path x-show="isMenuOpen" style="display: none;" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            <!-- Desktop CTA -->
+            <div class="hidden lg:flex lg:flex-1 lg:justify-end gap-4">
+                @auth
+                    <a href="{{ url('/dashboard') }}" class="text-sm font-semibold leading-6 text-slate-900 flex items-center gap-1">
+                        Tableau de bord <span aria-hidden="true">&rarr;</span>
+                    </a>
+                @else
+                    <a href="{{ url('/dashboard/login') }}" class="rounded-full bg-brand-600 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 transition-all">
+                        Se connecter
+                    </a>
+                @endauth
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <div class="flex lg:hidden">
+                <button type="button" @click="mobileMenuOpen = true" class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-slate-700">
+                    <span class="sr-only">Ouvrir le menu</span>
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                    </svg>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Mobile Menu Dialog -->
+        <div x-show="mobileMenuOpen" class="lg:hidden" x-cloak>
+            <div class="fixed inset-0 z-50" @click="mobileMenuOpen = false"></div>
+            <div class="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-slate-900/10 shadow-2xl">
+                <div class="flex items-center justify-between">
+                    <a href="#" class="-m-1.5 p-1.5 flex items-center gap-2">
+                         <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-8 w-auto">
+                         <span class="font-bold text-lg text-slate-900">{{ config('app.name', 'Fido') }}</span>
+                    </a>
+                    <button type="button" @click="mobileMenuOpen = false" class="-m-2.5 rounded-md p-2.5 text-slate-700">
+                        <span class="sr-only">Fermer</span>
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
-            </div>
-        </div>
-
-        <!-- Mobile Navigation -->
-        <div x-show="isMenuOpen" x-transition @click.away="isMenuOpen = false" class="absolute w-full bg-white shadow-lg md:hidden" style="display: none;">
-            <div class="flex flex-col space-y-4 px-4 pt-2 pb-5">
-                <a href="#features" @click="isMenuOpen = false" class="block rounded px-3 py-2 text-muted hover:bg-light hover:text-primary">Features</a>
-                <a href="#contact" @click="isMenuOpen = false" class="block rounded px-3 py-2 text-muted hover:bg-light hover:text-primary">Contact</a>
-                <div class="border-t border-gray-200 pt-4">
-                     @auth
-                        <a href="{{ url('/dashboard') }}" class="block w-full text-center rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-md hover:bg-primary-dark transition-all duration-200">Dashboard</a>
-                    @else
-                        <a href="{{ url('/dashboard/login') }}" class="block w-full text-center rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-md hover:bg-primary-dark transition-all duration-200">Login</a>
-                    @endauth
+                <div class="mt-6 flow-root">
+                    <div class="-my-6 divide-y divide-slate-500/10">
+                        <div class="space-y-2 py-6">
+                            <a href="#features" @click="mobileMenuOpen = false" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-slate-900 hover:bg-slate-50">Fonctionnalités</a>
+                            <a href="#pricing" @click="mobileMenuOpen = false" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-slate-900 hover:bg-slate-50">Tarifs</a>
+                            <a href="#security" @click="mobileMenuOpen = false" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-slate-900 hover:bg-slate-50">Sécurité</a>
+                            <a href="#contact" @click="mobileMenuOpen = false" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-slate-900 hover:bg-slate-50">Contact</a>
+                        </div>
+                        <div class="py-6">
+                            @auth
+                                <a href="{{ url('/dashboard') }}" class="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-brand-600 hover:bg-slate-50">Accéder au Dashboard</a>
+                            @else
+                                <a href="{{ url('/dashboard/login') }}" class="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-slate-900 hover:bg-slate-50">Se connecter</a>
+                            @endauth
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </header>
 
-    <main>
+    <main class="isolate">
         <!-- Hero Section -->
-        <section class="relative bg-secondary pt-32 pb-20 text-white md:pt-40 md:pb-28">
-            <div class="absolute inset-0 bg-secondary-light opacity-20 [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]"></div>
-            <div class="container relative mx-auto max-w-5xl px-4 text-center sm:px-6 lg:px-8">
-                <h1 class="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl">
-                    Streamlined Solutions for Modern Businesses
-                </h1>
-                <p class="mx-auto mt-6 max-w-2xl text-lg text-gray-300">
-                    Fido Online offers an intuitive platform for multi-tenant management, secure Google authentication, and comprehensive business oversight.
+        <div class="relative pt-14">
+            <div class="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80" aria-hidden="true">
+                <div class="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-brand-100 to-brand-600 opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]" style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"></div>
+            </div>
+
+            <div class="py-24 sm:py-32 lg:pb-40">
+                <div class="mx-auto max-w-7xl px-6 lg:px-8">
+                    <div class="mx-auto max-w-2xl text-center">
+                        <div class="mb-6 flex justify-center">
+                            <div class="relative rounded-full px-3 py-1 text-sm leading-6 text-slate-600 ring-1 ring-slate-900/10 hover:ring-slate-900/20">
+                                Nouveau : Gestion simplifiée des taux de TVA. <a href="#features" class="font-semibold text-brand-600"><span class="absolute inset-0" aria-hidden="true"></span>En savoir plus <span aria-hidden="true">&rarr;</span></a>
+                            </div>
+                        </div>
+                        <h1 class="text-4xl font-bold tracking-tight text-slate-900 sm:text-6xl">
+                            Gérez votre entreprise en toute <span class="text-brand-500">sérénité</span>.
+                        </h1>
+                        <p class="mt-6 text-lg leading-8 text-slate-600">
+                            Fido est la solution tout-en-un pour la gestion multi-organisations, la comptabilité et la collaboration. Conçue spécifiquement pour les professionnels tunisiens.
+                        </p>
+                        <div class="mt-10 flex items-center justify-center gap-x-6">
+                            @auth
+                                <a href="{{ url('/dashboard') }}" class="rounded-md bg-brand-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-brand-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 transition-all">Accéder à mon espace</a>
+                            @else
+                                <a href="{{ url('/dashboard/login') }}" class="rounded-md bg-brand-600 px-6 py-3 text-sm font-semibold text-white shadow-xl shadow-brand-500/20 hover:bg-brand-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 transition-all transform hover:-translate-y-1">Commencer maintenant</a>
+                                <a href="#features" class="text-sm font-semibold leading-6 text-slate-900">En savoir plus <span aria-hidden="true">→</span></a>
+                            @endauth
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]" aria-hidden="true">
+                <div class="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 bg-gradient-to-tr from-[#80caff] to-brand-500 opacity-30 sm:left-[calc(50%+36rem)] sm:w-[72.1875rem]" style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"></div>
+            </div>
+        </div>
+
+        <!-- Features Grid -->
+        <div id="features" class="mx-auto mt-8 max-w-7xl px-6 sm:mt-16 lg:px-8 pb-24">
+            <div class="mx-auto max-w-2xl lg:text-center">
+                <h2 class="text-base font-semibold leading-7 text-brand-600">Tout-en-un</h2>
+                <p class="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Tout ce dont votre entreprise a besoin</p>
+                <p class="mt-6 text-lg leading-8 text-slate-600">
+                    Une suite complète d'outils conçus pour l'efficacité, la sécurité et la simplicité. Adapté aux besoins des entreprises et comptables.
                 </p>
-                <div class="mt-10">
-                    @auth
-                        <a href="{{ url('/dashboard') }}" class="transform rounded-lg bg-primary px-8 py-4 text-lg font-semibold text-white shadow-xl transition-transform duration-200 hover:-translate-y-1 hover:bg-primary-dark">
-                            Access Dashboard
-                        </a>
-                    @else
-                        <a href="{{ url('/dashboard/login') }}" class="transform rounded-lg bg-primary px-8 py-4 text-lg font-semibold text-white shadow-xl transition-transform duration-200 hover:-translate-y-1 hover:bg-primary-dark">
-                            Start Your Journey
-                        </a>
-                    @endauth
+            </div>
+            
+            <div class="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
+                <dl class="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-3">
+                    <!-- Feature 1 -->
+                    <div class="flex flex-col bg-white p-8 rounded-2xl shadow-sm ring-1 ring-slate-200 hover:shadow-lg transition-shadow duration-300">
+                        <dt class="flex items-center gap-x-3 text-base font-bold leading-7 text-slate-900">
+                            <div class="h-10 w-10 flex items-center justify-center rounded-lg bg-brand-600">
+                                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+                            </div>
+                            Multi-Organisations
+                        </dt>
+                        <dd class="mt-4 flex flex-auto flex-col text-base leading-7 text-slate-600">
+                            <p class="flex-auto">Gérez plusieurs environnements clients ou filiales avec une isolation stricte des données et des accès personnalisés.</p>
+                        </dd>
+                    </div>
+                    <!-- Feature 2 -->
+                    <div class="flex flex-col bg-white p-8 rounded-2xl shadow-sm ring-1 ring-slate-200 hover:shadow-lg transition-shadow duration-300">
+                        <dt class="flex items-center gap-x-3 text-base font-bold leading-7 text-slate-900">
+                             <div class="h-10 w-10 flex items-center justify-center rounded-lg bg-brand-600">
+                                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" /></svg>
+                            </div>
+                            Connexion Sécurisée
+                        </dt>
+                        <dd class="mt-4 flex flex-auto flex-col text-base leading-7 text-slate-600">
+                            <p class="flex-auto">Authentification simple et ultra-sécurisée via Google. Plus besoin de retenir des mots de passe complexes.</p>
+                        </dd>
+                    </div>
+                    <!-- Feature 3 -->
+                    <div class="flex flex-col bg-white p-8 rounded-2xl shadow-sm ring-1 ring-slate-200 hover:shadow-lg transition-shadow duration-300">
+                        <dt class="flex items-center gap-x-3 text-base font-bold leading-7 text-slate-900">
+                             <div class="h-10 w-10 flex items-center justify-center rounded-lg bg-brand-600">
+                                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75" /></svg>
+                            </div>
+                            Administration
+                        </dt>
+                        <dd class="mt-4 flex flex-auto flex-col text-base leading-7 text-slate-600">
+                            <p class="flex-auto">Contrôle centralisé pour les administrateurs : gestion des utilisateurs, des invitations et des paramètres globaux.</p>
+                        </dd>
+                    </div>
+                    <!-- Feature 4 -->
+                    <div class="flex flex-col bg-white p-8 rounded-2xl shadow-sm ring-1 ring-slate-200 hover:shadow-lg transition-shadow duration-300">
+                        <dt class="flex items-center gap-x-3 text-base font-bold leading-7 text-slate-900">
+                             <div class="h-10 w-10 flex items-center justify-center rounded-lg bg-brand-600">
+                                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" /></svg>
+                            </div>
+                            Tableaux de Bord
+                        </dt>
+                        <dd class="mt-4 flex flex-auto flex-col text-base leading-7 text-slate-600">
+                            <p class="flex-auto">Des vues personnalisées offrant aux utilisateurs des données pertinentes et des outils spécifiques à leur dossier.</p>
+                        </dd>
+                    </div>
+                    <!-- Feature 5 -->
+                    <div class="flex flex-col bg-white p-8 rounded-2xl shadow-sm ring-1 ring-slate-200 hover:shadow-lg transition-shadow duration-300">
+                        <dt class="flex items-center gap-x-3 text-base font-bold leading-7 text-slate-900">
+                             <div class="h-10 w-10 flex items-center justify-center rounded-lg bg-brand-600">
+                                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" /></svg>
+                            </div>
+                            Onboarding Rapide
+                        </dt>
+                        <dd class="mt-4 flex flex-auto flex-col text-base leading-7 text-slate-600">
+                            <p class="flex-auto">Un processus simplifié permettant aux nouveaux utilisateurs de créer ou de rejoindre une organisation en quelques clics.</p>
+                        </dd>
+                    </div>
+                    <!-- Feature 6 -->
+                    <div class="flex flex-col bg-white p-8 rounded-2xl shadow-sm ring-1 ring-slate-200 hover:shadow-lg transition-shadow duration-300">
+                        <dt class="flex items-center gap-x-3 text-base font-bold leading-7 text-slate-900">
+                             <div class="h-10 w-10 flex items-center justify-center rounded-lg bg-brand-600">
+                                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" /></svg>
+                            </div>
+                            Système d'invitation
+                        </dt>
+                        <dd class="mt-4 flex flex-auto flex-col text-base leading-7 text-slate-600">
+                            <p class="flex-auto">Contrôlez l'accès aux organisations grâce à des codes d'invitation uniques et traçables pour chaque membre.</p>
+                        </dd>
+                    </div>
+                </dl>
+            </div>
+        </div>
+
+        <!-- Pricing Section -->
+        <div id="pricing" class="bg-white py-24 sm:py-32 border-t border-slate-200">
+            <div class="mx-auto max-w-7xl px-6 lg:px-8">
+                <div class="mx-auto max-w-2xl sm:text-center">
+                    <h2 class="text-base font-semibold leading-7 text-brand-600">Tarification simple</h2>
+                    <p class="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Des offres adaptées à vos besoins</p>
+                    <p class="mt-6 text-lg leading-8 text-slate-600">Commencez gratuitement et évoluez au rythme de votre activité.</p>
+                </div>
+                <div class="mx-auto mt-16 max-w-2xl rounded-3xl ring-1 ring-slate-200 sm:mt-20 lg:mx-0 lg:flex lg:max-w-none">
+                    <div class="p-8 sm:p-10 lg:flex-auto">
+                        <h3 class="text-2xl font-bold tracking-tight text-slate-900">Gratuit / Découverte</h3>
+                        <p class="mt-6 text-base leading-7 text-slate-600">Idéal pour les freelances ou pour tester la plateforme sans engagement.</p>
+                        <div class="mt-10 flex items-center gap-x-4">
+                            <h4 class="flex-none text-sm font-semibold leading-6 text-brand-600">Inclus dans l'offre</h4>
+                            <div class="h-px flex-auto bg-slate-100"></div>
+                        </div>
+                        <ul role="list" class="mt-8 grid grid-cols-1 gap-4 text-sm leading-6 text-slate-600 sm:grid-cols-2 sm:gap-6">
+                            <li class="flex gap-x-3">
+                                <svg class="h-6 w-5 flex-none text-brand-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>
+                                1 organisation (Propriétaire)
+                            </li>
+                            <li class="flex gap-x-3">
+                                <svg class="h-6 w-5 flex-none text-brand-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>
+                                Rejoindre 2 organisations max
+                            </li>
+                            <li class="flex gap-x-3">
+                                <svg class="h-6 w-5 flex-none text-brand-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>
+                                30 Documents / an
+                            </li>
+                            <li class="flex gap-x-3 text-slate-400">
+                                <svg class="h-6 w-5 flex-none text-slate-300" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                                Support prioritaire
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="-mt-2 p-2 lg:mt-0 lg:w-full lg:max-w-md lg:flex-shrink-0">
+                        <div class="rounded-2xl bg-slate-50 py-10 text-center ring-1 ring-inset ring-slate-900/5 lg:flex lg:flex-col lg:justify-center lg:py-16">
+                            <div class="mx-auto max-w-xs px-8">
+                                <p class="text-base font-semibold text-slate-600">Abonnement Gratuit</p>
+                                <p class="mt-6 flex items-baseline justify-center gap-x-2">
+                                    <span class="text-5xl font-bold tracking-tight text-slate-900">0</span>
+                                    <span class="text-sm font-semibold leading-6 tracking-wide text-slate-600">TND</span>
+                                </p>
+                                <a href="{{ url('/dashboard/login') }}" class="mt-10 block w-full rounded-md bg-slate-800 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-slate-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600 transition-all">Créer un compte</a>
+                                <p class="mt-6 text-xs leading-5 text-slate-600">Aucune carte bancaire requise</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PRO PLAN -->
+                <div class="mx-auto mt-8 max-w-2xl rounded-3xl ring-2 ring-brand-500 bg-slate-50 lg:mx-0 lg:flex lg:max-w-none shadow-xl relative overflow-hidden">
+                    <div class="absolute top-0 right-0 bg-brand-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg z-10">RECOMMANDÉ</div>
+                    <div class="p-8 sm:p-10 lg:flex-auto">
+                        <h3 class="text-2xl font-bold tracking-tight text-brand-900">Offre Illimitée</h3>
+                        <p class="mt-6 text-base leading-7 text-slate-600">Pour les entreprises en croissance et les cabinets comptables exigeants.</p>
+                        <div class="mt-10 flex items-center gap-x-4">
+                            <h4 class="flex-none text-sm font-semibold leading-6 text-brand-600">Tout inclus, sans limites</h4>
+                            <div class="h-px flex-auto bg-brand-100"></div>
+                        </div>
+                        <ul role="list" class="mt-8 grid grid-cols-1 gap-4 text-sm leading-6 text-slate-600 sm:grid-cols-2 sm:gap-6">
+                            <li class="flex gap-x-3 font-semibold text-brand-900">
+                                <svg class="h-6 w-5 flex-none text-brand-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>
+                                Organisations illimités
+                            </li>
+                            <li class="flex gap-x-3 font-semibold text-brand-900">
+                                <svg class="h-6 w-5 flex-none text-brand-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>
+                                Rejoindre illimitées
+                            </li>
+                            <li class="flex gap-x-3 font-semibold text-brand-900">
+                                <svg class="h-6 w-5 flex-none text-brand-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>
+                                Documents illimités
+                            </li>
+                            <li class="flex gap-x-3 font-semibold text-brand-900">
+                                <svg class="h-6 w-5 flex-none text-brand-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>
+                                Support prioritaire
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="-mt-2 p-2 lg:mt-0 lg:w-full lg:max-w-md lg:flex-shrink-0">
+                        <div class="rounded-2xl bg-brand-500 py-10 text-center ring-1 ring-inset ring-brand-600 lg:flex lg:flex-col lg:justify-center lg:py-16 h-full">
+                            <div class="mx-auto max-w-xs px-8">
+                                <p class="text-base font-semibold text-brand-100">Facturation Trimestrielle</p>
+                                <p class="mt-6 flex items-baseline justify-center gap-x-2">
+                                    <span class="text-5xl font-bold tracking-tight text-white">290</span>
+                                    <span class="text-sm font-semibold leading-6 tracking-wide text-brand-100">TND</span>
+                                </p>
+                                <!-- <a href="{{ url('/dashboard/login') }}" class="mt-10 block w-full rounded-md bg-white px-3 py-2 text-center text-sm font-semibold text-brand-600 shadow-sm hover:bg-brand-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-all">Passer à l'illimité</a> -->
+                                <div class="mt-10 block w-full rounded-md bg-white/60 px-3 py-2 text-center text-sm font-semibold text-brand-800 shadow-sm cursor-not-allowed select-none">
+                                    Bientôt disponible
+                                </div>
+                                <p class="mt-6 text-xs leading-5 text-brand-100">Facture avec TVA incluse</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </section>
-
-        <!-- Features Section -->
-        <section id="features" class="py-20 sm:py-28">
-            <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <div class="text-center">
-                    <h2 class="text-3xl font-extrabold tracking-tight text-secondary sm:text-4xl">
-                        Everything Your Business Needs
-                    </h2>
-                    <p class="mx-auto mt-4 max-w-2xl text-lg text-muted">
-                        A complete suite of tools designed for scalability, security, and simplicity.
-                    </p>
-                </div>
-
-                <div class="mt-16 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                    <!-- Feature Card: Multi-Tenancy -->
-                    <div class="transform rounded-xl border border-gray-200 bg-white p-8 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
-                        <div class="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-emerald-100 text-primary">
-                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+        </div>
+        
+        <!-- Trust / Security Section -->
+        <div id="security" class="bg-dark-900 py-24 sm:py-32">
+            <div class="mx-auto max-w-7xl px-6 lg:px-8">
+                <div class="grid grid-cols-1 gap-x-8 gap-y-16 sm:gap-y-20 lg:grid-cols-2 lg:items-center">
+                    <div class="px-6 lg:px-0 lg:pr-4 lg:pt-4">
+                        <div class="mx-auto max-w-2xl lg:mx-0 lg:max-w-lg">
+                            <h2 class="text-base font-semibold leading-7 text-brand-500">Sécurité avant tout</h2>
+                            <p class="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">Vos données sont protégées</p>
+                            <p class="mt-6 text-lg leading-8 text-slate-300">
+                                Nous comprenons l'importance de vos données financières. C'est pourquoi Fido utilise les standards de sécurité les plus élevés.
+                            </p>
+                            <dl class="mt-10 max-w-xl space-y-8 text-base leading-7 text-slate-300 lg:max-w-none">
+                                <div class="relative pl-9">
+                                    <dt class="inline font-semibold text-white">
+                                        <svg class="absolute left-1 top-1 h-5 w-5 text-brand-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clip-rule="evenodd" />
+                                        </svg>
+                                        Chiffrement SSL.
+                                    </dt>
+                                    <dd class="inline">Toutes les communications sont chiffrées de bout en bout.</dd>
+                                </div>
+                                <div class="relative pl-9">
+                                    <dt class="inline font-semibold text-white">
+                                        <svg class="absolute left-1 top-1 h-5 w-5 text-brand-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M5.5 17a4.5 4.5 0 01-1.44-8.765 4.5 4.5 0 018.302-3.046 3.5 3.5 0 014.504 4.272A4 4 0 0115 17H5.5zm3.75-2.75a.75.75 0 001.5 0V9.66l1.95 2.1a.75.75 0 101.1-1.02l-3.25-3.5a.75.75 0 00-1.1 0l-3.25 3.5a.75.75 0 101.1 1.02l1.95-2.1v4.59z" clip-rule="evenodd" />
+                                        </svg>
+                                        Sauvegardes quotidiennes.
+                                    </dt>
+                                    <dd class="inline">Vos données sont sauvegardées automatiquement pour éviter toute perte.</dd>
+                                </div>
+                            </dl>
                         </div>
-                        <h3 class="text-xl font-bold text-secondary">Multi-Tenancy</h3>
-                        <p class="mt-2 text-muted">Manage diverse client environments with robust data isolation and tailored access controls.</p>
                     </div>
-
-                    <!-- Feature Card: Google Auth -->
-                    <div class="transform rounded-xl border border-gray-200 bg-white p-8 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
-                        <div class="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-emerald-100 text-primary">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" /></svg>
+                    <div class="sm:px-6 lg:px-0">
+                        <!-- Abstract graphic for Security -->
+                        <div class="relative isolate overflow-hidden bg-brand-500 px-6 pt-8 sm:mx-auto sm:max-w-2xl sm:rounded-3xl sm:pl-16 sm:pr-0 sm:pt-16 lg:mx-0 lg:max-w-none">
+                            <div class="absolute -inset-y-px -left-3 -z-10 w-full origin-bottom-left skew-x-[-30deg] bg-brand-100 opacity-20 ring-1 ring-inset ring-white" aria-hidden="true"></div>
+                            <div class="mx-auto max-w-2xl sm:mx-0 sm:max-w-none">
+                                <div class="w-screen overflow-hidden rounded-tl-xl bg-dark-800 ring-1 ring-white/10">
+                                    <div class="flex bg-dark-900/40 ring-1 ring-white/5">
+                                        <div class="-mb-px flex text-sm font-medium leading-6 text-slate-400">
+                                            <div class="border-b border-r border-b-white/20 border-r-white/10 bg-white/5 px-4 py-2 text-white">Notification.php</div>
+                                            <div class="border-r border-slate-600/10 px-4 py-2">Security.php</div>
+                                        </div>
+                                    </div>
+                                    <div class="px-6 pb-14 pt-6 text-slate-300 font-mono text-xs leading-5">
+                                        <span class="text-brand-500">use</span> Illuminate\Support\Facades\Crypt;<br><br>
+                                        <span class="text-brand-500">class</span> <span class="text-white">SecureVault</span> {<br>
+                                        &nbsp;&nbsp;<span class="text-brand-500">public function</span> <span class="text-white">store</span>($data) {<br>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-slate-500">// Chiffrement AES-256</span><br>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-brand-500">return</span> Crypt::encryptString($data);<br>
+                                        &nbsp;&nbsp;}<br>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="pointer-events-none absolute inset-0 ring-1 ring-inset ring-black/10 sm:rounded-3xl" aria-hidden="true"></div>
                         </div>
-                        <h3 class="text-xl font-bold text-secondary">Google Auth</h3>
-                        <p class="mt-2 text-muted">Secure and effortless login experience, leveraging Google's trusted authentication.</p>
-                    </div>
-                    
-                    <!-- Feature Card: Admin Panel -->
-                    <div class="transform rounded-xl border border-gray-200 bg-white p-8 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
-                        <div class="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-emerald-100 text-primary">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75" /></svg>
-                        </div>
-                        <h3 class="text-xl font-bold text-secondary">Admin Panel</h3>
-                        <p class="mt-2 text-muted">Centralized control for administrators to manage tenants, users, and invitations efficiently.</p>
-                    </div>
-                    
-                    <!-- Feature Card: User Dashboards -->
-                    <div class="transform rounded-xl border border-gray-200 bg-white p-8 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
-                        <div class="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-emerald-100 text-primary">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25" /></svg>
-                        </div>
-                        <h3 class="text-xl font-bold text-secondary">User Dashboards</h3>
-                        <p class="mt-2 text-muted">Personalized dashboards providing users with relevant, tenant-specific data and tools.</p>
-                    </div>
-
-                    <!-- Feature Card: Onboarding -->
-                    <div class="transform rounded-xl border border-gray-200 bg-white p-8 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
-                        <div class="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-emerald-100 text-primary">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" /></svg>
-                        </div>
-                        <h3 class="text-xl font-bold text-secondary">Onboarding</h3>
-                        <p class="mt-2 text-muted">Streamlined process for new users to create or join existing tenants with ease.</p>
-                    </div>
-                    
-                    <!-- Feature Card: Invite System -->
-                    <div class="transform rounded-xl border border-gray-200 bg-white p-8 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
-                        <div class="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-emerald-100 text-primary">
-                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" /></svg>
-                        </div>
-                        <h3 class="text-xl font-bold text-secondary">Invite System</h3>
-                        <p class="mt-2 text-muted">Controlled user access through unique, trackable invitation codes for each tenant.</p>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
     </main>
-    
+
     <!-- Footer -->
-    <footer id="contact" class="bg-secondary">
-        <div class="container mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-            <div class="text-center text-gray-400">
-                <p class="mb-4 text-lg">Have questions? We'd love to hear from you.</p>
-                <a href="mailto:support@fido.online" class="text-primary hover:text-primary-dark text-xl font-semibold transition-colors duration-200">
-                    support@fido.online
-                </a>
-                <p class="mt-8 text-sm">&copy; {{ date('Y') }} {{ config('app.name', 'Fido Online') }}. All rights reserved.</p>
+    <footer id="contact" class="bg-white border-t border-slate-200">
+        <div class="mx-auto max-w-7xl overflow-hidden px-6 py-20 sm:py-24 lg:px-8">
+            <div class="text-center mb-10">
+                <h3 class="text-xl font-bold text-slate-900">Une question ?</h3>
+                <p class="mt-2 text-slate-600">Notre équipe support est là pour vous aider.</p>
+                <a href="mailto:support@fido.tn" class="mt-4 inline-block text-brand-600 font-semibold hover:text-brand-500 transition">support@fido.tn</a>
             </div>
+
+            <!-- Quick Links -->
+            <nav class="-mb-6 columns-2 sm:flex sm:justify-center sm:space-x-12" aria-label="Footer">
+                <div class="pb-6">
+                    <a href="{{ route('about') }}" class="text-sm leading-6 text-slate-600 hover:text-slate-900">À propos</a>
+                </div>
+                <div class="pb-6">
+                    <a href="{{ route('legal') }}" class="text-sm leading-6 text-slate-600 hover:text-slate-900">Mentions légales</a>
+                </div>
+                <div class="pb-6">
+                    <a href="{{ route('privacy-policy') }}" class="text-sm leading-6 text-slate-600 hover:text-slate-900">Politique de confidentialité</a>
+                </div>
+            </nav>
+
+            <p class="mt-10 text-center text-xs leading-5 text-slate-500">
+                &copy; {{ date('Y') }} {{ config('app.name', 'Fido') }}. Tous droits réservés.
+            </p>
         </div>
     </footer>
 

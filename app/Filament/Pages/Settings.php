@@ -7,6 +7,7 @@ use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
 use BackedEnum;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\RichEditor; // <--- Import this
 use Filament\Schemas\Components\Section;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
@@ -44,9 +45,9 @@ class Settings extends Page implements HasForms
             ->components([
                 Form::make([
                     
-                    // --- SECTION 1: Informations Générales ---
+                    // --- SECTION 1: General ---
                     Section::make('Informations Générales')
-                        ->description('Détails de contact et identification de la société.')
+                        /* ->collapsed() */ // Optional: collapses this section to save space
                         ->schema([
                             TextInput::make('site_name')
                                 ->label('Nom de la société')
@@ -65,51 +66,45 @@ class Settings extends Page implements HasForms
                         ])
                         ->columns(2),
 
-                    // --- SECTION 2: Fiscalité (Taxes) ---
+                    // --- SECTION 2: Taxes ---
                     Section::make('Taux et Taxes')
-                        ->description('Configuration des taux de TVA, RS et Timbre Fiscal.')
+                        /* ->collapsed()  */
                         ->schema([
-                            // TVA 19%
                             TextInput::make('tva_rate')
                                 ->label('Taux de TVA (Standard)')
-                                ->helperText('Taux normal (ex: 19%).')
-                                ->numeric()
-                                ->step(0.01)
-                                ->suffix('%')
-                                ->default(19.00)
-                                ->required(),
+                                ->numeric()->step(0.01)->suffix('%')->default(19.00)->required(),
 
-                            // TVA 7%
                             TextInput::make('tva_reduced_rate')
                                 ->label('Taux de TVA (Réduit)')
-                                ->helperText('Taux réduit (ex: 7%).')
-                                ->numeric()
-                                ->step(0.01)
-                                ->suffix('%')
-                                ->default(7.00)
-                                ->required(),
+                                ->numeric()->step(0.01)->suffix('%')->default(7.00)->required(),
 
-                            // RS (Retenue à la Source)
                             TextInput::make('rs_rate')
                                 ->label('Taux de RS (Retenue)')
-                                ->helperText('Retenue à la source (ex: 3%).')
-                                ->numeric()
-                                ->step(0.01)
-                                ->suffix('%')
-                                ->default(3.00)
-                                ->required(),
+                                ->numeric()->step(0.01)->suffix('%')->default(3.00)->required(),
 
-                            // Timbre Fiscal
                             TextInput::make('tf_rate')
                                 ->label('Timbre Fiscal')
-                                ->helperText('Montant fixe par facture.')
-                                ->numeric()
-                                ->step(0.001)
-                                ->suffix('TND')
-                                ->default(1.000)
-                                ->required(),
+                                ->numeric()->step(0.001)->suffix('TND')->default(1.000)->required(),
                         ])
                         ->columns(2),
+
+                    // --- SECTION 3: Legal Pages Content (NEW) ---
+                    Section::make('Contenu des Pages Légales')
+                        ->collapsed()
+                        ->description('Modifiez le contenu des pages publiques (À propos, Mentions légales, Confidentialité).')
+                        ->schema([
+                            RichEditor::make('about_content')
+                                ->label('Page : À propos')
+                                ->columnSpanFull(),
+
+                            RichEditor::make('legal_content')
+                                ->label('Page : Mentions Légales')
+                                ->columnSpanFull(),
+
+                            RichEditor::make('privacy_content')
+                                ->label('Page : Politique de confidentialité')
+                                ->columnSpanFull(),
+                        ]),
                 ])
                 ->livewireSubmitHandler('save')
                 ->footer([
@@ -127,15 +122,8 @@ class Settings extends Page implements HasForms
     public function save(): void
     {
         $data = $this->form->getState();
-        
-        $record = $this->getRecord();
-        
-        $record->update($data);
-
-        Notification::make()
-            ->title('Paramètres mis à jour avec succès')
-            ->success()
-            ->send();
+        $this->getRecord()->update($data);
+        Notification::make()->title('Paramètres mis à jour avec succès')->success()->send();
     }
 
     public function getRecord(): Setting

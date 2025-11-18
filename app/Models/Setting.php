@@ -14,6 +14,9 @@ class Setting extends Model
         'site_name',
         'support_email',
         'support_phone',
+        'about_content',
+        'legal_content',
+        'privacy_content',
     ];
 
     public static function singleton(): self

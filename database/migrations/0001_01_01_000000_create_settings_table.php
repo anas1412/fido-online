@@ -18,6 +18,9 @@ return new class extends Migration
             $table->string('site_name')->default('Fido');
             $table->string('support_email')->default('contact@fido.tn');
             $table->string('support_phone')->default('54930048');
+            $table->longText('about_content')->nullable();
+            $table->longText('legal_content')->nullable();
+            $table->longText('privacy_content')->nullable();
             $table->timestamps();
         });
 
