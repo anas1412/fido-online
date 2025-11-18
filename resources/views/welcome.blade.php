@@ -45,16 +45,16 @@
     </style>
 </head>
 
-<body class="bg-slate-50 font-sans text-slate-600 antialiased selection:bg-brand-500 selection:text-white">
+<!-- 1. MOVED x-data HERE so both Header and Menu can access it -->
+<body x-data="{ mobileMenuOpen: false }" class="bg-slate-50 font-sans text-slate-600 antialiased selection:bg-brand-500 selection:text-white">
 
     <!-- Navbar -->
-    <header x-data="{ mobileMenuOpen: false }" class="fixed top-0 z-50 w-full bg-white/90 backdrop-blur-md border-b border-slate-200 transition-all duration-300">
+    <header class="fixed top-0 z-40 w-full bg-white/90 backdrop-blur-md border-b border-slate-200">
         <nav class="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
             
             <!-- Logo Container -->
             <div class="flex lg:flex-1">
                 <a href="/" class="-m-1.5 p-1.5 flex items-center gap-x-2">
-                    <!-- Make sure logo exists or use text fallback -->
                     <img src="{{ asset('images/logo.png') }}" alt="Fido Logo" class="h-8 w-auto">
                     <span class="font-bold text-xl text-slate-900 tracking-tight">{{ config('app.name', 'Fido') }}</span>
                 </a>
@@ -91,15 +91,37 @@
                 </button>
             </div>
         </nav>
+    </header>
 
-        <!-- Mobile Menu Dialog -->
-        <div x-show="mobileMenuOpen" class="lg:hidden" x-cloak>
-            <div class="fixed inset-0 z-50" @click="mobileMenuOpen = false"></div>
-            <div class="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-slate-900/10 shadow-2xl">
-                <div class="flex items-center justify-between">
+    <!-- 2. MOVED MOBILE MENU OUTSIDE THE HEADER so it isn't trapped by backdrop-blur -->
+    <div x-show="mobileMenuOpen" class="relative z-50 lg:hidden" x-cloak role="dialog" aria-modal="true">
+            
+        <!-- Backdrop (Dimmed Background) -->
+        <div x-show="mobileMenuOpen" 
+                x-transition:enter="transition-opacity ease-linear duration-300"
+                x-transition:enter-start="opacity-0"
+                x-transition:enter-end="opacity-100"
+                x-transition:leave="transition-opacity ease-linear duration-300"
+                x-transition:leave-start="opacity-100"
+                x-transition:leave-end="opacity-0"
+                class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm" 
+                @click="mobileMenuOpen = false"></div>
+
+        <!-- Sliding Panel -->
+        <div class="fixed inset-0 z-50 flex">
+            <div x-show="mobileMenuOpen" 
+                    x-transition:enter="transition ease-in-out duration-300 transform"
+                    x-transition:enter-start="translate-x-full"
+                    x-transition:enter-end="translate-x-0"
+                    x-transition:leave="transition ease-in-out duration-300 transform"
+                    x-transition:leave-start="translate-x-0"
+                    x-transition:leave-end="translate-x-full"
+                    class="relative ml-auto flex h-full w-full max-w-sm flex-col overflow-y-auto bg-white py-4 pb-12 shadow-xl">
+                
+                <div class="flex items-center justify-between px-6">
                     <a href="#" class="-m-1.5 p-1.5 flex items-center gap-2">
-                         <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-8 w-auto">
-                         <span class="font-bold text-lg text-slate-900">{{ config('app.name', 'Fido') }}</span>
+                            <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-8 w-auto">
+                            <span class="font-bold text-lg text-slate-900">{{ config('app.name', 'Fido') }}</span>
                     </a>
                     <button type="button" @click="mobileMenuOpen = false" class="-m-2.5 rounded-md p-2.5 text-slate-700">
                         <span class="sr-only">Fermer</span>
@@ -108,7 +130,8 @@
                         </svg>
                     </button>
                 </div>
-                <div class="mt-6 flow-root">
+
+                <div class="mt-6 flow-root px-6">
                     <div class="-my-6 divide-y divide-slate-500/10">
                         <div class="space-y-2 py-6">
                             <a href="#features" @click="mobileMenuOpen = false" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-slate-900 hover:bg-slate-50">Fonctionnalités</a>
@@ -127,7 +150,7 @@
                 </div>
             </div>
         </div>
-    </header>
+    </div>
 
     <main class="isolate">
         <!-- Hero Section -->
@@ -353,7 +376,7 @@
             </div>
         </div>
         
-        <!-- Trust / Security Section (UPDATED & FIXED) -->
+        <!-- Trust / Security Section -->
         <div id="security" class="bg-dark-900 py-24 sm:py-32 relative isolate overflow-hidden">
             <div class="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
                 <div class="grid grid-cols-1 gap-x-8 gap-y-16 sm:gap-y-20 lg:grid-cols-2 lg:items-center">
@@ -517,7 +540,7 @@
             </div>
         </div>
 
-        <!-- Call to Action (CTA) Section (ADDED) -->
+        <!-- Call to Action (CTA) Section -->
         <div class="bg-brand-600 relative isolate overflow-hidden">
             <div class="px-6 py-24 sm:px-6 sm:py-32 lg:px-8">
                 <div class="mx-auto max-w-2xl text-center relative z-10">
