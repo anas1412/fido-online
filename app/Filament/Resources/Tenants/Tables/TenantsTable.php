@@ -16,19 +16,24 @@ class TenantsTable
         return $table
             ->columns([
                 TextColumn::make('name')
+                    ->label('Nom')
                     ->searchable(),
                 TextColumn::make('slug')
+                    ->label('Identifiant unique')
                     ->searchable(),
                 TextColumn::make('type')
+                    ->label('Type')
                     ->badge(),
                 TextColumn::make('currency')
                     ->label('Devise')
                     ->searchable(),
                 TextColumn::make('created_at')
+                    ->label('Créé le')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
+                    ->label('Mis à jour le')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

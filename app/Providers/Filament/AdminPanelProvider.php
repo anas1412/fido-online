@@ -23,8 +23,9 @@ use Illuminate\Support\Facades\Blade;
 use Illuminate\View\View;
 use Filament\Actions\Action;
 use MartinPetricko\FilamentSentryFeedback\SentryUser;
-use Filament\Navigation\MenuItem;
+use Filament\Navigation\NavigationItem;
 use App\Http\Middleware\EnsureUserIsAdmin;
+/* use Filament\Pages\ManageSettings; */
 
 
 class AdminPanelProvider extends PanelProvider
@@ -79,11 +80,18 @@ class AdminPanelProvider extends PanelProvider
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
                 Dashboard::class,
+                /* ManageSettings::class, */
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
                 AccountWidget::class,
                 FilamentInfoWidget::class,
+            ])
+            ->navigationItems([
+                NavigationItem::make('Paramètres')
+                    /* ->url(fn (): string => \App\Filament\Resources\Settings\SettingResource::getUrl()) */
+                    ->icon('heroicon-o-cog-6-tooth')
+                    ->sort(3),
             ])
             /* ->plugins([
                 \MartinPetricko\FilamentSentryFeedback\FilamentSentryFeedbackPlugin::make()
