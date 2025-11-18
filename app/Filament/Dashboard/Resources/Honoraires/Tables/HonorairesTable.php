@@ -1,58 +1,74 @@
 <?php
 
-namespace App\Filament\Dashboard\Resources\Invoices\Tables;
+namespace App\Filament\Dashboard\Resources\Honoraires\Tables;
 
 use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
-use Filament\Actions\DeleteBulkAction;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
+use App\Filament\Dashboard\Filters\FiscalYearFilter;
 use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Table;
-use App\Filament\Dashboard\Filters\FiscalYearFilter;
 use Filament\Tables\Filters\TrashedFilter;
-use App\Filament\Dashboard\Resources\Invoices\InvoiceResource;
+use App\Filament\Dashboard\Resources\Honoraires\HonoraireResource;
 
-class InvoicesTable
+class HonorairesTable
 {
     public static function configure(Table $table): Table
     {
         return $table
             ->recordUrl(
                 fn ($record) => !$record->trashed()
-                    ? InvoiceResource::getUrl('view', ['record' => $record])
+                    ? HonoraireResource::getUrl('view', ['record' => $record])
                     : null
             )
-            ->columns([
-                TextColumn::make('invoice_number')
-                    ->label('Numéro de Facture')
+            ->columns([               
+                TextColumn::make('honoraire_number')
+                    ->label('Numéro d\'honoraire')
                     ->searchable(),
                 TextColumn::make('client.name')
                     ->label('Client')
-                    ->sortable(),
-                TextColumn::make('issue_date')
-                    ->label('Date d\'Émission')
-                    ->date()
-                    ->sortable(),
-                TextColumn::make('due_date')
-                    ->label('Date d\'Échéance')
-                    ->date()
-                    ->sortable(),
-                TextColumn::make('status')
-                    ->label('Statut')
                     ->searchable(),
+                TextColumn::make('amount_ht')
+                    ->label('Montant HT')
+                    ->numeric()
+                    ->money(fn ($record) => $record->currency)
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('amount_ttc')
+                    ->label('Montant TTC')
+                    ->numeric()
+                    ->money(fn ($record) => $record->currency)
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('tva_rate')
+                    ->label('Taux TVA')
+                    ->numeric()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('rs_rate')
+                    ->label('Taux RS')
+                    ->numeric()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('tf_rate')
+                    ->label('Taux TF')
+                    ->numeric()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('total_amount')
                     ->label('Montant Total')
                     ->numeric()
                     ->money(fn ($record) => $record->currency)
                     ->sortable(),
-                TextColumn::make('currency')
-                    ->label('Devise')
-                    ->searchable(),
+                TextColumn::make('issue_date')
+                    ->label('Date d\'émission')
+                    ->date()
+                    ->sortable(),
                 TextColumn::make('created_at')
                     ->label('Créé le')
                     ->dateTime()

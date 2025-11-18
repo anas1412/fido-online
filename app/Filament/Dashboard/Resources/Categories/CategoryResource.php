@@ -31,6 +31,12 @@ class CategoryResource extends Resource
     protected static ?int $navigationSort = 4;
     protected static ?string $tenantOwnershipRelationshipName = 'tenant';
 
+    public static function canViewAny(): bool
+    {
+        $tenant = filament()->getTenant();
+        return $tenant && $tenant->type === 'commercial';
+    }
+
     public static function form(Schema $schema): Schema
     {
         return $schema->components([

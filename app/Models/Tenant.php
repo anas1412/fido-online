@@ -25,6 +25,11 @@ class Tenant extends Model implements HasName
         return $this->hasMany(Invoice::class);
     }
 
+    public function honoraires()
+    {
+        return $this->hasMany(Honoraire::class);
+    }
+
     public function getFilamentName(): string
     {
         $dbType = $this->getAttribute('type');

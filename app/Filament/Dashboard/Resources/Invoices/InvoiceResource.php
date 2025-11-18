@@ -39,7 +39,6 @@ class InvoiceResource extends Resource
         return static::getModel()::count();
     }
 
-
     protected static ?string $tenantOwnershipRelationshipName = 'tenant';
 
     public static function canViewAny(): bool

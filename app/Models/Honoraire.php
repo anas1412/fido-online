@@ -2,33 +2,31 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Model;
 use App\Models\Client;
 use App\Models\Tenant;
 use App\Models\Traits\HasFiscalYearScope;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Services\InvoiceNumberService;
+use App\Services\HonoraireNumberService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Invoice extends Model
+class Honoraire extends Model
 {
     use HasFiscalYearScope, SoftDeletes;
 
     protected $fillable = [
         'client_id',
-        'invoice_number',
-        'issue_date',
-        'due_date',
-        'status',
+        'honoraire_number',
+        'object',
         'amount_ht',
         'amount_ttc',
         'tva_rate',
         'rs_rate',
         'tf_rate',
         'total_amount',
-        'currency',
+        'issue_date',
     ];
 
     protected $casts = [
@@ -36,15 +34,6 @@ class Invoice extends Model
         'exonere_rs' => 'boolean',
         'exonere_tva' => 'boolean',
     ];
-
-    protected static function booted()
-    {
-        static::creating(function ($invoice) {
-            if (empty($invoice->invoice_number)) {
-                $invoice->invoice_number = (new InvoiceNumberService())->generate($invoice->tenant, Carbon::parse($invoice->issue_date));
-            }
-        });
-    }
 
     public function tenant(): BelongsTo
     {
@@ -56,8 +45,17 @@ class Invoice extends Model
         return $this->belongsTo(Client::class);
     }
 
-    public function invoiceItems(): HasMany
+    protected static function booted()
     {
-        return $this->hasMany(InvoiceItem::class);
+        static::creating(function ($honoraire) {
+            if (empty($honoraire->issue_date)) {
+                $honoraire->issue_date = now()->toDateString();
+            }
+            if (empty($honoraire->honoraire_number)) {
+                $honoraire->honoraire_number = (new HonoraireNumberService())->generate($honoraire->tenant, \Carbon\Carbon::parse($honoraire->issue_date));
+            }
+        });
     }
+
+
 }
