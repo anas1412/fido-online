@@ -48,7 +48,8 @@ class Settings extends Page implements HasForms
             ->components([
                 // In Filament 4, we wrap fields in a Form component
                 Form::make([
-                    Section::make('Paramètres du site')
+                    // Changed title to avoid redundancy with the Page Title
+                    Section::make('Informations Générales')
                         ->schema([
                             TextInput::make('site_name')
                                 ->label('Nom du site')
@@ -64,19 +65,19 @@ class Settings extends Page implements HasForms
                                 ->required(),
 
                             TextInput::make('tva_rate')
-                                ->label('Taux de TVA')
+                                ->label('Taux de TVA (%)')
                                 ->numeric()
                                 ->step(0.01)
                                 ->required(),
 
                             TextInput::make('rs_rate')
-                                ->label('Taux de RS')
+                                ->label('Taux de RS (%)')
                                 ->numeric()
                                 ->step(0.01)
                                 ->required(),
 
                             TextInput::make('tf_rate')
-                                ->label('Taux de TF')
+                                ->label('Timbre Fiscal (Montant)')
                                 ->numeric()
                                 ->step(0.01)
                                 ->required(),
@@ -123,5 +124,4 @@ class Settings extends Page implements HasForms
     {
         return auth()->user()?->is_admin ?? false;
     }
-
 }

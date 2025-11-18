@@ -14,7 +14,8 @@ use UnitEnum;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\DB;
+use Filament\Notifications\Notification;
 
 class TenantUserResource extends Resource
 {
@@ -70,30 +71,67 @@ class TenantUserResource extends Resource
                         $currentUser = Auth::user();
                         $tenantId = $record->tenant_id;
 
-                        // Check if the current authenticated user is the owner of this tenant
-                        $currentUserIsOwner = $currentUser->tenants()->where('tenant_id', $tenantId)->wherePivot('is_owner', true)->exists();
+                        // Check if current user is owner
+                        $currentUserIsOwner = $currentUser->tenants()
+                            ->where('tenant_id', $tenantId)
+                            ->wherePivot('is_owner', true)
+                            ->exists();
 
-                        // If the current authenticated user is not an owner, disable the toggle
-                        if (!$currentUserIsOwner) {
-                            return true;
-                        }
+                        if (!$currentUserIsOwner) return true;
 
-                        // If the current authenticated user IS an owner, and the record being displayed is for THEM,
-                        // then disable the toggle (because an owner is implicitly a mod)
-                        if ($currentUserIsOwner && $record->user_id === $currentUser->id) {
-                            return true;
-                        }
+                        // Owner implies Mod, cannot disable own mod status
+                        if ($record->user_id === $currentUser->id) return true;
 
-                        // Otherwise, allow the toggle (owner can change other members' mod status)
-                        // Explicitly enable if current user is owner and target is another user
-                        if ($currentUserIsOwner && $record->user_id !== $currentUser->id) {
-                            return false;
-                        }
-
-                        return true;
+                        return false;
                     }),
             ])
             ->actions([
+                // --- TRANSFER OWNERSHIP ACTION ---
+                Action::make('transfer_ownership')
+                    ->label('Céder la propriété')
+                    ->icon('heroicon-o-key')
+                    ->color('warning')
+                    ->requiresConfirmation()
+                    ->modalHeading('Transférer la propriété')
+                    ->modalDescription('Êtes-vous sûr ? Vous perdrez vos droits de propriétaire et deviendrez modérateur.')
+                    ->action(function (TenantUserPivot $record) {
+                        $currentUser = Auth::user();
+                        
+                        DB::transaction(function () use ($record, $currentUser) {
+                            // 1. Downgrade current owner (becomes Mod only)
+                            TenantUserPivot::where('tenant_id', $record->tenant_id)
+                                ->where('user_id', $currentUser->id)
+                                ->update([
+                                    'is_owner' => false, 
+                                    'is_mod' => true
+                                ]);
+
+                            // 2. Upgrade target user (becomes Owner & Mod)
+                            $record->update([
+                                'is_owner' => true, 
+                                'is_mod' => true
+                            ]);
+                        });
+
+                        Notification::make()
+                            ->title('Propriété transférée')
+                            ->success()
+                            ->send();
+                            
+                        return redirect()->to('/dashboard'); // Reload to refresh permissions
+                    })
+                    ->visible(function (TenantUserPivot $record) {
+                        $currentUser = Auth::user();
+                        
+                        // Visible only if I am the owner AND the row is not me
+                        $amIOwner = $currentUser->tenants()
+                            ->where('tenant_id', $record->tenant_id)
+                            ->wherePivot('is_owner', true)
+                            ->exists();
+
+                        return $amIOwner && $record->user_id !== $currentUser->id;
+                    }),
+
                 Action::make('kick')
                     ->label('Exclure')
                     ->icon('heroicon-o-user-minus')
@@ -106,28 +144,16 @@ class TenantUserResource extends Resource
                         $currentUser = Auth::user();
                         $tenantId = $record->tenant_id;
 
-                        // Rule: is_admin can never be kicked.
-                        if ($record->user->is_admin) {
-                            return false;
-                        }
+                        if ($record->user->is_admin) return false;
+                        if ($record->is_owner) return false;
 
-                        // Rule: is_owner can never be kicked from his tenant.
-                        if ($record->is_owner) {
-                            return false;
-                        }
-
-                        // Rule: Only is_owner or is_mod can see the action.
                         $currentUserTenantPivot = $currentUser->tenants()->where('tenant_id', $tenantId)->first()->pivot ?? null;
                         if (!$currentUserTenantPivot || (!$currentUserTenantPivot->is_owner && !$currentUserTenantPivot->is_mod)) {
-                            return false; // Current user is neither owner nor mod
-                        }
-
-                        // Rule: is_admin cannot remove himself (system admin).
-                        if ($currentUser->is_admin && $record->user->id === $currentUser->id) {
                             return false;
                         }
 
-                        // Rule: Tenant owner or mod cannot kick themselves.
+                        if ($currentUser->is_admin && $record->user->id === $currentUser->id) return false;
+
                         if (($currentUserTenantPivot->is_owner || $currentUserTenantPivot->is_mod) && $record->user->id === $currentUser->id) {
                             return false;
                         }
@@ -143,23 +169,12 @@ class TenantUserResource extends Resource
         $currentUser = Auth::user();
         $currentTenant = filament()->getTenant();
 
-        if (!$currentUser || !$currentTenant) {
-            return false;
-        }
+        if (!$currentUser || !$currentTenant) return false;
+        if ($currentUser->is_admin) return true;
 
-        // System admin can view any resource
-        if ($currentUser->is_admin) {
-            return true;
-        }
-
-        // Check if current user is owner or mod of the current tenant
         $currentUserTenantPivot = $currentUser->tenants()->where('tenant_id', $currentTenant->id)->first()->pivot ?? null;
 
-        if ($currentUserTenantPivot && ($currentUserTenantPivot->is_owner || $currentUserTenantPivot->is_mod)) {
-            return true;
-        }
-
-        return false;
+        return $currentUserTenantPivot && ($currentUserTenantPivot->is_owner || $currentUserTenantPivot->is_mod);
     }
 
     public static function getPages(): array
