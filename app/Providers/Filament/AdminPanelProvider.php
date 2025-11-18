@@ -88,9 +88,9 @@ class AdminPanelProvider extends PanelProvider
                 FilamentInfoWidget::class,
             ])
             ->navigationItems([
-                NavigationItem::make('Paramètres')
+                /* NavigationItem::make('Paramètres')
                     ->url(fn (): string => \App\Filament\Pages\Settings::getUrl())
-                    ->icon('heroicon-o-cog-6-tooth'),
+                    ->icon('heroicon-o-cog-6-tooth'), */
             ])
             /* ->plugins([
                 \MartinPetricko\FilamentSentryFeedback\FilamentSentryFeedbackPlugin::make()
