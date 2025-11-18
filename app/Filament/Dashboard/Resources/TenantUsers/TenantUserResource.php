@@ -88,7 +88,7 @@ class TenantUserResource extends Resource
             ->actions([
                 // --- TRANSFER OWNERSHIP ACTION ---
                 Action::make('transfer_ownership')
-                    ->label('Céder la propriété')
+                    ->label('Céder la propriété de l\'organisation')
                     ->icon('heroicon-o-key')
                     ->color('warning')
                     ->requiresConfirmation()
@@ -133,7 +133,7 @@ class TenantUserResource extends Resource
                     }),
 
                 Action::make('kick')
-                    ->label('Exclure')
+                    ->label('Exclure de l\'organisation')
                     ->icon('heroicon-o-user-minus')
                     ->color('danger')
                     ->requiresConfirmation()
@@ -144,7 +144,10 @@ class TenantUserResource extends Resource
                         $currentUser = Auth::user();
                         $tenantId = $record->tenant_id;
 
-                        if ($record->user->is_admin) return false;
+                        /* If the user is is_admin, they cannot be kicked */
+                        /* if ($record->user->is_admin) return false; */
+
+
                         if ($record->is_owner) return false;
 
                         $currentUserTenantPivot = $currentUser->tenants()->where('tenant_id', $tenantId)->first()->pivot ?? null;
