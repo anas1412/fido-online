@@ -29,16 +29,12 @@ class Settings extends Page implements HasForms
     protected static ?string $title = 'Paramètres du site';
     protected static ?string $navigationLabel = 'Paramètres Globaux';
 
-    
-    // Use the simple view provided by Filament 4 logic
     protected string $view = 'filament.pages.settings';
 
     public ?array $data = [];
 
     public function mount(): void
     {
-        // Fill the form with the singleton record
-        // We use the helper method getRecord() to keep it clean
         $this->form->fill($this->getRecord()->attributesToArray());
     }
 
@@ -46,57 +42,85 @@ class Settings extends Page implements HasForms
     {
         return $schema
             ->components([
-                // In Filament 4, we wrap fields in a Form component
                 Form::make([
-                    // Changed title to avoid redundancy with the Page Title
+                    
+                    // --- SECTION 1: Informations Générales ---
                     Section::make('Informations Générales')
+                        ->description('Détails de contact et identification de la société.')
                         ->schema([
                             TextInput::make('site_name')
-                                ->label('Nom du site')
-                                ->required(),
+                                ->label('Nom de la société')
+                                ->required()
+                                ->columnSpanFull(),
 
                             TextInput::make('support_email')
-                                ->label('Email de l\'assistance')
+                                ->label('Email de contact')
                                 ->email()
                                 ->required(),
 
                             TextInput::make('support_phone')
-                                ->label('Téléphone de l\'assistance')
+                                ->label('Téléphone')
+                                ->tel()
                                 ->required(),
+                        ])
+                        ->columns(2),
 
+                    // --- SECTION 2: Fiscalité (Taxes) ---
+                    Section::make('Taux et Taxes')
+                        ->description('Configuration des taux de TVA, RS et Timbre Fiscal.')
+                        ->schema([
+                            // TVA 19%
                             TextInput::make('tva_rate')
-                                ->label('Taux de TVA (%)')
+                                ->label('Taux de TVA (Standard)')
+                                ->helperText('Taux normal (ex: 19%).')
                                 ->numeric()
                                 ->step(0.01)
+                                ->suffix('%')
+                                ->default(19.00)
                                 ->required(),
 
+                            // TVA 7%
+                            TextInput::make('tva_reduced_rate')
+                                ->label('Taux de TVA (Réduit)')
+                                ->helperText('Taux réduit (ex: 7%).')
+                                ->numeric()
+                                ->step(0.01)
+                                ->suffix('%')
+                                ->default(7.00)
+                                ->required(),
+
+                            // RS (Retenue à la Source)
                             TextInput::make('rs_rate')
-                                ->label('Taux de RS (%)')
+                                ->label('Taux de RS (Retenue)')
+                                ->helperText('Retenue à la source (ex: 3%).')
                                 ->numeric()
                                 ->step(0.01)
+                                ->suffix('%')
+                                ->default(3.00)
                                 ->required(),
 
+                            // Timbre Fiscal
                             TextInput::make('tf_rate')
-                                ->label('Timbre Fiscal (Montant)')
+                                ->label('Timbre Fiscal')
+                                ->helperText('Montant fixe par facture.')
                                 ->numeric()
-                                ->step(0.01)
+                                ->step(0.001)
+                                ->suffix('TND')
+                                ->default(1.000)
                                 ->required(),
                         ])
                         ->columns(2),
                 ])
-                // Link the enter key and submit event to the 'save' method
                 ->livewireSubmitHandler('save')
-                // Define the Save button in the footer of the form card
                 ->footer([
                     Actions::make([
                         Action::make('save')
-                            ->label('Enregistrer')
+                            ->label('Enregistrer les paramètres')
                             ->submit('save')
                             ->keyBindings(['mod+s']),
                     ]),
                 ]),
             ])
-            // Bind the form to the $this->data property
             ->statePath('data');
     }
 
@@ -109,12 +133,11 @@ class Settings extends Page implements HasForms
         $record->update($data);
 
         Notification::make()
-            ->title('Paramètres enregistrés avec succès')
+            ->title('Paramètres mis à jour avec succès')
             ->success()
             ->send();
     }
 
-    // Helper to get the singleton
     public function getRecord(): Setting
     {
         return Setting::singleton();

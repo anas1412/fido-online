@@ -12,29 +12,37 @@ class TenantInfolist
     {
         return $schema->components([
             Section::make('Informations sur l\'organisation')
-                ->columns(2)           // 2-column layout for flexibility
-                ->compact()             // tighter padding
+                ->columns(2)
+                ->compact()
                 ->components([
                     TextEntry::make('name')
-                        ->label('Nom')
-                        ->columnSpan('full'),    // full width row
+                        ->label('Nom'),
+                        
                     TextEntry::make('slug')
                         ->label('Identifiant unique'),
+
+                    // Added Member Count Badge
+                    TextEntry::make('users_count')
+                        ->label('Membres')
+                        ->state(fn ($record) => $record->users()->count()) // Calculates count dynamically
+                        ->badge()
+                        ->color('info'),
+
                     TextEntry::make('type')
                         ->label('Type')
                         ->badge(),
-                    TextEntry::make('currency')
-                        ->label('Devise'),
+                        
                     TextEntry::make('created_at')
                         ->label('Créé le')
                         ->dateTime()
                         ->placeholder('-'),
+                        
                     TextEntry::make('updated_at')
                         ->label('Mis à jour le')
                         ->dateTime()
                         ->placeholder('-'),
                 ])
-                ->columnSpan('full'),      // section spans full page width
+                ->columnSpan('full'),
         ]);
     }
 }

@@ -18,15 +18,18 @@ class TenantsTable
                 TextColumn::make('name')
                     ->label('Nom')
                     ->searchable(),
+                TextColumn::make('users_count') 
+                    ->counts('users') // This must match the relationship name in your Tenant model
+                    ->label('Membres')
+                    ->badge()
+                    ->color('info') // Optional: makes the badge blue
+                    ->sortable(),
                 TextColumn::make('slug')
                     ->label('Identifiant unique')
                     ->searchable(),
                 TextColumn::make('type')
                     ->label('Type')
                     ->badge(),
-                TextColumn::make('currency')
-                    ->label('Devise')
-                    ->searchable(),
                 TextColumn::make('created_at')
                     ->label('Créé le')
                     ->dateTime()

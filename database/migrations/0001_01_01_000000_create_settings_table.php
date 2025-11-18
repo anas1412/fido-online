@@ -12,6 +12,7 @@ return new class extends Migration
         Schema::create('settings', function (Blueprint $table) {
             $table->id();
             $table->decimal('tva_rate', 5, 2)->default(19.0);
+            $table->decimal('tva_reduced_rate', 5, 2)->default(7.0);
             $table->decimal('rs_rate', 5, 2)->default(3.0);
             $table->decimal('tf_rate', 5, 2)->default(1.0);
             $table->string('site_name')->default('Fido');

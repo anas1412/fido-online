@@ -8,6 +8,7 @@ class Setting extends Model
 {
     protected $fillable = [
         'tva_rate',
+        'tva_reduced_rate',
         'rs_rate',
         'tf_rate',
         'site_name',
