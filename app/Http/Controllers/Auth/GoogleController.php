@@ -25,7 +25,12 @@ class GoogleController extends Controller
             \Log::info('Handling Google callback.');
 
             $googleUser = Socialite::driver('google')->user();
-            \Log::info('Google user retrieved:', ['user' => $googleUser->getName()]);
+            \Log::info('Google user retrieved:', [
+                'id' => $googleUser->getId(),
+                'name' => $googleUser->getName(),
+                'email' => $googleUser->getEmail(),
+                'avatar' => $googleUser->getAvatar(),
+            ]);
 
             // Find a user by their google_id, or create a new one
             $user = User::updateOrCreate(
@@ -35,10 +40,10 @@ class GoogleController extends Controller
                     'email' => $googleUser->getEmail(),
                 ]
             );
-            \Log::info('User created or updated:', ['user_id' => $user->id]);
+            \Log::info('User created or updated:', ['user_id' => $user->id, 'user_email' => $user->email, 'google_id' => $user->google_id]);
 
             Auth::login($user);
-            \Log::info('User logged in:', ['user_id' => $user->id]);
+            \Log::info('User logged in:', ['user_id' => $user->id, 'auth_check' => Auth::check(), 'auth_id' => Auth::id()]);
 
             // Check for invite code in session
             if (session()->has('invite_code')) {

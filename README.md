@@ -51,7 +51,7 @@ To get Fido Online up and running on your local machine, follow these steps:
 
 1.  **Clone the repository:**
     ```bash
-    git clone <repository_url>
+    git clone https://github.com/anas1412/fido-online.git
     cd fido-online
     ```
 
@@ -75,18 +75,65 @@ To get Fido Online up and running on your local machine, follow these steps:
     php artisan key:generate
     ```
 
-6.  **Configure your database:**
-    Edit the `.env` file and set your MySQL database credentials.
+6.  **Create Database:**
+    Create a MySQL database named `fido_db`.
 
-7.  **Run database migrations:**
+7.  **Configure your database:**
+    Edit the `.env` file and set your MySQL database credentials, ensuring `DB_DATABASE=fido_db`.
+
+8.  **Run database migrations:**
     ```bash
     php artisan migrate
     ```
 
-8.  **Set up Google OAuth:**
+9.  **Set up Google OAuth:**
     *   Create a Google OAuth client ID and secret in the Google API Console.
     *   Add `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` to your `.env` file.
     *   Ensure your Google OAuth redirect URI is correctly configured to `YOUR_APP_URL/oauth/google/callback`.
+
+### PHP Configuration
+
+This section outlines necessary `php.ini` modifications, especially for Google OAuth and local development environments like Laragon.
+
+#### 1. Enable ZIP Extension
+
+Uncomment or add the following line in your `php.ini` file. This extension is often required by Composer to manage packages, including the Google API client.
+
+```ini
+extension=zip
+```
+
+#### 2. Set cURL / OpenSSL Certificate Path
+
+These settings are crucial for PHP's cURL extension to verify SSL certificates when making secure API calls. This step resolves common "SSL certificate problem: unable to get local issuer certificate" errors.
+
+```ini
+curl.cainfo = "C:\laragon\etc\ssl\cacert.pem"
+openssl.cafile = "C:\laragon\etc\ssl\cacert.pem"
+```
+
+#### 3. Optional Performance / Optimization
+
+These settings are not strictly required for Google OAuth but are highly recommended for a faster development experience by enabling and configuring PHP's Opcache.
+
+```ini
+memory_limit = 512M
+opcache.enable = 1
+opcache.enable_cli = 1
+opcache.memory_consumption = 256
+opcache.interned_strings_buffer = 16
+opcache.max_accelerated_files = 20000
+opcache.validate_timestamps = 0
+opcache.save_comments = 1
+realpath_cache_size = 4096k
+realpath_cache_ttl = 600
+```
+
+#### Important Notes
+
+*   **Restart Laragon:** You must **restart** the Laragon services (or the entire application) for these `php.ini` changes to take effect.
+*   **Verify Paths:** Ensure the path `C:\laragon\` matches your actual Laragon installation directory.
+*   **Download Certificate:** If the `cacert.pem` file is missing from the `C:\laragon\etc\ssl\` directory, you can download it from the official cURL website: [https://curl.se/ca/cacert.pem](https://curl.se/ca/cacert.pem)
 
 9.  **Serve the application:**
     ```bash
