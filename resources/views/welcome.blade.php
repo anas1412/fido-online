@@ -54,7 +54,8 @@
             <!-- Logo Container -->
             <div class="flex lg:flex-1">
                 <a href="/" class="-m-1.5 p-1.5 flex items-center gap-x-2">
-                    <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-8 w-auto">
+                    <!-- Make sure logo exists or use text fallback -->
+                    <img src="{{ asset('images/logo.png') }}" alt="Fido Logo" class="h-8 w-auto">
                     <span class="font-bold text-xl text-slate-900 tracking-tight">{{ config('app.name', 'Fido') }}</span>
                 </a>
             </div>
@@ -341,7 +342,6 @@
                                     <span class="text-5xl font-bold tracking-tight text-white">290</span>
                                     <span class="text-sm font-semibold leading-6 tracking-wide text-brand-100">TND</span>
                                 </p>
-                                <!-- <a href="{{ url('/dashboard/login') }}" class="mt-10 block w-full rounded-md bg-white px-3 py-2 text-center text-sm font-semibold text-brand-600 shadow-sm hover:bg-brand-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-all">Passer à l'illimité</a> -->
                                 <div class="mt-10 block w-full rounded-md bg-white/60 px-3 py-2 text-center text-sm font-semibold text-brand-800 shadow-sm cursor-not-allowed select-none">
                                     Bientôt disponible
                                 </div>
@@ -353,16 +353,18 @@
             </div>
         </div>
         
-        <!-- Trust / Security Section -->
-        <div id="security" class="bg-dark-900 py-24 sm:py-32">
-            <div class="mx-auto max-w-7xl px-6 lg:px-8">
+        <!-- Trust / Security Section (UPDATED & FIXED) -->
+        <div id="security" class="bg-dark-900 py-24 sm:py-32 relative isolate overflow-hidden">
+            <div class="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
                 <div class="grid grid-cols-1 gap-x-8 gap-y-16 sm:gap-y-20 lg:grid-cols-2 lg:items-center">
+                    
+                    <!-- Left Column: Text Content -->
                     <div class="px-6 lg:px-0 lg:pr-4 lg:pt-4">
                         <div class="mx-auto max-w-2xl lg:mx-0 lg:max-w-lg">
                             <h2 class="text-base font-semibold leading-7 text-brand-500">Sécurité avant tout</h2>
                             <p class="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">Vos données sont protégées</p>
                             <p class="mt-6 text-lg leading-8 text-slate-300">
-                                Nous comprenons l'importance de vos données financières. C'est pourquoi Fido utilise les standards de sécurité les plus élevés.
+                                Nous comprenons l'importance de vos données financières. C'est pourquoi Fido utilise une architecture isolée et sécurisée pour chaque organisation.
                             </p>
                             <dl class="mt-10 max-w-xl space-y-8 text-base leading-7 text-slate-300 lg:max-w-none">
                                 <div class="relative pl-9">
@@ -372,7 +374,7 @@
                                         </svg>
                                         Chiffrement SSL.
                                     </dt>
-                                    <dd class="inline">Toutes les communications sont chiffrées de bout en bout.</dd>
+                                    <dd class="inline">Toutes les communications sont chiffrées de bout en bout via HTTPS.</dd>
                                 </div>
                                 <div class="relative pl-9">
                                     <dt class="inline font-semibold text-white">
@@ -383,38 +385,175 @@
                                     </dt>
                                     <dd class="inline">Vos données sont sauvegardées automatiquement pour éviter toute perte.</dd>
                                 </div>
+                                <div class="relative pl-9">
+                                    <dt class="inline font-semibold text-white">
+                                        <svg class="absolute left-1 top-1 h-5 w-5 text-brand-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                            <path d="M10 8a3 3 0 100-6 3 3 0 000 6zM3.465 14.493a1.23 1.23 0 00.41 1.412A9.957 9.957 0 0010 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 00-13.074.003z" />
+                                        </svg>
+                                        Accès cloisonné.
+                                    </dt>
+                                    <dd class="inline">Séparation stricte entre les organisations pour une confidentialité totale.</dd>
+                                </div>
                             </dl>
                         </div>
                     </div>
+
+                    <!-- Right Column: Graphic Container -->
                     <div class="sm:px-6 lg:px-0">
-                        <!-- Abstract graphic for Security -->
-                        <div class="relative isolate overflow-hidden bg-brand-500 px-6 pt-8 sm:mx-auto sm:max-w-2xl sm:rounded-3xl sm:pl-16 sm:pr-0 sm:pt-16 lg:mx-0 lg:max-w-none">
+                        <div class="relative isolate overflow-hidden bg-brand-500 px-6 pt-8 sm:mx-auto sm:max-w-2xl sm:rounded-3xl sm:pl-16 sm:pr-0 sm:pt-16 lg:mx-0 lg:max-w-none min-h-[500px] flex items-center justify-center">
+                            
+                            <!-- Background Abstract Effects -->
                             <div class="absolute -inset-y-px -left-3 -z-10 w-full origin-bottom-left skew-x-[-30deg] bg-brand-100 opacity-20 ring-1 ring-inset ring-white" aria-hidden="true"></div>
-                            <div class="mx-auto max-w-2xl sm:mx-0 sm:max-w-none">
-                                <div class="w-screen overflow-hidden rounded-tl-xl bg-dark-800 ring-1 ring-white/10">
-                                    <div class="flex bg-dark-900/40 ring-1 ring-white/5">
-                                        <div class="-mb-px flex text-sm font-medium leading-6 text-slate-400">
-                                            <div class="border-b border-r border-b-white/20 border-r-white/10 bg-white/5 px-4 py-2 text-white">Notification.php</div>
-                                            <div class="border-r border-slate-600/10 px-4 py-2">Security.php</div>
+                            <div class="absolute inset-0 -z-10 bg-[radial-gradient(#ffffff33_1px,transparent_1px)] [background-size:16px_16px] opacity-20"></div>
+
+                            <!-- Main Visual: Technical Security Status -->
+                            <div class="mx-auto max-w-2xl sm:mx-0 sm:max-w-none w-full relative z-10">
+                                
+                                <!-- The Main Card -->
+                                <div class="bg-white rounded-2xl shadow-2xl ring-1 ring-gray-900/10 overflow-hidden">
+                                    
+                                    <!-- Card Header: Live Status -->
+                                    <div class="border-b border-slate-100 bg-slate-50 p-4 flex items-center justify-between">
+                                        <div class="flex items-center gap-2">
+                                            <span class="relative flex h-3 w-3">
+                                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                            <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                                            </span>
+                                            <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">État du système</span>
+                                        </div>
+                                        <div class="flex gap-1">
+                                            <div class="h-2 w-2 rounded-full bg-slate-300"></div>
+                                            <div class="h-2 w-2 rounded-full bg-slate-300"></div>
                                         </div>
                                     </div>
-                                    <div class="px-6 pb-14 pt-6 text-slate-300 font-mono text-xs leading-5">
-                                        <span class="text-brand-500">use</span> Illuminate\Support\Facades\Crypt;<br><br>
-                                        <span class="text-brand-500">class</span> <span class="text-white">SecureVault</span> {<br>
-                                        &nbsp;&nbsp;<span class="text-brand-500">public function</span> <span class="text-white">store</span>($data) {<br>
-                                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-slate-500">// Chiffrement AES-256</span><br>
-                                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-brand-500">return</span> Crypt::encryptString($data);<br>
-                                        &nbsp;&nbsp;}<br>
-                                        }
+
+                                    <!-- Card Body: Honest Features -->
+                                    <div class="p-6 space-y-5">
+                                        
+                                        <!-- Hero Status -->
+                                        <div class="flex items-center gap-4 mb-6">
+                                            <div class="h-12 w-12 rounded-full bg-brand-50 text-brand-600 flex items-center justify-center border border-brand-100">
+                                                <!-- Shield Icon -->
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <h3 class="text-lg font-bold text-slate-900">Protection Active</h3>
+                                                <p class="text-xs text-slate-500">Vos données sont privées et sécurisées.</p>
+                                            </div>
+                                        </div>
+
+                                        <!-- Security Features List -->
+                                        <div class="space-y-3">
+                                            
+                                            <!-- Item 1: Connection Security -->
+                                            <div class="flex items-start gap-3 p-3 rounded-lg bg-slate-50 border border-slate-100">
+                                                <div class="mt-0.5 text-brand-600">
+                                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>
+                                                </div>
+                                                <div>
+                                                    <p class="text-sm font-bold text-slate-800">Connexion HTTPS / SSL</p>
+                                                    <p class="text-xs text-slate-500 mt-0.5">Toutes les communications sont cryptées.</p>
+                                                </div>
+                                            </div>
+
+                                            <!-- Item 2: Isolation -->
+                                            <div class="flex items-start gap-3 p-3 rounded-lg bg-slate-50 border border-slate-100">
+                                                <div class="mt-0.5 text-brand-600">
+                                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" /></svg>
+                                                </div>
+                                                <div>
+                                                    <p class="text-sm font-bold text-slate-800">Isolation des données</p>
+                                                    <p class="text-xs text-slate-500 mt-0.5">Informations strictement cloisonnées.</p>
+                                                </div>
+                                            </div>
+
+                                            <!-- Item 3: Backups -->
+                                            <div class="flex items-start gap-3 p-3 rounded-lg bg-slate-50 border border-slate-100">
+                                                <div class="mt-0.5 text-brand-600">
+                                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" /></svg>
+                                                </div>
+                                                <div>
+                                                    <p class="text-sm font-bold text-slate-800">Sauvegardes Régulières</p>
+                                                    <p class="text-xs text-slate-500 mt-0.5">Vos données sont sauvegardées auto.</p>
+                                                </div>
+                                            </div>
+
+                                        </div>
                                     </div>
                                 </div>
+                                
+                                <!-- Floating Badge 1: Auth -->
+                                <div class="absolute -top-4 -right-4 bg-dark-900 rounded-lg p-3 shadow-xl border border-slate-700 flex items-center gap-3 transform rotate-3">
+                                    <div class="bg-slate-700 p-1.5 rounded text-white">
+                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <div class="text-[10px] text-slate-400 leading-tight">Identification</div>
+                                        <div class="text-xs font-bold text-white">Accès Sécurisé</div>
+                                    </div>
+                                </div>
+
+                                <!-- Floating Badge 2: Uptime -->
+                                <div class="absolute -bottom-5 -left-4 bg-white rounded-lg p-3 shadow-xl ring-1 ring-slate-200 flex items-center gap-3 transform -rotate-2">
+                                    <div class="bg-green-100 p-1.5 rounded text-green-600">
+                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <div class="text-[10px] text-slate-500 leading-tight">Disponibilité</div>
+                                        <div class="text-xs font-bold text-slate-900">99.9% Uptime</div>
+                                    </div>
+                                </div>
+
                             </div>
-                            <div class="pointer-events-none absolute inset-0 ring-1 ring-inset ring-black/10 sm:rounded-3xl" aria-hidden="true"></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- Call to Action (CTA) Section (ADDED) -->
+        <div class="bg-brand-600 relative isolate overflow-hidden">
+            <div class="px-6 py-24 sm:px-6 sm:py-32 lg:px-8">
+                <div class="mx-auto max-w-2xl text-center relative z-10">
+                    <h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+                        Prêt à transformer votre gestion ?<br>
+                        Commencez dès aujourd'hui.
+                    </h2>
+                    <p class="mx-auto mt-6 max-w-xl text-lg leading-8 text-brand-100">
+                        Rejoignez les entreprises qui font confiance à Fido pour simplifier leur comptabilité et leur gestion quotidienne.
+                    </p>
+                    <div class="mt-10 flex items-center justify-center gap-x-6">
+                        @auth
+                            <a href="{{ url('/dashboard') }}" class="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-brand-600 shadow-sm hover:bg-brand-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-all">
+                                Accéder à mon espace
+                            </a>
+                        @else
+                            <a href="{{ url('/dashboard/login') }}" class="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-brand-600 shadow-sm hover:bg-brand-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-all">
+                                Commencer gratuitement
+                            </a>
+                            <a href="#contact" class="text-sm font-semibold leading-6 text-white">Contactez-nous <span aria-hidden="true">→</span></a>
+                        @endauth
+                    </div>
+                </div>
+                <!-- Decorative background effect for CTA -->
+                <svg viewBox="0 0 1024 1024" class="absolute left-1/2 top-1/2 -z-10 h-[64rem] w-[64rem] -translate-x-1/2 [mask-image:radial-gradient(closest-side,white,transparent)]" aria-hidden="true">
+                    <circle cx="512" cy="512" r="512" fill="url(#827591b1-ce8c-4110-b064-7cb85a0b1217)" fill-opacity="0.7" />
+                    <defs>
+                    <radialGradient id="827591b1-ce8c-4110-b064-7cb85a0b1217">
+                        <stop stop-color="#ffffff" />
+                        <stop offset="1" stop-color="#6fbf44" />
+                    </radialGradient>
+                    </defs>
+                </svg>
+            </div>
+        </div>
+        
     </main>
 
     <!-- Footer -->
