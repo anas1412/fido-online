@@ -48,35 +48,35 @@ class Settings extends Page implements HasForms
             ->components([
                 // In Filament 4, we wrap fields in a Form component
                 Form::make([
-                    Section::make('Site Settings')
+                    Section::make('Paramètres du site')
                         ->schema([
                             TextInput::make('site_name')
-                                ->label('Site Name')
+                                ->label('Nom du site')
                                 ->required(),
 
                             TextInput::make('support_email')
-                                ->label('Support Email')
+                                ->label('Email de l\'assistance')
                                 ->email()
                                 ->required(),
 
                             TextInput::make('support_phone')
-                                ->label('Support Phone')
+                                ->label('Téléphone de l\'assistance')
                                 ->required(),
 
                             TextInput::make('tva_rate')
-                                ->label('TVA Rate')
+                                ->label('Taux de TVA')
                                 ->numeric()
                                 ->step(0.01)
                                 ->required(),
 
                             TextInput::make('rs_rate')
-                                ->label('RS Rate')
+                                ->label('Taux de RS')
                                 ->numeric()
                                 ->step(0.01)
                                 ->required(),
 
                             TextInput::make('tf_rate')
-                                ->label('TF Rate')
+                                ->label('Taux de TF')
                                 ->numeric()
                                 ->step(0.01)
                                 ->required(),
@@ -123,7 +123,5 @@ class Settings extends Page implements HasForms
     {
         return auth()->user()?->is_admin ?? false;
     }
-    
-    // In Filament 4 Singular Resources, we don't typically use getHeaderActions() 
-    // or getFormActions() for the main save button anymore; it's in the Form footer.
+
 }
