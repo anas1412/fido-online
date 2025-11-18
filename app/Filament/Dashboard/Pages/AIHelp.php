@@ -7,17 +7,19 @@ use Filament\Support\Icons\Heroicon;
 use BackedEnum;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Concerns\InteractsWithForms;
-use Filament\Forms\Form;
 use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
+use Filament\Actions\Action; 
 use Illuminate\Support\Facades\Http;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Str;
 use Exception;
 
 class AIHelp extends Page implements HasForms
 {
     use InteractsWithForms;
 
+    // --- ORIGINAL DECLARATIONS (KEPT EXACTLY AS REQUESTED) ---
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedChatBubbleBottomCenterText;
 
     protected static ?string $pluralModelLabel = 'Assistance IA';
@@ -31,8 +33,7 @@ class AIHelp extends Page implements HasForms
     public ?string $response = null;
     public array $chatHistory = [];
 
-    // Instructions for Fido's expertise
-    private string $fidoInstructions = "Vous êtes Fido, un assistant IA expert en comptabilité. Répondez de manière concise, claire et professionnelle.";
+    private string $fidoInstructions = "Vous êtes Fido, un assistant IA expert en comptabilité. Répondez de manière concise, claire et professionnelle. Utilisez le Markdown.";
 
     public function mount(): void
     {
@@ -42,15 +43,17 @@ class AIHelp extends Page implements HasForms
 
     private function initializeChat(): void
     {
+        if (!empty($this->chatHistory)) return;
+
         $userName = auth()->user()?->name ?? 'Utilisateur';
 
-        // Initial greeting is clean; instructions are NOT displayed
         $this->chatHistory = [
             [
                 'role' => 'model',
                 'parts' => [[
-                    'text' => "Bonjour {$userName}, je suis Fido, votre assistant expert en comptabilité. Comment puis-je vous aider aujourd'hui ?"
+                    'text' => "Bonjour **{$userName}**, je suis Fido. Comment puis-je vous aider aujourd'hui ?"
                 ]],
+                'timestamp' => now(),
             ],
         ];
     }
@@ -60,10 +63,12 @@ class AIHelp extends Page implements HasForms
         return $form
             ->schema([
                 Textarea::make('prompt')
-                    ->label('Votre Requête')
-                    ->placeholder("Entrez votre question ou requête pour Fido...")
-                    ->rows(5)
-                    ->required(),
+                    ->hiddenLabel() // UX: Hide label to look like a chat app
+                    ->placeholder("Entrez votre question... (Maj+Entrée pour une nouvelle ligne)")
+                    ->rows(1)
+                    ->autosize() // UX: Auto-grow the textarea
+                    ->required()
+                    ->extraAttributes(['class' => 'resize-none']),
             ])
             ->statePath('data');
     }
@@ -73,26 +78,22 @@ class AIHelp extends Page implements HasForms
         $data = $this->form->getState();
         $prompt = $data['prompt'] ?? null;
 
-        if (blank($prompt)) {
-            Notification::make()
-                ->title('Requête vide')
-                ->body('Veuillez entrer une question avant de soumettre.')
-                ->danger()
-                ->send();
-            return;
-        }
+        if (blank($prompt)) return;
 
-        $this->response = null;
+        // Add User Message
+        $this->chatHistory[] = [
+            'role' => 'user', 
+            'parts' => [['text' => $prompt]],
+            'timestamp' => now()
+        ];
 
-        $this->chatHistory[] = ['role' => 'user', 'parts' => [['text' => $prompt]]];
+        // UX: Clear input immediately
+        $this->form->fill(['prompt' => '']); 
+        $this->dispatch('scroll-to-bottom');
 
         $apiKey = env('GEMINI_API_KEY');
         if (!$apiKey) {
-            Notification::make()
-                ->title('Clé API manquante')
-                ->body('Définissez GEMINI_API_KEY dans votre fichier .env.')
-                ->danger()
-                ->send();
+            Notification::make()->title('Clé API manquante')->danger()->send();
             return;
         }
 
@@ -100,73 +101,76 @@ class AIHelp extends Page implements HasForms
             $aiResponse = $this->getGeminiResponse($apiKey, $prompt);
 
             if ($aiResponse) {
-                $this->chatHistory[] = ['role' => 'model', 'parts' => [['text' => $aiResponse]]];
+                $this->chatHistory[] = [
+                    'role' => 'model', 
+                    'parts' => [['text' => $aiResponse]],
+                    'timestamp' => now()
+                ];
                 $this->response = $aiResponse;
-                // Dispatch scroll event
                 $this->dispatch('scroll-to-bottom');
             } else {
-                Notification::make()
-                    ->title('Erreur')
-                    ->body('Aucune réponse valide reçue du modèle.')
-                    ->danger()
-                    ->send();
+                Notification::make()->title('Erreur')->body('Aucune réponse.')->danger()->send();
             }
 
         } catch (\Exception $e) {
-            Notification::make()
-                ->title('Erreur')
-                ->body('Une erreur est survenue : ' . $e->getMessage())
-                ->danger()
-                ->send();
+            Notification::make()->title('Erreur')->body($e->getMessage())->danger()->send();
         }
     }
 
-
-    /**
-     * Prepend Fido instructions only to the latest user input
-     */
     private function getGeminiResponse(string $apiKey, string $latestUserPrompt): ?string
     {
         $contents = [];
 
+        // Simplified context builder
         foreach ($this->chatHistory as $turn) {
+            // Skip the very last user message we just added locally, we will reconstruct it with instructions
             if ($turn['role'] === 'user' && $turn['parts'][0]['text'] === $latestUserPrompt) {
-                $contents[] = [
-                    'role' => 'user',
-                    'parts' => [[
-                        'text' => $this->fidoInstructions . "\n" . $latestUserPrompt
-                    ]],
-                ];
-            } elseif ($turn['role'] === 'user' || $turn['role'] === 'model') {
-                $contents[] = $turn; // previous messages sent as-is
+                continue;
             }
+            // Send previous history for context (filtering out timestamps)
+            $contents[] = [
+                'role' => $turn['role'],
+                'parts' => $turn['parts']
+            ];
         }
 
+        // Append current prompt with instructions
+        $contents[] = [
+            'role' => 'user',
+            'parts' => [['text' => $this->fidoInstructions . "\n" . $latestUserPrompt]]
+        ];
+
         $response = Http::post(
-            "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key={$apiKey}",
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={$apiKey}",
             ['contents' => $contents]
         );
 
         if (!$response->successful()) {
-            \Log::error('Gemini API error: ' . $response->body());
+            \Log::error('Gemini Error: ' . $response->body());
             return null;
         }
 
-        $data = $response->json();
-
-        return $data['candidates'][0]['content']['parts'][0]['text'] ?? null;
+        return $response->json()['candidates'][0]['content']['parts'][0]['text'] ?? null;
     }
 
     public function clearConversation(): void
     {
+        $this->chatHistory = [];
         $this->initializeChat();
         $this->response = null;
-        $this->prompt = '';
-        $this->form->fill();
+        Notification::make()->title('Conversation réinitialisée')->success()->send();
     }
 
+    // UX: Move the clear button to the header to clean up the input area
     protected function getHeaderActions(): array
     {
-        return [];
+        return [
+            Action::make('clear')
+                ->label('Effacer la conversation')
+                ->color('gray')
+                ->icon('heroicon-m-trash')
+                ->action('clearConversation')
+                ->requiresConfirmation(),
+        ];
     }
 }
