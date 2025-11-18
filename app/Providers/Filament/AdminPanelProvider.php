@@ -25,7 +25,7 @@ use Filament\Actions\Action;
 use MartinPetricko\FilamentSentryFeedback\SentryUser;
 use Filament\Navigation\NavigationItem;
 use App\Http\Middleware\EnsureUserIsAdmin;
-/* use Filament\Pages\ManageSettings; */
+use App\Filament\Pages\Settings;
 
 
 class AdminPanelProvider extends PanelProvider
@@ -80,7 +80,7 @@ class AdminPanelProvider extends PanelProvider
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
                 Dashboard::class,
-                /* ManageSettings::class, */
+                Settings::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
