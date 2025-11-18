@@ -89,9 +89,8 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->navigationItems([
                 NavigationItem::make('Paramètres')
-                    /* ->url(fn (): string => \App\Filament\Resources\Settings\SettingResource::getUrl()) */
-                    ->icon('heroicon-o-cog-6-tooth')
-                    ->sort(3),
+                    ->url(fn (): string => \App\Filament\Pages\Settings::getUrl())
+                    ->icon('heroicon-o-cog-6-tooth'),
             ])
             /* ->plugins([
                 \MartinPetricko\FilamentSentryFeedback\FilamentSentryFeedbackPlugin::make()

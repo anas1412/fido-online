@@ -27,7 +27,8 @@ class Settings extends Page implements HasForms
     
     protected static ?string $slug = 'settings';
     protected static ?string $title = 'Paramètres du site';
-    protected static ?string $navigationLabel = 'Paramètres';
+    protected static ?string $navigationLabel = 'Paramètres Globals';
+
     
     // Use the simple view provided by Filament 4 logic
     protected string $view = 'filament.pages.settings';
