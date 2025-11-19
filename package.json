@@ -2,6 +2,10 @@
     "$schema": "https://json.schemastore.org/package.json",
     "private": true,
     "type": "module",
+    "name": "fido",
+    "version": "0.1.0",
+    "description": "Fido: Automating Accounting with Ease",
+    "author": "anas1412",
     "scripts": {
         "build": "vite build",
         "dev": "vite"

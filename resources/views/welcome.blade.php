@@ -420,7 +420,7 @@
                 <div class="mx-auto mt-16 max-w-2xl rounded-3xl ring-1 ring-slate-200 sm:mt-20 lg:mx-0 lg:flex lg:max-w-none">
                     <!-- Free Plan -->
                     <div class="p-8 sm:p-10 lg:flex-auto">
-                        <h3 class="text-2xl font-bold tracking-tight text-slate-900">Gratuit / Découverte</h3>
+                        <h3 class="text-2xl font-bold tracking-tight text-slate-900">Gratuit / Découverte pour membres et indépendants.</h3>
                         <p class="mt-6 text-base leading-7 text-slate-600">Idéal pour découvrir la puissance de l'IA Fido.</p>
                         <div class="mt-10 flex items-center gap-x-4">
                             <h4 class="flex-none text-sm font-semibold leading-6 text-brand-600">Inclus dans l'offre</h4>
@@ -433,17 +433,17 @@
                             </li>
                             <li class="flex gap-x-3">
                                 <svg class="h-6 w-5 flex-none text-brand-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>
-                                3 Organisations (1 Propriétaire)
+                                Gestion basic sans membres
                             </li>
                             <li class="flex gap-x-3">
                                 <svg class="h-6 w-5 flex-none text-brand-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>
-                                30 Documents / an
+                                Templates standards de documents
                             </li>
                             <li class="flex gap-x-3">
                                 <svg class="h-6 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M10 8.586L4.293 2.879a1 1 0 10-1.414 1.414L8.586 10l-5.707 5.707a1 1 0 101.414 1.414L10 11.414l5.707 5.707a1 1 0 001.414-1.414L11.414 10l5.707-5.707a1 1 0 00-1.414-1.414L10 8.586z" clip-rule="evenodd"/>
                                 </svg>
-                                Support Prioritaire
+                                Support Standard
                             </li>
                         </ul>
                     </div>
@@ -466,7 +466,7 @@
                 <div class="mx-auto mt-8 max-w-2xl rounded-3xl ring-2 ring-brand-500 bg-slate-50 lg:mx-0 lg:flex lg:max-w-none shadow-xl relative overflow-hidden">
                     <div class="absolute top-0 right-0 bg-brand-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg z-10">RECOMMANDÉ</div>
                     <div class="p-8 sm:p-10 lg:flex-auto">
-                        <h3 class="text-2xl font-bold tracking-tight text-brand-900">Offre Illimitée</h3>
+                        <h3 class="text-2xl font-bold tracking-tight text-brand-900">Offre Illimitée pour organisations</h3>
                         <p class="mt-6 text-base leading-7 text-slate-600">Pour les entreprises qui veulent automatiser leur gestion.</p>
                         <div class="mt-10 flex items-center gap-x-4">
                             <h4 class="flex-none text-sm font-semibold leading-6 text-brand-600">Tout inclus, sans limites</h4>
@@ -479,11 +479,11 @@
                             </li>
                             <li class="flex gap-x-3 font-semibold text-brand-900">
                                 <svg class="h-6 w-5 flex-none text-brand-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>
-                                Organisations illimitées
+                                Gestion complète avec multiples membres
                             </li>
                             <li class="flex gap-x-3 font-semibold text-brand-900">
                                 <svg class="h-6 w-5 flex-none text-brand-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>
-                                Documents illimités
+                                Templates personnalisables de documents
                             </li>
                              <li class="flex gap-x-3 font-semibold text-brand-900">
                                 <svg class="h-6 w-5 flex-none text-brand-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>

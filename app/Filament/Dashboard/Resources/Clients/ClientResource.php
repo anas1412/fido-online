@@ -3,6 +3,7 @@
 namespace App\Filament\Dashboard\Resources\Clients;
 
 use App\Filament\Dashboard\Resources\Clients\RelationManagers\InvoicesRelationManager;
+use App\Filament\Dashboard\Resources\Clients\RelationManagers\HonorairesRelationManager;
 use App\Filament\Dashboard\Resources\Clients\Pages\CreateClient;
 use App\Filament\Dashboard\Resources\Clients\Pages\EditClient;
 use App\Filament\Dashboard\Resources\Clients\Pages\ListClients;
@@ -62,6 +63,7 @@ class ClientResource extends Resource
     {
         return [
             InvoicesRelationManager::class,
+            HonorairesRelationManager::class,
         ];
     }
 

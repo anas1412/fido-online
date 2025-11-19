@@ -123,4 +123,14 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'version' => value(function() {
+        $path = base_path('package.json');
+        if (! file_exists($path)) {
+            return '1.0.0';
+        }
+        $content = file_get_contents($path);
+        $json = json_decode($content, true);
+        return $json['version'] ?? '1.0.0';
+    }),
+
 ];

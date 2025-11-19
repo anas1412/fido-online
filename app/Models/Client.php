@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Invoice;
+use App\Models\Honoraire;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -27,5 +28,10 @@ class Client extends Model
     public function invoices(): HasMany
     {
         return $this->hasMany(Invoice::class);
+    }
+
+    public function honoraires(): HasMany
+    {
+        return $this->hasMany(Honoraire::class);
     }
 }
