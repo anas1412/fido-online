@@ -2,9 +2,11 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\GoogleController;
+use App\Http\Controllers\GeminiStreamController;
 use Illuminate\Support\Facades\Auth;
 use App\Models\TenantInvite;
 use Filament\Facades\Filament;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -67,3 +69,7 @@ Route::post('/invite/{code}/join', function (string $code) {
 Route::view('/about', 'pages.about')->name('about');
 Route::view('/legal', 'pages.legal')->name('legal');
 Route::view('/privacy-policy', 'pages.privacy')->name('privacy-policy');
+
+Route::post('/gemini/stream', GeminiStreamController::class)
+    ->middleware(['web', 'auth'])
+    ->name('gemini.stream'); 
