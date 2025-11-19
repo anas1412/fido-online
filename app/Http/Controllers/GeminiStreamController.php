@@ -15,14 +15,25 @@ class GeminiStreamController extends Controller
         $user = auth()->user();
         if (!$user) abort(403);
         
-        $apiKey = env('GEMINI_API_KEY');
-        if (!$apiKey) abort(500, 'API Key missing');
+        $apiKey = config('services.gemini.api_key');
+        if (!$apiKey) {
+            Log::error('AI STREAM ERROR: API Key missing in .env'); // LOG ADDED
+            abort(500, 'API Key missing');
+        }
 
-        // 2. Get Model from ENV (Defaults to gemini-2.5-flash)
-        $model = env('GEMINI_MODEL', 'gemini-2.5-flash');
+        // 2. Get Model
+        $model = config('services.gemini.model');
 
         $history = $request->input('history', []);
         $prompt = $request->input('prompt');
+        
+        // LOG ADDED: Request Context
+        Log::info('AI STREAM START', [
+            'user_id' => $user->id,
+            'model' => $model,
+            'prompt_len' => strlen($prompt),
+            'history_count' => count($history)
+        ]);
         
         // 3. Retrieve Tenant Explicitly
         $tenantId = $request->input('tenant_id');
@@ -44,7 +55,6 @@ class GeminiStreamController extends Controller
         Log::info('AI STREAM: Tenant Resolved', [
             'tenant_id' => $tenant ? $tenant->id : 'STILL NULL', 
             'name' => $tenant ? $tenant->name : 'N/A',
-            'model' => $model
         ]);
 
         // 4. Get Data
@@ -74,45 +84,69 @@ class GeminiStreamController extends Controller
         // 7. Stream Response
         return response()->stream(function () use ($apiKey, $systemInstruction, $contents, $model) {
             
-            // Dynamic URL based on the model variable
+            // Dynamic URL
             $url = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:streamGenerateContent?alt=sse&key={$apiKey}";
             
-            $response = Http::withHeaders(['Content-Type' => 'application/json'])
-                ->withOptions(['stream' => true])
-                ->post($url, [
-                    'system_instruction' => ['parts' => [['text' => $systemInstruction]]],
-                    'contents' => $contents
-                ]);
+            // LOG ADDED: Connection Attempt
+            Log::info("AI STREAM: Connecting to Google...", ['url' => $url]);
 
-            $body = $response->getBody();
-            $buffer = '';
+            try {
+                $response = Http::withHeaders(['Content-Type' => 'application/json'])
+                    ->withOptions([
+                        'stream' => true,
+                        'verify' => false // Useful if local SSL is acting up
+                    ])
+                    ->post($url, [
+                        'system_instruction' => ['parts' => [['text' => $systemInstruction]]],
+                        'contents' => $contents
+                    ]);
 
-            while (!$body->eof()) {
-                $chunk = $body->read(1024);
-                $buffer .= $chunk;
+                // LOG ADDED: Check Response Status
+                if ($response->failed()) {
+                    Log::error('AI STREAM: Google API Error Response', [
+                        'status' => $response->status(),
+                        'body' => $response->body() // This will tell you EXACTLY why it failed (e.g. Invalid Model)
+                    ]);
+                } else {
+                    Log::info('AI STREAM: Connection Established (200 OK)');
+                }
 
-                while (($newlinePos = strpos($buffer, "\n")) !== false) {
-                    $line = substr($buffer, 0, $newlinePos);
-                    $buffer = substr($buffer, $newlinePos + 1);
+                $body = $response->getBody();
+                $buffer = '';
 
-                    $line = trim($line);
-                    if (str_starts_with($line, 'data: ')) {
-                        $jsonStr = substr($line, 6);
-                        if ($jsonStr === '[DONE]') continue;
-                        
-                        $data = json_decode($jsonStr, true);
-                        if (isset($data['candidates'][0]['content']['parts'][0]['text'])) {
-                            $text = $data['candidates'][0]['content']['parts'][0]['text'];
-                            echo "data: " . json_encode(['text' => $text]) . "\n\n";
-                            if (ob_get_level() > 0) ob_flush();
-                            flush();
+                while (!$body->eof()) {
+                    $chunk = $body->read(1024);
+                    $buffer .= $chunk;
+
+                    while (($newlinePos = strpos($buffer, "\n")) !== false) {
+                        $line = substr($buffer, 0, $newlinePos);
+                        $buffer = substr($buffer, $newlinePos + 1);
+
+                        $line = trim($line);
+                        if (str_starts_with($line, 'data: ')) {
+                            $jsonStr = substr($line, 6);
+                            if ($jsonStr === '[DONE]') continue;
+                            
+                            $data = json_decode($jsonStr, true);
+                            if (isset($data['candidates'][0]['content']['parts'][0]['text'])) {
+                                $text = $data['candidates'][0]['content']['parts'][0]['text'];
+                                echo "data: " . json_encode(['text' => $text]) . "\n\n";
+                                if (ob_get_level() > 0) ob_flush();
+                                flush();
+                            }
                         }
                     }
                 }
+                echo "event: stop\ndata: stopped\n\n";
+                if (ob_get_level() > 0) ob_flush();
+                flush();
+
+            } catch (\Exception $e) {
+                // LOG ADDED: Catch Crashes inside the stream
+                Log::error("AI STREAM CRITICAL EXCEPTION: " . $e->getMessage());
+                echo "data: " . json_encode(['text' => "Error: " . $e->getMessage()]) . "\n\n";
+                flush();
             }
-            echo "event: stop\ndata: stopped\n\n";
-            if (ob_get_level() > 0) ob_flush();
-            flush();
 
         }, 200, [
             'Content-Type' => 'text/event-stream',
