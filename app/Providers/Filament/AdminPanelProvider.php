@@ -35,7 +35,7 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             ->id('admin')
             ->path('admin')
-            ->login()
+            /* ->login() */
             /* ->profile() */
             ->topNavigation()
             /* ->userMenu(position: UserMenuPosition::Sidebar) */

@@ -73,3 +73,6 @@ Route::view('/privacy-policy', 'pages.privacy')->name('privacy-policy');
 Route::post('/gemini/stream', GeminiStreamController::class)
     ->middleware(['web', 'auth'])
     ->name('gemini.stream'); 
+
+Route::get('/logs', [App\Http\Controllers\LogViewerController::class, 'index'])
+    ->middleware(['auth', 'admin']);
