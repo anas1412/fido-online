@@ -45,8 +45,7 @@
     </style>
 </head>
 
-<!-- 1. MOVED x-data HERE so both Header and Menu can access it -->
-<body x-data="{ mobileMenuOpen: false }" class="bg-slate-50 font-sans text-slate-600 antialiased selection:bg-brand-500 selection:text-white">
+<body x-data="{ mobileMenuOpen: false }" class="bg-slate-50 font-sans text-slate-600 antialiased selection:bg-brand-500 selection:text-white overflow-x-hidden">
 
     <!-- Navbar -->
     <header class="fixed top-0 z-40 w-full bg-white/90 backdrop-blur-md border-b border-slate-200">
@@ -55,7 +54,8 @@
             <!-- Logo Container -->
             <div class="flex lg:flex-1">
                 <a href="/" class="-m-1.5 p-1.5 flex items-center gap-x-2">
-                    <img src="{{ asset('images/logo.png') }}" alt="Fido Logo" class="h-8 w-auto">
+                    <!-- Use your actual logo asset here -->
+                    <img src="{{ asset('images/logo.png') }}" onerror="this.src='https://placehold.co/100x40/6fbf44/ffffff?text=FIDO'" alt="Fido Logo" class="h-8 w-auto">
                     <span class="font-bold text-xl text-slate-900 tracking-tight">{{ config('app.name', 'Fido') }}</span>
                 </a>
             </div>
@@ -83,7 +83,7 @@
 
             <!-- Mobile Menu Button -->
             <div class="flex lg:hidden">
-                <button type="button" @click="mobileMenuOpen = true" class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-slate-700">
+                <button type="button" @click="mobileMenuOpen = true" class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-slate-700 hover:bg-slate-100">
                     <span class="sr-only">Ouvrir le menu</span>
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
@@ -93,10 +93,10 @@
         </nav>
     </header>
 
-    <!-- 2. MOVED MOBILE MENU OUTSIDE THE HEADER so it isn't trapped by backdrop-blur -->
+    <!-- Mobile Menu Overlay -->
     <div x-show="mobileMenuOpen" class="relative z-50 lg:hidden" x-cloak role="dialog" aria-modal="true">
             
-        <!-- Backdrop (Dimmed Background) -->
+        <!-- Backdrop -->
         <div x-show="mobileMenuOpen" 
                 x-transition:enter="transition-opacity ease-linear duration-300"
                 x-transition:enter-start="opacity-0"
@@ -120,10 +120,10 @@
                 
                 <div class="flex items-center justify-between px-6">
                     <a href="#" class="-m-1.5 p-1.5 flex items-center gap-2">
-                            <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-8 w-auto">
-                            <span class="font-bold text-lg text-slate-900">{{ config('app.name', 'Fido') }}</span>
+                        <img src="{{ asset('images/logo.png') }}" onerror="this.src='https://placehold.co/100x40/6fbf44/ffffff?text=FIDO'" alt="Logo" class="h-8 w-auto">
+                        <span class="font-bold text-lg text-slate-900">{{ config('app.name', 'Fido') }}</span>
                     </a>
-                    <button type="button" @click="mobileMenuOpen = false" class="-m-2.5 rounded-md p-2.5 text-slate-700">
+                    <button type="button" @click="mobileMenuOpen = false" class="-m-2.5 rounded-md p-2.5 text-slate-700 hover:bg-slate-100">
                         <span class="sr-only">Fermer</span>
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -154,37 +154,81 @@
 
     <main class="isolate">
         <!-- Hero Section -->
-        <div class="relative pt-14">
+        <div class="relative pt-14 overflow-hidden">
+            <!-- Background Blob 1 -->
             <div class="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80" aria-hidden="true">
                 <div class="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-brand-100 to-brand-600 opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]" style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"></div>
             </div>
 
             <div class="py-24 sm:py-32 lg:pb-40">
                 <div class="mx-auto max-w-7xl px-6 lg:px-8">
-                    <div class="mx-auto max-w-2xl text-center">
-                        <div class="mb-6 flex justify-center">
-                            <div class="relative rounded-full px-3 py-1 text-sm leading-6 text-slate-600 ring-1 ring-slate-900/10 hover:ring-slate-900/20">
-                                Nouveau : Gestion simplifiée des taux de TVA. <a href="#features" class="font-semibold text-brand-600"><span class="absolute inset-0" aria-hidden="true"></span>En savoir plus <span aria-hidden="true">&rarr;</span></a>
+                    
+                    <!-- Grid Layout: Text Left, Image Right -->
+                    <div class="grid grid-cols-1 gap-y-16 gap-x-8 lg:grid-cols-2 lg:items-center">
+                        
+                        <!-- Left Column: Text Content -->
+                        <div class="mx-auto max-w-2xl lg:mx-0 text-center lg:text-left">
+                            <div class="mb-6 flex justify-center lg:justify-start">
+                                <div class="relative rounded-full px-3 py-1 text-sm leading-6 text-slate-600 ring-1 ring-slate-900/10 hover:ring-slate-900/20 bg-white/50 backdrop-blur-sm">
+                                    Nouveau : Gestion simplifiée des taux de TVA. <a href="#features" class="font-semibold text-brand-600"><span class="absolute inset-0" aria-hidden="true"></span>En savoir plus <span aria-hidden="true">&rarr;</span></a>
+                                </div>
+                            </div>
+                            <h1 class="text-4xl font-bold tracking-tight text-slate-900 sm:text-6xl">
+                                Gérez votre entreprise en toute <span class="text-brand-500">sérénité</span>.
+                            </h1>
+                            <p class="mt-6 text-lg leading-8 text-slate-600">
+                                Fido est la solution tout-en-un pour la gestion multi-organisations, la comptabilité et la collaboration. Conçue spécifiquement pour les professionnels tunisiens.
+                            </p>
+                            <div class="mt-10 flex items-center justify-center lg:justify-start gap-x-6">
+                                @auth
+                                    <a href="{{ url('/dashboard') }}" class="rounded-md bg-brand-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-brand-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 transition-all">Accéder à mon espace</a>
+                                @else
+                                    <a href="{{ url('/dashboard/login') }}" class="rounded-md bg-brand-600 px-6 py-3 text-sm font-semibold text-white shadow-xl shadow-brand-500/20 hover:bg-brand-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 transition-all transform hover:-translate-y-1">Commencer maintenant</a>
+                                    <a href="#features" class="text-sm font-semibold leading-6 text-slate-900">En savoir plus <span aria-hidden="true">→</span></a>
+                                @endauth
                             </div>
                         </div>
-                        <h1 class="text-4xl font-bold tracking-tight text-slate-900 sm:text-6xl">
-                            Gérez votre entreprise en toute <span class="text-brand-500">sérénité</span>.
-                        </h1>
-                        <p class="mt-6 text-lg leading-8 text-slate-600">
-                            Fido est la solution tout-en-un pour la gestion multi-organisations, la comptabilité et la collaboration. Conçue spécifiquement pour les professionnels tunisiens.
-                        </p>
-                        <div class="mt-10 flex items-center justify-center gap-x-6">
-                            @auth
-                                <a href="{{ url('/dashboard') }}" class="rounded-md bg-brand-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-brand-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 transition-all">Accéder à mon espace</a>
-                            @else
-                                <a href="{{ url('/dashboard/login') }}" class="rounded-md bg-brand-600 px-6 py-3 text-sm font-semibold text-white shadow-xl shadow-brand-500/20 hover:bg-brand-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 transition-all transform hover:-translate-y-1">Commencer maintenant</a>
-                                <a href="#features" class="text-sm font-semibold leading-6 text-slate-900">En savoir plus <span aria-hidden="true">→</span></a>
-                            @endauth
+
+                        <!-- Right Column: Screenshot / Image -->
+                        <div class="relative mx-auto w-full max-w-lg lg:max-w-none">
+                            <!-- Screenshot Container -->
+                            <div class="relative rounded-xl bg-slate-900/5 p-2 ring-1 ring-inset ring-slate-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 shadow-2xl">
+                                <!-- Placeholder for Browser Top Bar -->
+                                <div class="flex gap-2 mb-2 ml-2 lg:mb-4 lg:ml-1">
+                                    <div class="h-2.5 w-2.5 rounded-full bg-red-400"></div>
+                                    <div class="h-2.5 w-2.5 rounded-full bg-yellow-400"></div>
+                                    <div class="h-2.5 w-2.5 rounded-full bg-green-400"></div>
+                                </div>
+                                
+                                <!-- The Image: Replace src below with your dashboard screenshot -->
+                                <img 
+                                    src="https://placehold.co/1200x800/f8fafc/e2e8f0?text=Interface+Dashboard+Fido" 
+                                    alt="Interface Dashboard Fido" 
+                                    class="w-full rounded-md shadow-sm ring-1 ring-slate-900/10 bg-white"
+                                    width="2432" 
+                                    height="1442"
+                                >
+                                
+                                <!-- Floating Decor Element (Optional) -->
+                                <div class="absolute -bottom-6 -left-6 bg-white p-4 rounded-lg shadow-xl border border-slate-100 hidden sm:block animate-bounce" style="animation-duration: 3s;">
+                                    <div class="flex items-center gap-3">
+                                        <div class="bg-green-100 p-2 rounded-full text-green-600">
+                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                        </div>
+                                        <div>
+                                            <p class="text-xs text-slate-500">État</p>
+                                            <p class="font-bold text-sm text-slate-800">À jour</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
+
                 </div>
             </div>
             
+            <!-- Background Blob 2 -->
             <div class="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]" aria-hidden="true">
                 <div class="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 bg-gradient-to-tr from-[#80caff] to-brand-500 opacity-30 sm:left-[calc(50%+36rem)] sm:w-[72.1875rem]" style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"></div>
             </div>
