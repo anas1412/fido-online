@@ -25,8 +25,8 @@ class AIHelp extends Page implements HasForms
     protected static ?string $pluralModelLabel = 'Assistance IA';
     protected static ?string $navigationLabel = 'Assistance IA';
     protected static ?string $title = 'Assistance IA';
-
-    protected string $view = 'filament.dashboard.pages.a-i-help';
+    protected static ?string $slug = 'assistance-ia';
+    protected string $view = 'filament.dashboard.pages.assistance-ia';
 
     public ?array $data = [];
     public string $prompt = '';

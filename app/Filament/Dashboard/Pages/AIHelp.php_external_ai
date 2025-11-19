@@ -1,0 +1,144 @@
+<?php
+
+namespace App\Filament\Dashboard\Pages;
+
+use Filament\Pages\Page;
+use Filament\Support\Icons\Heroicon;
+use BackedEnum;
+use Filament\Forms\Contracts\HasForms;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Components\Textarea;
+use Filament\Actions\Action;
+use Filament\Schemas\Schema;
+use League\CommonMark\CommonMarkConverter;
+
+class AIHelp extends Page implements HasForms
+{
+    use InteractsWithForms;
+
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedChatBubbleBottomCenterText;
+
+    protected static ?string $pluralModelLabel = 'Assistance IA';
+    protected static ?string $navigationLabel = 'Assistance IA';
+    protected static ?string $title = 'Assistance IA';
+
+    protected string $view = 'filament.dashboard.pages.a-i-help';
+
+    public ?array $data = [];
+    public array $chatHistory = [];
+
+    public string $serviceUrl = '';
+    public string $serviceSecret = '';
+
+    public function mount(): void
+    {
+        $this->initializeChat();
+        $this->form->fill();
+
+        $this->serviceUrl = env('AI_SERVICE_URL', 'http://localhost:3000/stream');
+        $this->serviceSecret = env('AI_SERVICE_SECRET', '');
+    }
+
+    private function initializeChat(): void
+    {
+        if (!empty($this->chatHistory)) return;
+
+        $userName = auth()->user()?->name ?? 'Utilisateur';
+
+        $text = "Bonjour **{$userName}**, je suis Fido. Comment puis-je vous aider aujourd'hui ?";
+
+        $this->chatHistory = [
+            [
+                'role' => 'model',
+                'parts' => [[
+                    'text' => $this->parseMarkdown($this->parseAIResponse($text))
+                ]],
+                'timestamp' => now()->toIso8601String(),
+            ],
+        ];
+    }
+
+    public function form(Schema $form): Schema
+    {
+        return $form
+            ->schema([
+                Textarea::make('prompt')
+                    ->hiddenLabel()
+                    ->placeholder("Entrez votre question... (Maj+Entrée pour une nouvelle ligne)")
+                    ->rows(1)
+                    ->autosize()
+                    ->required()
+                    ->extraAttributes(['class' => 'resize-none']),
+            ])
+            ->statePath('data');
+    }
+
+    public function saveConversation(array $history): void
+    {
+        foreach ($history as &$msg) {
+            if ($msg['role'] === 'model') {
+                $rawText = $msg['parts'][0]['text'];
+
+                // 1️⃣ Parse AI JSON first
+                $cleaned = $this->parseAIResponse($rawText);
+
+                // 2️⃣ Convert Markdown to HTML
+                $msg['parts'][0]['text'] = $this->parseMarkdown($cleaned);
+            }
+        }
+
+        $this->chatHistory = $history;
+    }
+
+    /**
+     * Step 1: Parse AI JSON and clean newlines
+     */
+    protected function parseAIResponse(string $raw): string
+    {
+        // Decode JSON if valid
+        $decoded = json_decode($raw, true);
+        if (json_last_error() === JSON_ERROR_NONE && isset($decoded['response'])) {
+            $text = $decoded['response'];
+        } else {
+            $text = $raw;
+        }
+
+        // Normalize newlines and remove extra spaces
+        $text = str_replace(['\\n', "\r\n", "\r"], "\n", $text);
+        $text = preg_replace("/\n{2,}/", "\n\n", $text);
+        $text = trim($text);
+
+        return $text;
+    }
+
+    /**
+     * Step 2: Convert Markdown to HTML
+     */
+    protected function parseMarkdown(string $markdown): string
+    {
+        $converter = new CommonMarkConverter([
+            'html_input' => 'strip',
+            'allow_unsafe_links' => false,
+        ]);
+
+        return $converter->convertToHtml($markdown);
+    }
+
+    public function clearConversation(): void
+    {
+        $this->chatHistory = [];
+        $this->initializeChat();
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            Action::make('clear')
+                ->label('Effacer la conversation')
+                ->color('gray')
+                ->icon('heroicon-m-trash')
+                ->action('clearConversation')
+                ->requiresConfirmation(),
+        ];
+    }
+}
