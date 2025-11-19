@@ -18,46 +18,48 @@ class GeminiStreamController extends Controller
         $apiKey = env('GEMINI_API_KEY');
         if (!$apiKey) abort(500, 'API Key missing');
 
+        // 2. Get Model from ENV (Defaults to gemini-2.5-flash)
+        $model = env('GEMINI_MODEL', 'gemini-2.5-flash');
+
         $history = $request->input('history', []);
         $prompt = $request->input('prompt');
         
-        // 2. FIX: Retrieve Tenant Explicitly
-        // The frontend now sends 'tenant_id'. We verify the user actually belongs to it.
+        // 3. Retrieve Tenant Explicitly
         $tenantId = $request->input('tenant_id');
         $tenant = null;
 
         if ($tenantId) {
-            // Find tenant ONLY if the user is associated with it
             $tenant = Tenant::where('id', $tenantId)
                 ->whereHas('users', function($q) use ($user) {
                     $q->where('user_id', $user->id);
                 })->first();
         }
 
-        // Fallback: If no ID sent, grab the user's most recent tenant
         if (!$tenant) {
             $tenant = Tenant::whereHas('users', function($q) use ($user) {
                 $q->where('user_id', $user->id);
             })->first();
         }
         
-        // DEBUG: Confirm we found it this time
         Log::info('AI STREAM: Tenant Resolved', [
             'tenant_id' => $tenant ? $tenant->id : 'STILL NULL', 
-            'name' => $tenant ? $tenant->name : 'N/A'
+            'name' => $tenant ? $tenant->name : 'N/A',
+            'model' => $model
         ]);
 
-        // 3. Get Data
+        // 4. Get Data
         $businessData = $this->getBusinessData($tenant);
         
-        // 4. System Prompt
+        // 5. System Prompt
         $dataString = json_encode($businessData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
         $systemInstruction = "Vous êtes Fido, un assistant comptable expert.\n" .
                              "Voici les données comptables RÉELLES de l'utilisateur (Source de vérité) :\n" . 
                              $dataString . "\n\n" .
-                             "Instructions : Répondez en français. Utilisez le Markdown. Soyez précis avec les chiffres.";
+                             "Instructions : Répondez en français. Utilisez le Markdown. Soyez précis avec les chiffres. 
+                             Ne dites jamais que vous êtes un modèle d'IA développé par Google. 
+                             Vous êtes une IA développée par Cyberia Digital Solutions, votre nom est Fido AI Pro";
 
-        // 5. Prepare Request
+        // 6. Prepare Request contents
         $contents = [];
         foreach ($history as $msg) {
             if(isset($msg['role']) && !empty($msg['parts'][0]['text'])) {
@@ -69,10 +71,11 @@ class GeminiStreamController extends Controller
         }
         $contents[] = ['role' => 'user', 'parts' => [['text' => $prompt]]];
 
-        // 6. Stream
-        return response()->stream(function () use ($apiKey, $systemInstruction, $contents) {
+        // 7. Stream Response
+        return response()->stream(function () use ($apiKey, $systemInstruction, $contents, $model) {
             
-            $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:streamGenerateContent?alt=sse&key={$apiKey}";
+            // Dynamic URL based on the model variable
+            $url = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:streamGenerateContent?alt=sse&key={$apiKey}";
             
             $response = Http::withHeaders(['Content-Type' => 'application/json'])
                 ->withOptions(['stream' => true])
@@ -130,8 +133,7 @@ class GeminiStreamController extends Controller
             if (method_exists($tenant, 'clients')) {
                 $data['clients'] = $tenant->clients()
                     ->latest()->take(50)
-                    ->get(['name', 'contact_person','email', 'phone', 'address',
-        'notes'])
+                    ->get(['name', 'contact_person','email', 'phone', 'address', 'notes'])
                     ->toArray();
             }
 

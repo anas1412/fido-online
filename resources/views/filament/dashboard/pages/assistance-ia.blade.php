@@ -33,12 +33,6 @@
                              :class="msg.role === 'user' 
                                 ? 'bg-primary-600 text-white rounded-tr-none' 
                                 : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 rounded-tl-none'">
-                             
-                             {{-- 
-                                2. RENDER MARKDOWN HERE 
-                                - If User: Show plain text (safer)
-                                - If AI: Parse Markdown to HTML and use 'prose' classes for styling lists/bold
-                             --}}
                              <div 
                                 x-html="msg.role === 'user' ? msg.parts[0].text : parseMarkdown(msg.parts[0].text)"
                                 class="prose dark:prose-invert prose-sm max-w-none 
@@ -97,7 +91,7 @@
                     if (this.history.length === 0) {
                         this.history.push({
                             role: 'model',
-                            parts: [{ text: "Bonjour {{ auth()->user()->name }}, je suis Fido. Je vois vos données, posez-moi une question !" }]
+                            parts: [{ text: "Bonjour {{ auth()->user()->name }}, je suis Fido. Comment puis-je vous aider dans votre comptabilité aujourd'hui ?" }]
                         });
                     }
                 },

@@ -50,7 +50,7 @@ class AIHelp extends Page implements HasForms
             ->schema([
                 Textarea::make('prompt')
                     ->hiddenLabel()
-                    ->placeholder("Entrez votre question... (Maj+Entrée pour une nouvelle ligne)")
+                    ->placeholder("Entrez votre question...")
                     ->rows(1)
                     ->autosize()
                     ->required()
