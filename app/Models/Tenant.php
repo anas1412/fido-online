@@ -25,9 +25,24 @@ class Tenant extends Model implements HasName
         return $this->hasMany(Invoice::class);
     }
 
-    public function honoraires()
+    public function honoraires() : HasMany
     {
         return $this->hasMany(Honoraire::class);
+    }
+
+    public function clients(): HasMany
+    {
+        return $this->hasMany(Client::class);
+    }
+
+    public function categories(): HasMany  
+    { 
+        return $this->hasMany(Category::class); 
+    
+    }
+    public function products(): HasMany
+    { 
+        return $this->hasMany(Product::class); 
     }
 
 

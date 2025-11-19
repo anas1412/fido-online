@@ -9,7 +9,6 @@
             x-ref="chatContainer"
             class="flex-1 overflow-y-auto p-4 space-y-6 bg-gray-50 dark:bg-gray-900 rounded-t-xl border border-gray-200 dark:border-gray-700 shadow-inner"
         >
-            {{-- Empty State --}}
             <template x-if="history.length === 0">
                 <div class="flex flex-col items-center justify-center h-full text-gray-400 opacity-60">
                     <x-heroicon-o-chat-bubble-left-right class="w-16 h-16 mb-4"/>
@@ -17,19 +16,15 @@
                 </div>
             </template>
 
-            {{-- Message Loop --}}
             <template x-for="(msg, index) in history" :key="index">
                 <div class="flex w-full" :class="msg.role === 'user' ? 'justify-end' : 'justify-start'">
                     <div class="flex max-w-[85%] gap-3" :class="msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'">
-                        
-                        {{-- Avatar --}}
                         <div class="flex-shrink-0 h-8 w-8 rounded-full flex items-center justify-center border border-gray-200 dark:border-gray-600"
                              :class="msg.role === 'user' ? 'bg-primary-600' : 'bg-white dark:bg-gray-800'">
                             <span x-show="msg.role === 'user'" class="text-xs text-white font-bold">U</span>
                             <x-heroicon-m-cpu-chip x-show="msg.role !== 'user'" class="w-5 h-5 text-gray-600 dark:text-gray-300" />
                         </div>
 
-                        {{-- Bubble --}}
                         <div class="p-3.5 rounded-2xl shadow-sm text-sm leading-relaxed"
                              :class="msg.role === 'user' 
                                 ? 'bg-primary-600 text-white rounded-tr-none' 
@@ -40,7 +35,7 @@
                 </div>
             </template>
 
-            {{-- Loading / Typing Indicator (Shown only when waiting) --}}
+            {{-- Loading State --}}
             <div x-show="loading" class="flex w-full justify-start animate-pulse">
                 <div class="flex max-w-[85%] gap-3 flex-row">
                     <div class="flex-shrink-0 h-8 w-8 rounded-full flex items-center justify-center bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600">
@@ -87,11 +82,10 @@
                 loading: false,
                 
                 initChat() {
-                    // Only add greeting if strictly empty
                     if (this.history.length === 0) {
                         this.history.push({
                             role: 'model',
-                            parts: [{ text: "Bonjour {{ auth()->user()->name }}, je suis Fido. Je vois vos données comptables, posez-moi une question !" }]
+                            parts: [{ text: "Bonjour {{ auth()->user()->name }}, je suis Fido. Je vois vos données, posez-moi une question !" }]
                         });
                     }
                 },
@@ -110,16 +104,12 @@
                     const text = input.value;
                     if (!text.trim() || this.loading) return;
 
-                    // 1. Add User Message
                     this.history.push({ role: 'user', parts: [{ text: text }] });
                     input.value = '';
-                    input.dispatchEvent(new Event('input')); // Reset Filament autosize
+                    input.dispatchEvent(new Event('input')); 
                     this.loading = true;
                     this.scrollToBottom();
 
-                    // 2. Prepare AI Message (We add it ONLY when we start receiving or before stream)
-                    // We wait to push the 'model' bubble until we start the fetch to avoid glitches
-                    
                     try {
                         const response = await fetch('{{ route("gemini.stream") }}', {
                             method: 'POST',
@@ -129,13 +119,14 @@
                             },
                             body: JSON.stringify({
                                 prompt: text,
-                                history: this.history
+                                history: this.history.slice(0, -1),
+                                // CRITICAL FIX: Send the Tenant ID from Blade context
+                                tenant_id: '{{ \Filament\Facades\Filament::getTenant()?->id ?? auth()->user()->currentTenant?->id }}'
                             })
                         });
 
                         if (!response.ok) throw new Error('Erreur API');
 
-                        // 3. Create the AI Bubble now that we have a connection
                         this.history.push({ role: 'model', parts: [{ text: '' }] });
                         const msgIndex = this.history.length - 1;
                         this.scrollToBottom();
@@ -167,11 +158,8 @@
 
                     } catch (error) {
                         console.error(error);
-                        // If it failed before we added the bubble, add an error bubble
-                        if (this.history[this.history.length - 1].role === 'user') {
-                             this.history.push({ role: 'model', parts: [{ text: "Désolé, je n'arrive pas à accéder au serveur." }] });
-                        } else {
-                             this.history[this.history.length - 1].parts[0].text += "\n[Erreur de connexion]";
+                        if (this.history[this.history.length - 1].role !== 'model') {
+                            this.history.push({ role: 'model', parts: [{ text: "Erreur de connexion." }] });
                         }
                     } finally {
                         this.loading = false;
