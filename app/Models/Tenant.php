@@ -30,22 +30,10 @@ class Tenant extends Model implements HasName
         return $this->hasMany(Honoraire::class);
     }
 
+
     public function getFilamentName(): string
     {
-        $dbType = $this->getAttribute('type');
-
-        $typeLabel = match($dbType) {
-            'commercial' => 'Société Commerciale',
-            'accounting' => 'Société Comptabilité',
-            default => $dbType,
-        };
-
-        return "{$this->name} {$typeLabel}";
-    }
-
-    /* public function getFilamentName(): string
-    {
         return "{$this->name} {$this->subscription_plan}";
-    } */
+    }
     
 }

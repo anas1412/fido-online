@@ -20,9 +20,6 @@ class ClientInfolist
                     TextEntry::make('address')
                         ->label('Adresse')
                         ->placeholder('-'),
-                    TextEntry::make('status')
-                        ->label('Statut')
-                        ->badge(),
                     TextEntry::make('contact_person')
                         ->label('Personne de contact')
                         ->placeholder('-'),

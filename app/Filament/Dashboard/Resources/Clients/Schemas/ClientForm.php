@@ -31,9 +31,6 @@ class ClientForm
                 Textarea::make('notes')
                     ->label('Notes')
                     ->columnSpanFull(),
-                TextInput::make('status')
-                    ->label('Statut')
-                    ->required()
             ]);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Dashboard\Resources\Invoices;
 
+// ... keep your existing imports
 use App\Filament\Dashboard\Resources\Invoices\RelationManagers\OtherClientInvoicesRelationManager;
 use App\Filament\Dashboard\Resources\Invoices\Pages\CreateInvoice;
 use App\Filament\Dashboard\Resources\Invoices\Pages\EditInvoice;
@@ -17,6 +18,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model; // Add this import
 
 class InvoiceResource extends Resource
 {
@@ -24,6 +26,7 @@ class InvoiceResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentText;
 
+    // You can keep this as the default fallback, but getGlobalSearchAttributes overrides logic
     protected static ?string $recordTitleAttribute = 'invoice_number';
 
     protected static ?string $pluralModelLabel = 'Factures';
@@ -33,7 +36,7 @@ class InvoiceResource extends Resource
     protected static UnitEnum|string|null $navigationGroup = 'Gestion Commerciale';
 
     protected static ?int $navigationSort = 2;
-
+    
     public static function getNavigationBadge(): ?string
     {
         return static::getModel()::count();
@@ -46,6 +49,28 @@ class InvoiceResource extends Resource
         $tenant = filament()->getTenant();
         return $tenant && $tenant->type === 'commercial';
     }
+
+    public static function getGlobalSearchAttributes(): array
+    {
+        return [
+            'invoice_number',
+            'client.name',
+        ];
+    }
+
+    public static function getGlobalSearchResultTitle(Model $record): string
+    {
+        return $record->invoice_number . ' • ' . $record->client?->name; 
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            'Client' => $record->client?->name,
+            'Date' => $record->issue_date,
+        ];
+    }
+    
 
     public static function form(Schema $schema): Schema
     {

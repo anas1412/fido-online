@@ -33,7 +33,6 @@ class HonoraireForm
                                     TextInput::make('phone')->label('Téléphone')->tel()->maxLength(255),
                                     Textarea::make('address')->label('Adresse')->columnSpanFull(),
                                     Textarea::make('notes')->label('Notes')->columnSpanFull(),
-                                    TextInput::make('status')->label('Statut')->required()->default('active')->maxLength(255),
                                 ])
                                 ->createOptionUsing(function (array $data): int {
                                     $data['tenant_id'] = filament()->getTenant()->id;

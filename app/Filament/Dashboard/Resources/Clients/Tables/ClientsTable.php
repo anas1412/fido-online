@@ -27,9 +27,6 @@ class ClientsTable
                 TextColumn::make('phone')
                     ->label('Téléphone')
                     ->searchable(),
-                TextColumn::make('status')
-                    ->label('Statut')
-                    ->searchable(),
                 TextColumn::make('created_at')
                     ->label('Créé le')
                     ->dateTime()

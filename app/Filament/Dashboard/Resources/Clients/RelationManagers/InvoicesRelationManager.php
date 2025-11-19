@@ -41,7 +41,7 @@ class InvoicesRelationManager extends RelationManager
                     ->sortable(),
                 TextColumn::make('total_amount')
                     ->label('Montant Total')
-                    ->money('usd') // Assuming USD, adjust as needed
+                    ->money('usd') 
                     ->sortable(),
             ])
             ->headerActions([

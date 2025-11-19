@@ -17,7 +17,6 @@ class Client extends Model
         'phone',
         'address',
         'notes',
-        'status',
     ];
 
     public function tenant(): BelongsTo

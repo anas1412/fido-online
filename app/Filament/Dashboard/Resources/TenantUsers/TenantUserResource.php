@@ -23,8 +23,6 @@ class TenantUserResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUserGroup;
 
-    protected static ?string $recordTitleAttribute = 'user.name';
-
     protected static ?string $pluralModelLabel = 'Utilisateurs';
 
     protected static ?string $navigationLabel = 'Utilisateurs';

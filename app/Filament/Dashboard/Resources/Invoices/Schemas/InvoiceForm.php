@@ -50,11 +50,6 @@ class InvoiceForm
                                     Textarea::make('notes')
                                         ->label('Notes')
                                         ->columnSpanFull(),
-                                    TextInput::make('status')
-                                        ->label('Statut')
-                                        ->required()
-                                        ->default('active')
-                                        ->maxLength(255),
                                 ])
                                 ->createOptionUsing(function (array $data): int {
                                     $data['tenant_id'] = filament()->getTenant()->id;

@@ -20,7 +20,6 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->text('address')->nullable();
             $table->text('notes')->nullable();
-            $table->string('status')->default('active'); // e.g., active, inactive, lead
             $table->timestamps();
         });
     }

@@ -87,7 +87,7 @@ class DashboardPanelProvider extends PanelProvider
             ->databaseTransactions()
             ->collapsibleNavigationGroups(false)
             ->sidebarCollapsibleOnDesktop()
-
+            ->globalSearch(false)
             /* ->navigationItems([
                 NavigationItem::make('Analytics')
                     ->url('https://filament.pirsch.io', shouldOpenInNewTab: true)
