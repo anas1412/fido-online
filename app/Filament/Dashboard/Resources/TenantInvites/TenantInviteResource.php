@@ -2,42 +2,36 @@
 
 namespace App\Filament\Dashboard\Resources\TenantInvites;
 
-use App\Filament\Dashboard\Resources\TenantInvites\Pages\CreateTenantInvite;
 use App\Filament\Dashboard\Resources\TenantInvites\Pages\EditTenantInvite;
 use App\Filament\Dashboard\Resources\TenantInvites\Pages\ListTenantInvites;
 use App\Models\TenantInvite;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Actions\Action;
-use Filament\Actions\EditAction;
-use Filament\Notifications\Notification;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Support\Icons\Heroicon;
+use Filament\Notifications\Notification; // Added Notification Import
 use Illuminate\Support\Str;
 use UnitEnum;
 use BackedEnum;
-use Webbingbrasil\FilamentCopyActions\Tables\CopyableTextColumn;
-use Webbingbrasil\FilamentCopyActions\Actions\CopyAction;
-use LaraZeus\Popover\Tables\PopoverColumn;
 use Illuminate\Support\Facades\Auth;
 
 class TenantInviteResource extends Resource
 {
     protected static ?string $model = TenantInvite::class;
 
-    // Correct type for Filament v4
     protected static BackedEnum|string|null $navigationIcon = Heroicon::OutlinedEnvelope;
 
     protected static ?string $recordTitleAttribute = 'code';
 
     protected static ?string $pluralModelLabel = 'Invitations';
 
-    // Correct type for navigation group
     protected static UnitEnum|string|null $navigationGroup = 'Gestion Administrative';
 
     protected static ?int $navigationSort = 10;
@@ -58,12 +52,10 @@ class TenantInviteResource extends Resource
             return false;
         }
 
-        // System admin can view any resource
         if ($currentUser->is_admin) {
             return true;
         }
 
-        // Check if current user is owner or mod of the current tenant
         $currentUserTenantPivot = $currentUser->tenants()->where('tenant_id', $currentTenant->id)->first()->pivot ?? null;
 
         if ($currentUserTenantPivot && ($currentUserTenantPivot->is_owner || $currentUserTenantPivot->is_mod)) {
@@ -85,12 +77,11 @@ class TenantInviteResource extends Resource
                     ->readOnly()
                     ->hiddenOn('edit'),
 
-                TextInput::make('expires_at')
+                DateTimePicker::make('expires_at')
                     ->label('Expire le')
                     ->required()
                     ->default(fn () => now()->addWeeks(1))
-                    ->readOnly()
-                    ->hiddenOn('edit'),
+                    ->native(false), 
 
                 TextInput::make('tenant_id')
                     ->label('ID du Locataire')
@@ -113,18 +104,23 @@ class TenantInviteResource extends Resource
         return $table
             ->recordUrl(null)
             ->columns([
-                CopyableTextColumn::make('code')
-                    ->copyMessage('Code d\'invitation copié')
-                    ->label('Code'),
+                TextColumn::make('code')
+                    ->label('Code')
+                    ->copyable()
+                    ->copyMessage('Code d\'invitation copié'),
+
                 TextColumn::make('expires_at')
                     ->label('Expire le')
                     ->dateTime(),
+
                 TextColumn::make('user.name')
                     ->label('Utilisé par')
                     ->default('Non utilisé'),
+
                 TextColumn::make('creator.name')
                     ->label('Créé par')
                     ->default('Inconnu'),
+
                 TextColumn::make('created_at')
                     ->label('Créé le')
                     ->dateTime(),
@@ -133,16 +129,38 @@ class TenantInviteResource extends Resource
                 //
             ])
             ->actions([
-                CopyAction::make('copyCode')
+                Action::make('copyCode')
                     ->label('Copier le code')
-                    ->copyable(fn ($record) => $record->code)
                     ->icon('heroicon-o-clipboard-document')
-                    ->successNotificationTitle('Code copié!'),
-                CopyAction::make('copyLink')
+                    // Server-side notification (Reliable)
+                    ->action(function () {
+                        Notification::make()
+                            ->title('Code copié !')
+                            ->success()
+                            ->send();
+                    })
+                    // Client-side clipboard copy
+                    ->extraAttributes(fn (TenantInvite $record) => [
+                        'x-on:click' => 'window.navigator.clipboard.writeText("'. $record->code .'")',
+                        'class' => 'cursor-pointer',
+                    ]),
+
+                Action::make('copyLink')
                     ->label('Copier le lien')
-                    ->copyable(fn ($record) => route('invite', ['code' => $record->code]))
                     ->icon('heroicon-o-link')
-                    ->successNotificationTitle('Lien copié!'),
+                    // Server-side notification (Reliable)
+                    ->action(function () {
+                        Notification::make()
+                            ->title('Lien copié !')
+                            ->success()
+                            ->send();
+                    })
+                    // Client-side clipboard copy
+                    ->extraAttributes(fn (TenantInvite $record) => [
+                        'x-on:click' => 'window.navigator.clipboard.writeText("'. route('invite', ['code' => $record->code]) .'")',
+                        'class' => 'cursor-pointer',
+                    ]),
+
                 DeleteAction::make()
                     ->label('Supprimer'),
             ])
