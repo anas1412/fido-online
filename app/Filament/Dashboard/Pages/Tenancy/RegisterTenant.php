@@ -11,6 +11,7 @@ use Filament\Schemas\Schema;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB; // Added for data safety
 use Illuminate\Support\Str;
 
 class RegisterTenant extends BaseRegisterTenant
@@ -46,13 +47,28 @@ class RegisterTenant extends BaseRegisterTenant
 
     protected function handleRegistration(array $data): Tenant
     {
-        $data['slug'] = Str::slug($data['name']);
+        // Wrapped in transaction to prevent "Ghost Tenants" (created but not attached to user)
+        return DB::transaction(function () use ($data) {
+            
+            // Fix: Unique Slug Generation
+            // Without this loop, creating a 2nd company with the same name will crash your app.
+            $originalSlug = Str::slug($data['name']);
+            $slug = $originalSlug;
+            $count = 1;
 
-        $tenant = Tenant::create($data);
+            while (Tenant::where('slug', $slug)->exists()) {
+                $slug = "{$originalSlug}-{$count}";
+                $count++;
+            }
 
-        Auth::user()->tenants()->attach($tenant, ['is_owner' => true, 'is_mod' => true]);
+            $data['slug'] = $slug;
 
-        return $tenant;
+            $tenant = Tenant::create($data);
+
+            Auth::user()->tenants()->attach($tenant, ['is_owner' => true, 'is_mod' => true]);
+
+            return $tenant;
+        });
     }
 
     protected function getFormActions(): array
@@ -74,11 +90,10 @@ class RegisterTenant extends BaseRegisterTenant
                 ->action(function (array $data) {
                     $rawInput = $data['invite_code'];
 
-                    // Extract code from URL if it's a URL
+                    // Fix: Safer URL parsing. 
+                    // 'basename' handles trailing slashes better than 'explode/end'
                     if (filter_var($rawInput, FILTER_VALIDATE_URL)) {
-                        $path = parse_url($rawInput, PHP_URL_PATH);
-                        $segments = explode('/', $path);
-                        $inviteCode = end($segments);
+                        $inviteCode = basename(parse_url($rawInput, PHP_URL_PATH));
                     } else {
                         $inviteCode = $rawInput;
                     }
@@ -95,14 +110,25 @@ class RegisterTenant extends BaseRegisterTenant
                             ->title('Code d\'invitation invalide ou déjà utilisé.')
                             ->danger()
                             ->send();
+                        
+                        $this->halt(); // Stops the modal from closing if error
                         return;
                     }
 
-                    // Attach user to tenant
-                    $user->tenants()->syncWithoutDetaching([$invite->tenant_id]);
+                    // Fix: Check if user is ALREADY in the tenant
+                    if ($user->tenants()->where('tenant_id', $invite->tenant_id)->exists()) {
+                         Notification::make()
+                            ->title('Vous êtes déjà membre de cette entreprise.')
+                            ->warning()
+                            ->send();
+                        return;
+                    }
 
-                    // Mark invite as used
-                    $invite->update(['used_by' => $user->id]);
+                    // Fix: Transaction ensures invite is marked used ONLY if attach succeeds
+                    DB::transaction(function () use ($user, $invite) {
+                        $user->tenants()->syncWithoutDetaching([$invite->tenant_id]);
+                        $invite->update(['used_by' => $user->id]);
+                    });
 
                     Notification::make()
                         ->title('Vous avez rejoint l\'entreprise avec succès !')
