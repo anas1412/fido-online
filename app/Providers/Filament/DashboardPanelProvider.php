@@ -33,6 +33,7 @@ use Devonab\FilamentEasyFooter\EasyFooterPlugin;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\Facades\Auth;
 use Filament\Navigation\NavigationItem;
+use App\Filament\Dashboard\Pages\Auth\Login;
 
 class DashboardPanelProvider extends PanelProvider
 {
@@ -42,7 +43,7 @@ class DashboardPanelProvider extends PanelProvider
             ->default()
             ->id('dashboard')
             ->path('dashboard')
-            ->login()
+            ->login(Login::class)
             /* ->profile() */
             /* ->userMenu(position: UserMenuPosition::Sidebar) */
             ->userMenuItems([
@@ -58,7 +59,7 @@ class DashboardPanelProvider extends PanelProvider
             ])
             
             
-            // 1. Add our Google Login button before the form
+            /* // 1. Add our Google Login button before the form
             ->renderHook(
                 'panels::auth.login.form.before',
                 fn (): string => Blade::render('<x-google-login-button />')
@@ -72,7 +73,7 @@ class DashboardPanelProvider extends PanelProvider
                         display: none;
                     }
                 </style>')
-            )
+            ) */
             ->brandName('Fido')
             ->brandLogo(asset('images/logo.png'))
             ->brandLogoHeight('3rem')
