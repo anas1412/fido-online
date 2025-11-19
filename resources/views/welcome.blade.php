@@ -153,7 +153,7 @@
                         <div class="mx-auto max-w-2xl lg:mx-0 text-center lg:text-left">
                             <div class="mb-6 flex justify-center lg:justify-start">
                                 <div class="relative rounded-full px-3 py-1 text-sm leading-6 text-slate-600 ring-1 ring-slate-900/10 hover:ring-slate-900/20 bg-white/50 backdrop-blur-sm">
-                                    <span class="font-semibold text-brand-600">Nouveau</span> : Fido IA répond à vos questions fiscales.
+                                    <span class="font-semibold text-brand-600">Nouveau</span> : Fido IA, solution 100% tunisienne, répond à vos questions fiscales.
                                 </div>
                             </div>
                             <h1 class="text-4xl font-bold tracking-tight text-slate-900 sm:text-6xl">
@@ -249,8 +249,8 @@
                             </div>
 
                             <!-- Floating Hint -->
-                            <div class="absolute -right-6 -bottom-6 -z-10 bg-slate-900 rounded-xl p-4 text-white text-xs shadow-lg rotate-3 w-48">
-                                <p class="font-bold mb-1">🚀 Astuce</p>
+                            <div class="absolute -right-4 -bottom-8 z-20 bg-slate-900 rounded-xl p-4 text-white text-xs shadow-2xl rotate-3 w-48 border border-slate-700 transition-transform hover:scale-105 cursor-help">
+                                <p class="font-bold mb-1 text-brand-400">🚀 Astuce</p>
                                 <p>Fido peut aussi analyser vos dépenses mensuelles en un clic.</p>
                             </div>
                         </div>
