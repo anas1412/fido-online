@@ -129,15 +129,16 @@ class GeminiStreamController extends Controller
             // CLIENTS
             if (method_exists($tenant, 'clients')) {
                 $data['clients'] = $tenant->clients()
-                    ->latest()->take(30)
-                    ->get(['name', 'email'])
+                    ->latest()->take(50)
+                    ->get(['name', 'contact_person','email', 'phone', 'address',
+        'notes'])
                     ->toArray();
             }
 
             if ($type === 'commercial' && method_exists($tenant, 'invoices')) {
                 $data['invoices'] = $tenant->invoices()
                     ->with('client:id,name')
-                    ->latest()->take(20)
+                    ->latest()->take(99)
                     ->get(['invoice_number', 'issue_date', 'total_amount', 'status', 'client_id'])
                     ->map(fn($i) => [
                         'number' => $i->invoice_number,
@@ -149,7 +150,7 @@ class GeminiStreamController extends Controller
             elseif ($type === 'accounting' && method_exists($tenant, 'honoraires')) {
                 $data['honoraires'] = $tenant->honoraires()
                     ->with('client:id,name')
-                    ->latest()->take(20)
+                    ->latest()->take(99)
                     ->get(['honoraire_number', 'object', 'total_amount', 'client_id'])
                     ->map(fn($h) => [
                         'number' => $h->honoraire_number,

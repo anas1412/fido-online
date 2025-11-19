@@ -1,4 +1,7 @@
 <x-filament-panels::page class="h-full">
+    {{-- 1. Include the Markdown Parser --}}
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
     <div 
         x-data="aiChat()"
         x-init="initChat()"
@@ -19,23 +22,33 @@
             <template x-for="(msg, index) in history" :key="index">
                 <div class="flex w-full" :class="msg.role === 'user' ? 'justify-end' : 'justify-start'">
                     <div class="flex max-w-[85%] gap-3" :class="msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'">
+                        
                         <div class="flex-shrink-0 h-8 w-8 rounded-full flex items-center justify-center border border-gray-200 dark:border-gray-600"
                              :class="msg.role === 'user' ? 'bg-primary-600' : 'bg-white dark:bg-gray-800'">
                             <span x-show="msg.role === 'user'" class="text-xs text-white font-bold">U</span>
                             <x-heroicon-m-cpu-chip x-show="msg.role !== 'user'" class="w-5 h-5 text-gray-600 dark:text-gray-300" />
                         </div>
 
-                        <div class="p-3.5 rounded-2xl shadow-sm text-sm leading-relaxed"
+                        <div class="p-3.5 rounded-2xl shadow-sm text-sm leading-relaxed overflow-hidden"
                              :class="msg.role === 'user' 
                                 ? 'bg-primary-600 text-white rounded-tr-none' 
                                 : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 rounded-tl-none'">
-                             <div class="whitespace-pre-wrap" x-text="msg.parts[0].text"></div>
+                             
+                             {{-- 
+                                2. RENDER MARKDOWN HERE 
+                                - If User: Show plain text (safer)
+                                - If AI: Parse Markdown to HTML and use 'prose' classes for styling lists/bold
+                             --}}
+                             <div 
+                                x-html="msg.role === 'user' ? msg.parts[0].text : parseMarkdown(msg.parts[0].text)"
+                                class="prose dark:prose-invert prose-sm max-w-none 
+                                       prose-p:my-1 prose-ul:my-1 prose-li:my-0 prose-headings:my-2"
+                             ></div>
                         </div>
                     </div>
                 </div>
             </template>
 
-            {{-- Loading State --}}
             <div x-show="loading" class="flex w-full justify-start animate-pulse">
                 <div class="flex max-w-[85%] gap-3 flex-row">
                     <div class="flex-shrink-0 h-8 w-8 rounded-full flex items-center justify-center bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600">
@@ -50,7 +63,6 @@
             </div>
         </div>
 
-        {{-- Input Area --}}
         <div class="bg-white dark:bg-gray-900 border-x border-b border-gray-200 dark:border-gray-700 rounded-b-xl p-4 z-10">
             <div class="relative flex items-end gap-2">
                 <div class="flex-grow" @keydown.enter.prevent="if(!$event.shiftKey) sendMessage()">
@@ -90,6 +102,13 @@
                     }
                 },
 
+                // 3. HELPER FUNCTION TO PARSE MARKDOWN
+                parseMarkdown(text) {
+                    if (!text) return '';
+                    // 'marked.parse' comes from the script included at the top
+                    return marked.parse(text);
+                },
+
                 scrollToBottom() {
                     this.$nextTick(() => {
                         const box = this.$refs.chatContainer;
@@ -120,7 +139,6 @@
                             body: JSON.stringify({
                                 prompt: text,
                                 history: this.history.slice(0, -1),
-                                // CRITICAL FIX: Send the Tenant ID from Blade context
                                 tenant_id: '{{ \Filament\Facades\Filament::getTenant()?->id ?? auth()->user()->currentTenant?->id }}'
                             })
                         });
