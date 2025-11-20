@@ -7,14 +7,18 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Grid;
-use Filament\Schemas\Components\Utilities\Get; // Import Get
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 
 class ClientForm
 {
-    public static function configure(Schema $schema): Schema
+    /**
+     * Returns the array of form components.
+     * reusable in other forms (like Invoice Quick Create).
+     */
+    public static function components(): array
     {
-        return $schema->components([
+        return [
             Section::make('Informations Client')
                 ->schema([
                     Grid::make(2)->schema([
@@ -72,6 +76,11 @@ class ClientForm
                         ->label('Notes internes')
                         ->columnSpanFull(),
                 ])
-        ]);
+        ];
+    }
+
+    public static function configure(Schema $schema): Schema
+    {
+        return $schema->components(self::components());
     }
 }

@@ -4,6 +4,8 @@ namespace App\Filament\Dashboard\Resources\Honoraires\Schemas;
 
 use App\Models\Client;
 use App\Models\Setting;
+// Import the shared Client Form Schema
+use App\Filament\Dashboard\Resources\Clients\Schemas\ClientForm; 
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -32,18 +34,13 @@ class HonoraireForm
                                 ->relationship('client', 'name')
                                 ->searchable()
                                 ->required()
-                                // --- FIX: Check URL for client_id (Matches Invoice Logic) ---
+                                // --- CONTEXT LOGIC: Check URL for client_id ---
                                 ->default(fn () => request()->query('client_id'))
                                 ->disabled(fn () => request()->has('client_id'))
                                 ->dehydrated(true) // Always save
-                                // ------------------------------------------------------------
-                                ->createOptionForm([
-                                    TextInput::make('name')->label('Nom du client')->required()->maxLength(255),
-                                    TextInput::make('contact_person')->label('Personne à contacter')->maxLength(255),
-                                    TextInput::make('email')->label('Adresse e-mail')->email()->maxLength(255),
-                                    TextInput::make('phone')->label('Téléphone')->tel()->maxLength(255),
-                                    Textarea::make('address')->label('Adresse')->columnSpanFull(),
-                                ])
+                                // ----------------------------------------------
+                                // REUSE SHARED CLIENT FORM:
+                                ->createOptionForm(ClientForm::components())
                                 ->createOptionUsing(function (array $data): int {
                                     $data['tenant_id'] = filament()->getTenant()->id;
                                     return Client::create($data)->getKey();

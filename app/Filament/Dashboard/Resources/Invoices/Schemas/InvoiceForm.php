@@ -5,6 +5,7 @@ namespace App\Filament\Dashboard\Resources\Invoices\Schemas;
 use App\Models\Client;
 use App\Models\Product;
 use App\Models\Setting;
+use App\Filament\Dashboard\Resources\Clients\Schemas\ClientForm; // Import ClientForm
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
@@ -36,18 +37,13 @@ class InvoiceForm
                                 ->relationship('client', 'name')
                                 ->searchable()
                                 ->required()
-                                // --- FIX: Check URL for client_id ---
+                                // --- Context Logic (Relation Manager Awareness) ---
                                 ->default(fn () => request()->query('client_id'))
                                 ->disabled(fn () => request()->has('client_id'))
-                                ->dehydrated(true) // Always save the value even if disabled
-                                // ------------------------------------
-                                ->createOptionForm([
-                                    TextInput::make('name')->required(),
-                                    TextInput::make('contact_person'),
-                                    TextInput::make('email')->email(),
-                                    TextInput::make('phone')->tel(),
-                                    Textarea::make('address'),
-                                ])
+                                ->dehydrated(true)
+                                // --------------------------------------------------
+                                // REUSE CLIENT FORM LOGIC HERE:
+                                ->createOptionForm(ClientForm::components())
                                 ->createOptionUsing(function (array $data): int {
                                     $data['tenant_id'] = filament()->getTenant()->id;
                                     return Client::create($data)->getKey();
@@ -172,9 +168,7 @@ class InvoiceForm
                                             })
                                             ->afterStateHydrated(function ($component, $state, Get $get) {
                                                 $rate = $get('tva_rate');
-                                                // Default new rows to Standard
                                                 if ($rate === null) { $component->state('standard'); return; }
-                                                
                                                 $settings = Setting::singleton();
                                                 if ((float)$rate == (float)($settings->tva_rate ?? 19)) $component->state('standard');
                                                 elseif ((float)$rate == (float)($settings->tva_reduced_rate ?? 7)) $component->state('reduced');
@@ -223,7 +217,9 @@ class InvoiceForm
                                     TextInput::make('tf_value')->label('Timbre Fiscal')->readOnly(),
                                     TextInput::make('amount_ttc')->label('Montant TTC')->readOnly(),
                                     TextInput::make('rs_amount')->label('Retenue Source')->readOnly(),
-                                    TextInput::make('net_to_pay')->label('NET À PAYER')->readOnly()
+                                    TextInput::make('net_to_pay')
+                                        ->label('NET À PAYER')
+                                        ->readOnly()
                                         ->extraInputAttributes(['style' => 'font-size: 1.5rem; font-weight: bold; color: #16a34a;']),
                                 ])->columns(2),
                         ]),
@@ -249,7 +245,6 @@ class InvoiceForm
         foreach ($items as $item) {
             $qty = (float) ($item['quantity'] ?? 0);
             $price = (float) ($item['unit_price'] ?? 0);
-            // Ensure valid float for rate
             $rate = isset($item['tva_rate']) && $item['tva_rate'] !== '' ? (float)$item['tva_rate'] : 19.0;
             
             $lineHT = $qty * $price;
