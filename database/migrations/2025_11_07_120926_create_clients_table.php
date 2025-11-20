@@ -6,27 +6,37 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('clients', function (Blueprint $table) {
             $table->id();
             $table->foreignId('tenant_id')->constrained('tenants')->cascadeOnDelete();
-            $table->string('name');
-            $table->string('contact_person')->nullable();
+            
+            // Client Type: 'company' (Société) or 'individual' (Personne physique)
+            $table->string('type')->default('company'); 
+            
+            $table->string('name'); // Company Name or Person Name
+            $table->string('contact_person')->nullable(); // Specific person to call
+            
+            // B2B Requirement
+            $table->string('matricule_fiscal')->nullable(); 
+            
+            // Contact
             $table->string('email')->nullable();
             $table->string('phone')->nullable();
+            
+            // Structured Address
             $table->text('address')->nullable();
-            $table->text('notes')->nullable();
+            $table->string('city')->nullable();
+            $table->string('zip_code')->nullable();
+            
+            $table->text('notes')->nullable(); // Internal notes
+
             $table->timestamps();
+            $table->softDeletes(); // Explicitly requested
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('clients');

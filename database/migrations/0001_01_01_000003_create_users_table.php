@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
@@ -16,11 +13,15 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('google_id')->nullable();
+            $table->string('google_id')->nullable(); // OAuth only
+            $table->string('avatar_url')->nullable(); // For profile picture
+            $table->string('phone')->nullable();
+            
             $table->boolean('is_admin')->default(false);
-            /* $table->string('password'); */
+            
             $table->rememberToken();
             $table->timestamps();
+            $table->softDeletes(); // Safety net
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
@@ -39,9 +40,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('users');
