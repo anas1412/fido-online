@@ -4,12 +4,12 @@ namespace App\Filament\Dashboard\Pages\Tenancy;
 
 use App\Models\Tenant;
 use App\Models\TenantInvite;
-use Filament\Actions\Action; // Correct import for v4 Actions
+use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Schemas\Components\Section; // Correct import for v4 Sections
+use Filament\Schemas\Components\Section;
 use Filament\Pages\Tenancy\RegisterTenant as BaseRegisterTenant;
-use Filament\Schemas\Schema; // Correct import for v4 Schema
+use Filament\Schemas\Schema;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -42,19 +42,20 @@ class RegisterTenant extends BaseRegisterTenant
                         ->maxLength(255),
 
                     Select::make('type')
-                        ->label('Type d\'entreprise')
+                        ->label('Secteur d\'activité')
                         ->options([
-                            'accounting' => 'Société comptable',
-                            'commercial' => 'Société commerciale',
+                            'commercial' => 'Commercial (Vente, Services IT...)',
+                            'accounting' => 'Profession Libérale (Avocat, Expert...)',
+                            'medical'    => 'Santé (Médecin, Clinique...)',
                         ])
                         ->required()
-                        ->placeholder('Sélectionnez un type'),
+                        ->default('commercial')
+                        ->placeholder('Sélectionnez votre secteur'),
                 ])
-                // Native v4 way to add buttons to a section
                 ->footer([
                     Action::make('register')
                         ->label('Créer mon entreprise')
-                        ->action('register') // Calls the standard register() method
+                        ->action('register')
                         ->color('primary')
                         ->icon('heroicon-m-sparkles'),
                 ]),
@@ -64,7 +65,7 @@ class RegisterTenant extends BaseRegisterTenant
                 ->icon('heroicon-o-user-group')
                 ->description('Vous avez reçu un code ou un lien d\'invitation ?')
                 ->collapsed(false) 
-                ->schema([]) // Empty schema, just using the footer for the button
+                ->schema([])
                 ->footer([
                     Action::make('open_join_modal')
                         ->label('Saisir un code d\'invitation')
@@ -100,7 +101,8 @@ class RegisterTenant extends BaseRegisterTenant
             }
 
             $data['slug'] = $slug;
-
+            // Currency default to TND if not set (though form doesn't ask, model defaults it)
+            
             $tenant = Tenant::create($data);
 
             Auth::user()->tenants()->attach($tenant, ['is_owner' => true, 'is_mod' => true]);
@@ -157,7 +159,6 @@ class RegisterTenant extends BaseRegisterTenant
         $this->redirect(filament()->getUrl(tenant: $invite->tenant));
     }
 
-    // --- CONFIG: Hide Default Footer Buttons ---
     protected function getFormActions(): array
     {
         return [];

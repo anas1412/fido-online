@@ -17,10 +17,14 @@ return new class extends Migration
             $table->foreignId('category_id')->nullable()->constrained('categories')->nullOnDelete();
             $table->string('name');
             $table->text('description')->nullable();
-            $table->string('sku')->unique()->nullable();
-            $table->decimal('unit_price', 10, 2)->default(0.00);
+            $table->string('sku')->nullable(); 
+            $table->decimal('unit_price', 15, 3)->default(0);
+            $table->boolean('track_stock')->default(true); // If false, it's a service (unlimited)
             $table->integer('current_stock')->default(0);
+            // Visibility
+            $table->boolean('is_active')->default(true); // To hide products without deleting them
             $table->timestamps();
+            $table->unique(['tenant_id', 'sku']);
         });
     }
 

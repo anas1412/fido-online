@@ -19,11 +19,11 @@ class EditTenantProfile extends BaseEditTenantProfile
     protected function getHeaderActions(): array
     {
         return [
-            Action::make('deleteTenant') // Renaming to be more descriptive
+            Action::make('deleteTenant')
                 ->label("Supprimer l'organisation")
                 ->icon('heroicon-o-trash')
                 ->color('danger')
-                ->requiresConfirmation() // Add confirmation
+                ->requiresConfirmation()
                 ->modalHeading(fn () => 'Supprimer ' . (filament()->getTenant()?->name ?? "l'organisation") . ' ?')
                 ->modalSubheading("Cette action supprimera définitivement l'organisation et toutes ses données.")
                 ->modalButton('Oui, supprimer')
@@ -41,7 +41,6 @@ class EditTenantProfile extends BaseEditTenantProfile
                 ->visible(function () {
                     $user = Auth::user();
                     $tenant = filament()->getTenant();
-                    // Only owner can see this delete button
                     return $user->tenants()->where('tenant_id', $tenant->id)->wherePivot('is_owner', true)->exists();
                 }),
         ];
@@ -56,12 +55,10 @@ class EditTenantProfile extends BaseEditTenantProfile
             return false;
         }
 
-        // System admin can access
         if ($currentUser->is_admin) {
             return true;
         }
 
-        // Check if current user is owner or mod of the current tenant
         $currentUserTenantPivot = $currentUser->tenants()->where('tenant_id', $currentTenant->id)->first()->pivot ?? null;
 
         if ($currentUserTenantPivot && ($currentUserTenantPivot->is_owner || $currentUserTenantPivot->is_mod)) {
@@ -76,50 +73,52 @@ class EditTenantProfile extends BaseEditTenantProfile
         return 'Profil de l\'organisation';
     }
 
-        public function form(Schema $schema): Schema
-        {
-            return $schema
-                ->schema([
+    public function form(Schema $schema): Schema
+    {
+        return $schema
+            ->schema([
 
-                    Fieldset::make('Paramètres généraux')
-                        ->columns([
-                            'default' => 1,
-                            'md' => 2,
-                            'xl' => 3,
-                        ])
-                        ->schema([
+                Fieldset::make('Paramètres généraux')
+                    ->columns([
+                        'default' => 1,
+                        'md' => 2,
+                        'xl' => 3,
+                    ])
+                    ->schema([
 
-                            TextInput::make('name')
-                                ->label('Nom de l\'organisation')
-                                ->required()
-                                ->live()
-                                ->afterStateUpdated(fn (string $operation, $state, Set $set) => $set('slug', Str::slug($state))),
-                            TextInput::make('slug')
-                                ->label('Identifiant lisible')
-                                ->readOnly(),
-                            TextInput::make('type')
-                                ->label('Type d\'organisation')
-                                ->disabled()
-                                ->afterStateHydrated(function ($component, $state) {
-                                    $component->state(
-                                        match($state) {
-                                            'commercial' => 'Société Commerciale',
-                                            'accounting' => 'Société Comptabilité',
-                                            default => $state,
-                                        }
-                                    );
-                                }),
-                            Select::make('currency')
-                                ->options([
-                                    'TND' => 'Dinar tunisien (TND)',
-                                    'EUR' => 'Euro (EUR)',
-                                    'USD' => 'Dollar américain (USD)',
-                                ])
-                                ->label('Devise par défaut'),
-                        ]),
-                    ]);
+                        TextInput::make('name')
+                            ->label('Nom de l\'organisation')
+                            ->required()
+                            ->live()
+                            ->afterStateUpdated(fn (string $operation, $state, Set $set) => $set('slug', Str::slug($state))),
+                        
+                        TextInput::make('slug')
+                            ->label('Identifiant lisible')
+                            ->readOnly(),
+                        
+                        // FIX: Display the type correctly based on the 3 types we defined
+                        TextInput::make('type')
+                            ->label('Type d\'activité')
+                            ->disabled()
+                            ->formatStateUsing(fn (string $state): string => match($state) {
+                                'commercial' => 'Commerciale (Factures)',
+                                'accounting' => 'Consulting / Libérale (Honoraires)',
+                                'medical'    => 'Médical / Santé (Honoraires 7%)',
+                                default => $state,
+                            }),
 
-        }
+                        Select::make('currency')
+                            ->options([
+                                'TND' => 'Dinar tunisien (TND)',
+                                'EUR' => 'Euro (EUR)',
+                                'USD' => 'Dollar américain (USD)',
+                            ])
+                            ->label('Devise par défaut')
+                            ->default('TND')
+                            ->required(),
+                    ]),
+            ]);
+    }
 
     protected function getRedirectUrl(): string
     {

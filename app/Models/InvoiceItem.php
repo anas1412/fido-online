@@ -9,13 +9,22 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class InvoiceItem extends Model
 {
+
     protected $fillable = [
         'invoice_id',
         'product_id',
         'name',
         'quantity',
         'unit_price',
+        'tva_rate', 
         'total',
+    ];
+
+    protected $casts = [
+        'quantity' => 'integer',
+        'unit_price' => 'decimal:3',
+        'total' => 'decimal:3',
+        'tva_rate' => 'float',
     ];
 
     public function invoice(): BelongsTo

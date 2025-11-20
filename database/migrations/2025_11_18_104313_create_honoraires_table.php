@@ -6,32 +6,39 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('honoraires', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('tenant_id')->constrained('tenants')->cascadeOnDelete();
-            $table->foreignId('client_id')->constrained('clients')->cascadeOnDelete();
+            $table->foreignId('tenant_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('client_id')->constrained()->cascadeOnDelete();
+            
             $table->string('honoraire_number')->unique();
             $table->text('object')->nullable();
-            $table->decimal('amount_ht')->nullable();
-            $table->decimal('amount_ttc')->nullable();
-            $table->decimal('tva_rate')->nullable();
-            $table->decimal('rs_rate')->nullable();
-            $table->decimal('tf_rate')->nullable();
-            $table->decimal('total_amount')->nullable();    
             $table->date('issue_date');
+
+            // Exemption Flags
+            $table->boolean('exonere_tva')->default(false);
+            $table->boolean('exonere_rs')->default(false);
+            $table->boolean('exonere_tf')->default(false);
+
+            // Snapshots of rates used at creation
+            $table->decimal('tva_rate', 5, 2)->default(0);
+            $table->decimal('rs_rate', 5, 2)->default(0);
+            $table->decimal('tf_value', 15, 3)->default(0); // Fixed amount (e.g., 1.000)
+
+            // Financial Amounts (15, 3 for Tunisian Dinar precision)
+            $table->decimal('amount_ht', 15, 3)->default(0);
+            $table->decimal('tva_amount', 15, 3)->default(0);
+            $table->decimal('rs_amount', 15, 3)->default(0);
+            $table->decimal('amount_ttc', 15, 3)->default(0);
+            $table->decimal('net_to_pay', 15, 3)->default(0); 
+
             $table->timestamps();
             $table->softDeletes();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('honoraires');

@@ -10,12 +10,21 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Product extends Model
 {
     protected $fillable = [
+        'tenant_id',
+        'category_id',
         'name',
         'description',
         'sku',
         'unit_price',
         'current_stock',
-        'category_id',
+        'track_stock',
+        'is_active',
+    ];
+
+    protected $casts = [
+        'unit_price' => 'decimal:3',
+        'track_stock' => 'boolean',
+        'is_active' => 'boolean',
     ];
 
     public function tenant(): BelongsTo

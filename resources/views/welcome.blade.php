@@ -494,9 +494,9 @@
                     <div class="-mt-2 p-2 lg:mt-0 lg:w-full lg:max-w-md lg:flex-shrink-0">
                         <div class="rounded-2xl bg-brand-500 py-10 text-center ring-1 ring-inset ring-brand-600 lg:flex lg:flex-col lg:justify-center lg:py-16 h-full">
                             <div class="mx-auto max-w-xs px-8">
-                                <p class="text-base font-semibold text-brand-100">Facturation Trimestrielle</p>
+                                <p class="text-base font-semibold text-brand-100">Facturation Annuelle</p>
                                 <p class="mt-6 flex items-baseline justify-center gap-x-2">
-                                    <span class="text-5xl font-bold tracking-tight text-white">290</span>
+                                    <span class="text-5xl font-bold tracking-tight text-white">490</span>
                                     <span class="text-sm font-semibold leading-6 tracking-wide text-brand-100">TND</span>
                                 </p>
                                 <div class="mt-10 block w-full rounded-md bg-white/60 px-3 py-2 text-center text-sm font-semibold text-brand-800 shadow-sm cursor-not-allowed select-none">

@@ -15,7 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('slug')->unique();
-            $table->enum('type', ['accounting', 'commercial']);
+            $table->enum('type', ['commercial', 'accounting', 'medical'])->default('commercial');
+            $table->string('currency')->default('TND'); 
+            
             $table->timestamps();
         });
     }

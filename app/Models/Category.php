@@ -11,6 +11,7 @@ class Category extends Model
     protected $fillable = [
         'name',
         'tenant_id',
+        'color',
     ];
 
     public function tenant(): BelongsTo

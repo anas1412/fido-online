@@ -16,6 +16,8 @@ return new class extends Migration
             $table->foreignId('tenant_id')->constrained()->cascadeOnDelete();
             $table->string('name');
             $table->timestamps();
+            $table->string('color')->default('primary'); // Useful for UI badges
+            $table->unique(['tenant_id', 'name']);
         });
     }
 

@@ -43,7 +43,7 @@ class HonoraireResource extends Resource
     public static function canViewAny(): bool
     {
         $tenant = filament()->getTenant();
-        return $tenant && $tenant->type === 'accounting';
+        return $tenant && $tenant->usesHonoraires();
     }
 
     public static function form(Schema $schema): Schema
