@@ -18,6 +18,7 @@ class Tenant extends Model implements HasName, HasAvatar
         'name', 
         'slug', 
         'type', 
+        'plan',
         'currency',
         // Legal & Contact
         'matricule_fiscal',
@@ -80,5 +81,18 @@ class Tenant extends Model implements HasName, HasAvatar
             'medical' => 7.00,
             default => 19.00,
         };
+    }
+
+    public function isPro(): bool
+    {
+        // TODO: Create a migration to add $table->string('plan')->default('free');
+        // For now, we return false (Free Tier) by default.
+        // You can test the UI by changing this to: return true;
+        return $this->getAttribute('plan') === 'pro';
+    }
+
+    public function getPlanLabel(): string
+    {
+        return $this->isPro() ? 'PRO' : 'Gratuit';
     }
 }

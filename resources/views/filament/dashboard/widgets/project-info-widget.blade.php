@@ -1,6 +1,9 @@
 <x-filament-widgets::widget class="fi-dashboard-project-info-widget h-full">
     <x-filament::section class="h-full flex flex-col justify-center">
+        <!-- Main Layout Wrapper -->
         <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-4">
+
+            <!-- Left Side: Identity (Unchanged) -->
             <div class="flex items-center gap-3">
                 <x-filament::icon
                     icon="heroicon-o-sparkles"
@@ -27,13 +30,22 @@
                     </a>
                 </div>
             </div>
+
+            <!-- Right Side: Actions -->
             <div class="flex items-center gap-2">
+                
+                <!-- 
+                    FIX: Added 'text-center h-auto' to both buttons.
+                    'text-center': Ensures "IA" centers under "Assistance".
+                    'h-auto': Ensures the button grows if text wraps to 2 lines.
+                -->
                 <x-filament::button
                     tag="a"
                     href="{{ \App\Filament\Dashboard\Pages\AIHelp::getUrl() }}"
                     color="primary"
                     size="sm"
                     icon="heroicon-m-chat-bubble-left-right"
+                    class="text-center h-auto"
                 >
                     Assistance IA
                 </x-filament::button>
@@ -43,6 +55,7 @@
                     size="sm"
                     icon="heroicon-m-lifebuoy"
                     x-on:click="$dispatch('open-modal', { id: 'support-modal' })"
+                    class="text-center h-auto"
                 >
                     Centre de Support
                 </x-filament::button>

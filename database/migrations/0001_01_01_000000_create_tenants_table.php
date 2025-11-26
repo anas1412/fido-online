@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->enum('type', ['commercial', 'accounting', 'medical'])->default('commercial');
             $table->string('currency')->default('TND');
-            
+            $table->enum('plan', ['free', 'pro'])->default('free'); 
             // Branding
             $table->string('logo_path')->nullable();
             $table->string('website')->nullable();

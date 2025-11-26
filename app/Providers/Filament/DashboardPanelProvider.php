@@ -76,6 +76,13 @@ class DashboardPanelProvider extends PanelProvider
                 </li>
             HTML)
         );
+
+        FilamentView::registerRenderHook(
+            PanelsRenderHook::SIDEBAR_NAV_END, 
+            fn (): string => Blade::render('<x-tenant-plan-widget />')
+        );
+
+
     }
 
     public function panel(Panel $panel): Panel
