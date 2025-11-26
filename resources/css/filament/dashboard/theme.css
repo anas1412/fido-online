@@ -3,3 +3,5 @@
 @source '../../../../app/Filament/Dashboard/**/*';
 @source '../../../../resources/views/filament/dashboard/**/*';
 @source '../../../../vendor/devonab/filament-easy-footer/resources/views/**/*';
+@source '../../../../vendor/alareqi/filament-pwa/resources/views/**/*';
+@source '../../../../vendor/alareqi/filament-pwa/resources/css/**/*';

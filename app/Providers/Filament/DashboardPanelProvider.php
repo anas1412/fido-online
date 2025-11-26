@@ -34,9 +34,52 @@ use Illuminate\Support\HtmlString;
 use Illuminate\Support\Facades\Auth;
 use Filament\Navigation\NavigationItem;
 use App\Filament\Dashboard\Pages\Auth\Login;
+use Alareqi\FilamentPwa\FilamentPwaPlugin;
+use Filament\Support\Facades\FilamentView;
+use Filament\View\PanelsRenderHook;
+
 
 class DashboardPanelProvider extends PanelProvider
 {
+
+public function boot(): void
+    {
+        // ... existing code ...
+
+        FilamentView::registerRenderHook(
+            PanelsRenderHook::SIDEBAR_NAV_END,
+            fn (): string => Blade::render(<<<'HTML'
+                <!-- 'list-none' removes the white dot -->
+                <li class="fi-sidebar-item mt-auto list-none">
+                    <button
+                        id="pwa-sidebar-button"
+                        onclick="window.pwaInstaller.installApp()"
+                        style="display: none;"
+                        class="fi-sidebar-item-button w-full relative rounded-lg px-2 py-2 text-sm outline-none transition duration-75 hover:bg-gray-100 focus:bg-gray-100 dark:hover:bg-white/5 dark:focus:bg-white/5 font-medium text-gray-700 dark:text-gray-200"
+                    >
+                        <div class="flex items-center gap-3">
+                            <svg 
+                                class="h-6 w-6 text-gray-400 dark:text-gray-500"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke-width="1.5"
+                                stroke="currentColor"
+                            >
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                            </svg>
+
+                            <span class="truncate">
+                                Installer l'app
+                            </span>
+                        </div>
+                    </button>
+
+                </li>
+            HTML)
+        );
+    }
+
     public function panel(Panel $panel): Panel
     {
         return $panel
@@ -149,18 +192,38 @@ class DashboardPanelProvider extends PanelProvider
                     ->enableScreenshot(true), */
 
                 EasyFooterPlugin::make()
-                ->withBorder()
-                ->withFooterPosition('footer')
-                /* ->withGithub(showLogo: true, showUrl: true) */
-                /* ->withLoadTime('Cette page a été chargée en') */
-                ->withLogo(asset('images/logo.png'))
-                ->withLinks([
-                    ['title' => 'À propos', 'url' => url('/about')],
-                    ['title' => 'Mentions légales', 'url' => url('/legal')],
-                    ['title' => 'Politique de confidentialité', 'url' => url('/privacy-policy')],
-                ])
-                ->hiddenFromPages([ 'dashboard/login', 'dashboard/new', 'dashboard/profile' ])
-                ->hiddenFromPagesEnabled(),
+                    ->withBorder()
+                    ->withFooterPosition('footer')
+                    /* ->withGithub(showLogo: true, showUrl: true) */
+                    /* ->withLoadTime('Cette page a été chargée en') */
+                    ->withLogo(asset('images/logo.png'))
+                    ->withLinks([
+                        ['title' => 'À propos', 'url' => url('/about')],
+                        ['title' => 'Mentions légales', 'url' => url('/legal')],
+                        ['title' => 'Politique de confidentialité', 'url' => url('/privacy-policy')],
+                    ])
+                    ->hiddenFromPages([ 'dashboard/login', 'dashboard/new', 'dashboard/profile' ])
+                    ->hiddenFromPagesEnabled(),
+                FilamentPwaPlugin::make()
+                    ->name('Fido')
+                    ->shortName('Fido')
+                    ->description('Votre tableau de bord Fido')
+                    ->enableInstallation()
+                    /* ->enableDebugBanner() */
+                    ->startUrl('/dashboard')
+                    ->scope('/')
+                    ->themeColor('#18181b')
+                    ->backgroundColor('#ffffff')
+                    ->standalone()
+                    ->landscape() // Consider using 'portrait' or 'natural' for mobile phones
+                    ->language('fr')
+                    ->addShortcut('Dashboard', '/dashboard', 'Accéder au tableau de bord')
+                    ->serviceWorker(
+                        cacheName: 'my-app-v3.0.0',
+                        offlineUrl: '/offline',
+                        cacheUrls: ['/dashboard'], 
+                    )
+                    ->icons('images/icons', [72, 96, 128, 144, 152, 192, 384, 512]),
             ])
             ->middleware([
                 EncryptCookies::class,

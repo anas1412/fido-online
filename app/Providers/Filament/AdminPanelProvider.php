@@ -92,12 +92,12 @@ class AdminPanelProvider extends PanelProvider
                     ->url(fn (): string => \App\Filament\Pages\Settings::getUrl())
                     ->icon('heroicon-o-cog-6-tooth'), */
             ])
-            /* ->plugins([
-                \MartinPetricko\FilamentSentryFeedback\FilamentSentryFeedbackPlugin::make()
+            ->plugins([
+                /* \MartinPetricko\FilamentSentryFeedback\FilamentSentryFeedbackPlugin::make()
                     ->sentryUser(function (): ?SentryUser {
                         return new SentryUser(auth()->user()->name, auth()->user()->email);
-                    }),
-            ]) */
+                    }), */
+                ])  
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,

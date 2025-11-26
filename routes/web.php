@@ -76,3 +76,7 @@ Route::post('/gemini/stream', GeminiStreamController::class)
 
 Route::get('/logs', [App\Http\Controllers\LogViewerController::class, 'index'])
     ->middleware(['auth', 'admin']);
+
+/* Route::get('/offline', function () {
+    return view('offline');
+}); */
