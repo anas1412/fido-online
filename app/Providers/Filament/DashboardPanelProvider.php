@@ -70,7 +70,7 @@ public function boot(): void
                             </svg>
 
                             <span class="truncate">
-                                Installer l'app
+                                Installer l'application
                             </span>
                         </div>
                     </button>
