@@ -43,15 +43,12 @@ use App\Filament\Dashboard\Pages\AIHelp;
 class DashboardPanelProvider extends PanelProvider
 {
 
-public function boot(): void
+    public function boot(): void
     {
-        // ... existing code ...
-
         FilamentView::registerRenderHook(
             PanelsRenderHook::SIDEBAR_NAV_END,
             fn (): string => Blade::render(<<<'HTML'
-                <!-- 'list-none' removes the white dot -->
-                <li class="fi-sidebar-item mt-auto list-none">
+                <li class="fi-sidebar-item mt-auto list-none" x-data>
                     <button
                         id="pwa-sidebar-button"
                         onclick="window.pwaInstaller.installApp()"
@@ -70,7 +67,7 @@ public function boot(): void
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
                             </svg>
 
-                            <span class="truncate">
+                            <span class="truncate" x-show="$store.sidebar.isOpen">
                                 Installer l'application
                             </span>
                         </div>
@@ -127,6 +124,7 @@ public function boot(): void
             ])
             ->topbar(false)
             ->spa()
+
             ->maxContentWidth(Width::Full)
             ->unsavedChangesAlerts()
             ->databaseTransactions()
