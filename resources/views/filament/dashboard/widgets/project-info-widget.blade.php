@@ -1,12 +1,10 @@
 <x-filament-widgets::widget class="fi-dashboard-project-info-widget h-full">
     <x-filament::section class="h-full flex flex-col justify-center">
-        <div class="flex items-center justify-between gap-3">
-
-            <!-- Left Side: Identity -->
+        <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-4">
             <div class="flex items-center gap-3">
                 <x-filament::icon
                     icon="heroicon-o-sparkles"
-                    class="h-10 w-10 text-success-600 dark:text-success-400"
+                    class="h-10 w-10 text-success-600 dark:text-success-400 shrink-0"
                 />
 
                 <div class="flex flex-col">
@@ -29,15 +27,7 @@
                     </a>
                 </div>
             </div>
-
-            <!-- Right Side: Actions -->
             <div class="flex items-center gap-2">
-                
-                <!-- 
-                   BEST PRACTICE:
-                   Use the Page Class directly.
-                   This generates: http://domain/dashboard/test1/assistance-ia
-                -->
                 <x-filament::button
                     tag="a"
                     href="{{ \App\Filament\Dashboard\Pages\AIHelp::getUrl() }}"
