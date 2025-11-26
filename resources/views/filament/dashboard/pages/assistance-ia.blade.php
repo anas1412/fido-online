@@ -1,5 +1,5 @@
 <x-filament-panels::page class="h-full">
-    {{-- 1. Include the Markdown Parser --}}
+    {{-- Include the Markdown Parser --}}
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
     <div 
@@ -22,7 +22,6 @@
             <template x-for="(msg, index) in history" :key="index">
                 <div class="flex w-full" :class="msg.role === 'user' ? 'justify-end' : 'justify-start'">
                     <div class="flex max-w-[85%] gap-3" :class="msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'">
-                        
                         <div class="flex-shrink-0 h-8 w-8 rounded-full flex items-center justify-center border border-gray-200 dark:border-gray-600"
                              :class="msg.role === 'user' ? 'bg-primary-600' : 'bg-white dark:bg-gray-800'">
                             <span x-show="msg.role === 'user'" class="text-xs text-white font-bold">U</span>
@@ -58,16 +57,17 @@
         </div>
 
         <div class="bg-white dark:bg-gray-900 border-x border-b border-gray-200 dark:border-gray-700 rounded-b-xl p-4 z-10">
-            <div class="relative flex items-end gap-2">
-                <div class="flex-grow" @keydown.enter.prevent="if(!$event.shiftKey) sendMessage()">
+            <div class="flex items-stretch gap-2" @keydown.enter.prevent="if(!$event.shiftKey) sendMessage()">
+                <div class="flex-grow">
                     {{ $this->form }}
                 </div>
-                
+
                 <button
                     type="button"
                     @click="sendMessage()"
                     :disabled="loading"
-                    class="mb-1 inline-flex items-center justify-center gap-1 font-medium rounded-lg border transition-colors focus:outline-none focus:ring-offset-2 focus:ring-2 focus:ring-inset min-h-[2.25rem] px-4 text-sm text-white shadow focus:ring-white border-transparent bg-primary-600 hover:bg-primary-500 focus:bg-primary-700 disabled:opacity-70 disabled:pointer-events-none"
+                    class="inline-flex items-center justify-center gap-1 font-medium rounded-lg border transition-colors focus:outline-none focus:ring-offset-2 focus:ring-2 focus:ring-inset px-4 text-sm text-white shadow focus:ring-white border-transparent bg-primary-600 hover:bg-primary-500 focus:bg-primary-700 disabled:opacity-70 disabled:pointer-events-none"
+                    style="height: auto; min-height: 100%;"
                 >
                     <span x-show="!loading" class="flex items-center gap-1">
                         Envoyer <x-heroicon-m-paper-airplane class="w-4 h-4" />
@@ -75,6 +75,7 @@
                     <span x-show="loading">...</span>
                 </button>
             </div>
+
             <div class="text-center text-[10px] text-gray-400 mt-2">
                 Fido peut faire des erreurs. Vérifiez les données importantes.
             </div>
@@ -84,11 +85,11 @@
     <script>
         function aiChat() {
             return {
-                history: @js($this->chatHistory),
+                history: @js($this->chatHistory ?? []),
                 loading: false,
-                
+
                 initChat() {
-                    if (this.history.length === 0) {
+                    if (!this.history.length) {
                         this.history.push({
                             role: 'model',
                             parts: [{ text: "Bonjour {{ auth()->user()->name }}, je suis Fido. Comment puis-je vous aider dans votre comptabilité aujourd'hui ?" }]
@@ -96,17 +97,15 @@
                     }
                 },
 
-                // 3. HELPER FUNCTION TO PARSE MARKDOWN
                 parseMarkdown(text) {
                     if (!text) return '';
-                    // 'marked.parse' comes from the script included at the top
                     return marked.parse(text);
                 },
 
                 scrollToBottom() {
                     this.$nextTick(() => {
                         const box = this.$refs.chatContainer;
-                        if(box) box.scrollTop = box.scrollHeight;
+                        if (box) box.scrollTop = box.scrollHeight;
                     });
                 },
 
@@ -114,10 +113,10 @@
                     const input = document.querySelector('textarea'); 
                     if (!input) return;
 
-                    const text = input.value;
-                    if (!text.trim() || this.loading) return;
+                    const text = input.value.trim();
+                    if (!text || this.loading) return;
 
-                    this.history.push({ role: 'user', parts: [{ text: text }] });
+                    this.history.push({ role: 'user', parts: [{ text }] });
                     input.value = '';
                     input.dispatchEvent(new Event('input')); 
                     this.loading = true;
@@ -151,9 +150,7 @@
                             if (done) break;
 
                             const chunk = decoder.decode(value, { stream: true });
-                            const lines = chunk.split('\n');
-                            
-                            lines.forEach(line => {
+                            chunk.split('\n').forEach(line => {
                                 if (line.startsWith('data: ')) {
                                     try {
                                         const data = JSON.parse(line.substring(6));
@@ -165,14 +162,12 @@
                                 }
                             });
                         }
-                        
+
                         @this.saveConversation(this.history);
 
                     } catch (error) {
                         console.error(error);
-                        if (this.history[this.history.length - 1].role !== 'model') {
-                            this.history.push({ role: 'model', parts: [{ text: "Erreur de connexion." }] });
-                        }
+                        this.history.push({ role: 'model', parts: [{ text: "Erreur de connexion." }] });
                     } finally {
                         this.loading = false;
                         this.scrollToBottom();

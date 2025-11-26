@@ -37,6 +37,7 @@ use App\Filament\Dashboard\Pages\Auth\Login;
 use Alareqi\FilamentPwa\FilamentPwaPlugin;
 use Filament\Support\Facades\FilamentView;
 use Filament\View\PanelsRenderHook;
+use App\Filament\Dashboard\Pages\AIHelp;
 
 
 class DashboardPanelProvider extends PanelProvider
