@@ -37,7 +37,7 @@ class TenantInviteResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Invitations';
 
-    protected static ?int $navigationSort = 11;
+    protected static ?int $navigationSort = 21;
 
     // Correct type for navigation group
     protected static UnitEnum|string|null $navigationGroup = 'Gestion Administrative';

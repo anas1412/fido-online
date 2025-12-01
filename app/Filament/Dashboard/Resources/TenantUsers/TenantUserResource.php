@@ -29,7 +29,7 @@ class TenantUserResource extends Resource
 
     protected static UnitEnum|string|null $navigationGroup = 'Gestion Administrative';
 
-    protected static ?int $navigationSort = 11;
+    protected static ?int $navigationSort = 22;
 
     public static function getNavigationBadge(): ?string
     {

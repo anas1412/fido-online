@@ -25,9 +25,9 @@ class HonoraireResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'honoraire_number';
 
-    protected static ?string $pluralModelLabel = 'Notes d\'honoraires';
+    protected static ?string $pluralModelLabel = 'Notes d\'Honoraires';
 
-    protected static ?string $navigationLabel = 'Notes d\'honoraires';
+    protected static ?string $navigationLabel = 'Notes d\'Honoraires';
 
     protected static UnitEnum|string|null $navigationGroup = 'Gestion Commerciale';
 

@@ -25,9 +25,9 @@ class DebitResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'debit_number';
 
-    protected static ?string $pluralModelLabel = 'Notes de débit';
+    protected static ?string $pluralModelLabel = 'Notes de Débit';
 
-    protected static ?string $navigationLabel = 'Notes de débit';
+    protected static ?string $navigationLabel = 'Notes de Débit';
 
     protected static UnitEnum|string|null $navigationGroup = 'Gestion Commerciale';
 

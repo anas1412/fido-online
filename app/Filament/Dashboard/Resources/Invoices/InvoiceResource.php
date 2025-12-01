@@ -29,9 +29,10 @@ class InvoiceResource extends Resource
     // You can keep this as the default fallback, but getGlobalSearchAttributes overrides logic
     protected static ?string $recordTitleAttribute = 'invoice_number';
 
-    protected static ?string $pluralModelLabel = 'Factures';
-
     protected static ?string $navigationLabel = 'Factures';
+
+    protected static ?string $modelLabel = 'facture';
+    protected static ?string $pluralModelLabel = 'factures';
 
     protected static UnitEnum|string|null $navigationGroup = 'Gestion Commerciale';
 
