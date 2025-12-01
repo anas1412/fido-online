@@ -13,7 +13,8 @@ return new class extends Migration
             $table->foreignId('tenant_id')->constrained()->cascadeOnDelete();
             $table->foreignId('client_id')->constrained()->cascadeOnDelete();
             
-            $table->string('invoice_number')->unique();
+            $table->string('invoice_number');
+            $table->unique(['tenant_id', 'invoice_number']);
             $table->date('issue_date');
             $table->date('due_date')->nullable();
             $table->string('status')->default('draft'); // draft, sent, paid, overdue

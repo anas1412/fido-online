@@ -13,7 +13,8 @@ return new class extends Migration
             $table->foreignId('tenant_id')->constrained()->cascadeOnDelete();
             $table->foreignId('client_id')->constrained()->cascadeOnDelete();
             
-            $table->string('honoraire_number')->unique();
+            $table->string('honoraire_number');
+            $table->unique(['tenant_id', 'honoraire_number']);
             $table->text('object')->nullable();
             $table->date('issue_date');
 
