@@ -45,7 +45,7 @@ class DashboardPanelProvider extends PanelProvider
 
     public function boot(): void
     {
-        FilamentView::registerRenderHook(
+        /* FilamentView::registerRenderHook(
             PanelsRenderHook::SIDEBAR_NAV_END,
             fn (): string => Blade::render(<<<'HTML'
                 <li class="fi-sidebar-item mt-auto list-none" x-data>
@@ -75,7 +75,7 @@ class DashboardPanelProvider extends PanelProvider
 
                 </li>
             HTML)
-        );
+        ); */
 
         FilamentView::registerRenderHook(
             PanelsRenderHook::SIDEBAR_NAV_END, 
@@ -104,6 +104,43 @@ class DashboardPanelProvider extends PanelProvider
                     ->url(url('/admin'))
                     ->icon('heroicon-o-shield-check')
                     ->visible(fn (): bool => auth()->user()?->is_admin ?? false),
+                'install_app' => Action::make('install_app')
+                    ->label('Installer l\'application')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->color('success')
+                    // Use '#' to treat it as a valid link, but we intercept the click
+                    ->url('#') 
+                    ->extraAttributes([
+                        // 1. Hide by default using inline style to prevent flickering
+                        'style' => 'display: none;',
+
+                        // 2. AlpineJS logic strictly for VISIBILITY (Showing/Hiding)
+                        'x-data' => '{ 
+                            isVisible: false,
+                            init() {
+                                // Check if the install prompt is already saved
+                                if (window.pwaInstaller && window.pwaInstaller.deferredPrompt) {
+                                    this.isVisible = true;
+                                }
+                                
+                                // Listen for the browser event
+                                window.addEventListener(\'beforeinstallprompt\', () => {
+                                    this.isVisible = true;
+                                });
+
+                                // Hide immediately after installation
+                                window.addEventListener(\'appinstalled\', () => {
+                                    this.isVisible = false;
+                                });
+                            }
+                        }',
+                        
+                        // 3. Bind visibility to the Alpine variable
+                        'x-show' => 'isVisible',
+
+                        // 4. Native JS Click Handler (Bypasses Alpine to ensure execution)
+                        'onclick' => "event.preventDefault(); window.pwaInstaller.installApp();",
+                    ]),
             ])
             
             

@@ -4,8 +4,8 @@ namespace App\Models;
 
 use App\Models\Client;
 use App\Models\Tenant;
-use App\Models\Setting; // Don't forget to import Setting
-use App\Services\InvoiceNumberService;
+use App\Models\Setting;
+use App\Services\DocumentNumberService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -63,11 +63,13 @@ class Invoice extends Model
             if (empty($invoice->issue_date)) {
                 $invoice->issue_date = now();
             }
+
             if (empty($invoice->invoice_number) && $invoice->tenant) {
-                $invoice->invoice_number = (new InvoiceNumberService())
-                    ->generate($invoice->tenant, Carbon::parse($invoice->issue_date));
+                // Pass self::class so the service knows which config to use
+                $invoice->invoice_number = (new DocumentNumberService())
+                    ->generate($invoice->tenant, $invoice->issue_date, self::class);
             }
-            // Auto-calculate on save (failsafe)
+            
             $invoice->calculateTaxes();
         });
 
