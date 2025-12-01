@@ -29,7 +29,7 @@ class HonoraireResource extends Resource
 
     protected static ?string $navigationLabel = 'Notes d\'Honoraires';
 
-    protected static UnitEnum|string|null $navigationGroup = 'Gestion Commerciale';
+    protected static UnitEnum|string|null $navigationGroup = 'Gestion du Cabinet';
 
     protected static ?int $navigationSort = 2;
 

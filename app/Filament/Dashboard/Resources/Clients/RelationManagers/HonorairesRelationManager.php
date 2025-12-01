@@ -6,15 +6,30 @@ use App\Filament\Dashboard\Resources\Honoraires\HonoraireResource;
 use Filament\Actions\CreateAction;
 use Filament\Actions\ViewAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\RestoreAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\RestoreBulkAction;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Support\Icons\Heroicon;
+use BackedEnum;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class HonorairesRelationManager extends RelationManager
 {
     protected static string $relationship = 'honoraires';
 
     protected static ?string $relatedResource = HonoraireResource::class;
+
+    protected static string|BackedEnum|null $icon = Heroicon::OutlinedDocumentText;
+
+    protected static ?string $title = 'Notes d\'Honoraires';
 
     public function isReadOnly(): bool
     {
@@ -58,13 +73,24 @@ class HonorairesRelationManager extends RelationManager
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->headerActions([
-                // FIX: Redirect to Full Page Create with Client ID in URL
                 CreateAction::make()
                     ->url(fn () => HonoraireResource::getUrl('create', ['client_id' => $this->getOwnerRecord()->id])),
             ])
             ->actions([
                 ViewAction::make(),
                 EditAction::make(),
-            ]);
+                DeleteAction::make(),
+                ForceDeleteAction::make(),
+                RestoreAction::make(),
+            ])->bulkActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
+                    ForceDeleteBulkAction::make(),
+                    RestoreBulkAction::make(),
+                ]),
+            ])
+            ->modifyQueryUsing(fn (Builder $query) => $query->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ]));
     }
 }

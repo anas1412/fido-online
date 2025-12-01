@@ -2,7 +2,12 @@
 
 namespace App\Filament\Dashboard\Resources\Clients\RelationManagers;
 
-use App\Filament\Dashboard\Resources\Invoices\InvoiceResource;
+use App\Filament\Dashboard\Resources\Debits\DebitResource;
+use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Tables\Table;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\TrashedFilter;
+use App\Models\Debit;
 use Filament\Actions\CreateAction;
 use Filament\Actions\ViewAction;
 use Filament\Actions\EditAction;
@@ -13,23 +18,20 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
-use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Table;
 use Filament\Support\Icons\Heroicon;
 use BackedEnum;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class InvoicesRelationManager extends RelationManager
+class DebitsRelationManager extends RelationManager
 {
-    protected static string $relationship = 'invoices';
+    protected static string $relationship = 'debits';
 
-    protected static ?string $relatedResource = InvoiceResource::class;
+    protected static ?string $relatedResource = DebitResource::class;
 
-    protected static string|BackedEnum|null $icon = Heroicon::OutlinedDocumentText;
+    protected static string|BackedEnum|null $icon = Heroicon::OutlinedDocumentPlus;
 
-    protected static ?string $title = 'Factures';
+    protected static ?string $title = 'Notes de Débit';
 
     public function isReadOnly(): bool
     {
@@ -39,39 +41,47 @@ class InvoicesRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
-            ->recordTitleAttribute('invoice_number')
+            ->recordTitleAttribute('debit_number')
             ->columns([
-                TextColumn::make('invoice_number')
+                TextColumn::make('debit_number')
                     ->label('Numéro')
                     ->searchable()
-                    ->sortable(),
-                
+                    ->sortable()
+                    ->weight('bold'),
+
                 TextColumn::make('issue_date')
                     ->label('Date')
                     ->date('d/m/Y')
                     ->sortable(),
 
-                TextColumn::make('status')
-                    ->label('Statut')
+                // Logic for Commercial Tenants (Invoices)
+                TextColumn::make('invoice.invoice_number')
+                    ->label('Réf. Facture')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'paid' => 'success',
-                        'sent' => 'info',
-                        'overdue' => 'danger',
-                        'draft' => 'gray',
-                        default => 'gray',
-                    }),
+                    ->color('gray')
+                    ->placeholder('-')
+                    ->visible(fn () => filament()->getTenant()->usesInvoices()),
+
+                // Logic for Accounting/Medical Tenants (Honoraires)
+                TextColumn::make('honoraire.honoraire_number')
+                    ->label('Réf. Honoraire')
+                    ->badge()
+                    ->color('info')
+                    ->placeholder('-')
+                    ->visible(fn () => filament()->getTenant()->usesHonoraires()),
 
                 TextColumn::make('net_to_pay')
                     ->label('Net à Payer')
-                    ->money(fn ($record) => $record->currency) 
+                    ->money('TND')
                     ->weight('bold')
-                    ->sortable(),
+                    ->color('success'),
+            ])
+            ->filters([
+                TrashedFilter::make(),
             ])
             ->headerActions([
-                // FIX: Redirect to Full Page Create with Client ID in URL
                 CreateAction::make()
-                    ->url(fn () => InvoiceResource::getUrl('create', ['client_id' => $this->getOwnerRecord()->id])),
+                    ->url(fn () => DebitResource::getUrl('create', ['client_id' => $this->getOwnerRecord()->id])),
             ])
             ->actions([
                 ViewAction::make(),
@@ -79,7 +89,8 @@ class InvoicesRelationManager extends RelationManager
                 DeleteAction::make(),
                 ForceDeleteAction::make(),
                 RestoreAction::make(),
-            ])->bulkActions([
+            ])
+            ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                     ForceDeleteBulkAction::make(),

@@ -89,7 +89,8 @@ class DebitForm
                             TextInput::make('amount_ht')
                                 ->label('Montant HT')
                                 ->numeric()
-                                ->required()
+                                ->default(0)
+                                //->required()
                                 ->live(onBlur: true)
                                 ->afterStateUpdated(fn (Get $get, Set $set) => self::calculateTotals($get, $set)),
 

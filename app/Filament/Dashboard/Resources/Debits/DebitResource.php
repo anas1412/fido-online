@@ -29,7 +29,16 @@ class DebitResource extends Resource
 
     protected static ?string $navigationLabel = 'Notes de Débit';
 
-    protected static UnitEnum|string|null $navigationGroup = 'Gestion Commerciale';
+    /* protected static UnitEnum|string|null $navigationGroup = 'Gestion Commerciale'; */
+
+    public static function getNavigationGroup(): ?string
+{
+    // If the tenant is "commercial", use "Gestion Commerciale"
+    // Otherwise (medical/accounting), use "Gestion du Cabinet"
+    return filament()->getTenant()?->type === 'commercial' 
+        ? 'Gestion Commerciale' 
+        : 'Gestion du Cabinet';
+}
 
     protected static ?int $navigationSort = 3;
 

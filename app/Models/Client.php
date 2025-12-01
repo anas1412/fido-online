@@ -41,4 +41,9 @@ class Client extends Model
     {
         return $this->hasMany(Honoraire::class);
     }
+
+    public function debits(): HasMany
+    {
+        return $this->hasMany(Debit::class);
+    }
 }

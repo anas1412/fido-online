@@ -4,6 +4,7 @@ namespace App\Filament\Dashboard\Resources\Clients;
 
 use App\Filament\Dashboard\Resources\Clients\RelationManagers\InvoicesRelationManager;
 use App\Filament\Dashboard\Resources\Clients\RelationManagers\HonorairesRelationManager;
+use App\Filament\Dashboard\Resources\Clients\RelationManagers\DebitsRelationManager;    
 use App\Filament\Dashboard\Resources\Clients\Pages\CreateClient;
 use App\Filament\Dashboard\Resources\Clients\Pages\EditClient;
 use App\Filament\Dashboard\Resources\Clients\Pages\ListClients;
@@ -31,7 +32,16 @@ class ClientResource extends Resource
 
     protected static ?string $navigationLabel = 'Clients';
 
-    protected static UnitEnum|string|null $navigationGroup = 'Gestion Commerciale';
+    /* protected static UnitEnum|string|null $navigationGroup = 'Gestion Commerciale'; */
+
+    public static function getNavigationGroup(): ?string
+    {
+        // If the tenant is "commercial", use "Gestion Commerciale"
+        // Otherwise (medical/accounting), use "Gestion du Cabinet"
+        return filament()->getTenant()?->type === 'commercial' 
+            ? 'Gestion Commerciale' 
+            : 'Gestion du Cabinet';
+    }
 
     protected static ?int $navigationSort = 1;
 
@@ -64,6 +74,8 @@ class ClientResource extends Resource
         return [
             InvoicesRelationManager::class,
             HonorairesRelationManager::class,
+            DebitsRelationManager::class,
+            
         ];
     }
 
