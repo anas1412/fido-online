@@ -15,10 +15,13 @@ class Debit extends Model
     protected $fillable = [
         'tenant_id',
         'client_id',
+        'invoice_id',
+        'honoraire_id',
         'debit_number',
         'object',
         'issue_date',
         'amount_ht',
+        'debours_amount', // Added
         'tva_amount',
         'rs_amount',
         'amount_ttc',
@@ -37,6 +40,7 @@ class Debit extends Model
         'exonere_rs' => 'boolean',
         'exonere_tf' => 'boolean',
         'amount_ht' => 'decimal:3',
+        'debours_amount' => 'decimal:3',
         'tva_amount' => 'decimal:3',
         'rs_amount' => 'decimal:3',
         'amount_ttc' => 'decimal:3',
@@ -56,6 +60,16 @@ class Debit extends Model
         return $this->belongsTo(Client::class);
     }
 
+    public function invoice(): BelongsTo
+    {
+        return $this->belongsTo(Invoice::class);
+    }
+
+    public function honoraire(): BelongsTo
+    {
+        return $this->belongsTo(Honoraire::class);
+    }
+
     protected static function booted()
     {
         static::creating(function ($debit) {
@@ -64,6 +78,7 @@ class Debit extends Model
             }
 
             if (empty($debit->debit_number) && $debit->tenant) {
+                // Generates number using your unified service
                 $debit->debit_number = (new DocumentNumberService())
                     ->generate($debit->tenant, $debit->issue_date, self::class);
             }
@@ -80,15 +95,27 @@ class Debit extends Model
     {
         $settings = Setting::singleton();
         
+        // 1. Determine Rates
         $this->tva_rate = $this->exonere_tva ? 0 : ($this->tenant?->getDefaultTvaRate() ?? 19.0);
-        $this->rs_rate  = $this->exonere_rs  ? 0 : ($settings->rs_rate ?? 3.0);
+        $this->rs_rate  = $this->exonere_rs  ? 0 : ($settings->rs_rate ?? 1.0); // Default 1% for invoices/debits, 3% for honoraires
         $this->tf_value = $this->exonere_tf  ? 0 : ($settings->tf_rate ?? 1.000);
 
         $ht = (float) $this->amount_ht;
+        $debours = (float) $this->debours_amount;
         
+        // 2. Calculate TVA (On HT only)
         $this->tva_amount = $ht * ($this->tva_rate / 100);
-        $this->amount_ttc = $ht + $this->tva_amount + (float) $this->tf_value;
-        $this->rs_amount = $this->amount_ttc * ($this->rs_rate / 100);
+        
+        // 3. Calculate TTC (HT + TVA + Timbre + Debours)
+        // Debours are added at the end as they are non-taxable
+        $this->amount_ttc = $ht + $this->tva_amount + (float) $this->tf_value + $debours;
+        
+        // 4. Calculate RS
+        // RS applies to the TTC of the service, NOT the debours (reimbursement)
+        $baseForRs = $this->amount_ttc - $debours; 
+        $this->rs_amount = $baseForRs * ($this->rs_rate / 100);
+        
+        // 5. Net to Pay
         $this->net_to_pay = $this->amount_ttc - $this->rs_amount;
     }
 }

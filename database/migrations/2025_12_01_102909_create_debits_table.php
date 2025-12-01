@@ -13,9 +13,12 @@ return new class extends Migration
             $table->foreignId('tenant_id')->constrained()->cascadeOnDelete();
             $table->foreignId('client_id')->constrained()->cascadeOnDelete();
             
-            // Unique Number for Note de Débit
+            // Link to the original invoice (Standard for Note de Débit)
+            $table->foreignId('invoice_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('honoraire_id')->nullable()->constrained()->nullOnDelete();
+            
             $table->string('debit_number')->unique();
-            $table->text('object')->nullable();
+            $table->text('object')->nullable(); // "Objet"
             $table->date('issue_date');
 
             // Exemption Flags
@@ -23,13 +26,17 @@ return new class extends Migration
             $table->boolean('exonere_rs')->default(false);
             $table->boolean('exonere_tf')->default(false);
 
-            // Rate Snapshots
+            // Rate Snapshots (Preserve history)
             $table->decimal('tva_rate', 5, 2)->default(0);
             $table->decimal('rs_rate', 5, 2)->default(0);
             $table->decimal('tf_value', 15, 3)->default(0);
 
-            // Financial Amounts (15, 3 for TND precision)
+            // Financial Amounts (3 decimals for TND)
             $table->decimal('amount_ht', 15, 3)->default(0);
+            
+            // NEW: Debours (Non-taxable expenses to be reimbursed)
+            $table->decimal('debours_amount', 15, 3)->default(0); 
+            
             $table->decimal('tva_amount', 15, 3)->default(0);
             $table->decimal('rs_amount', 15, 3)->default(0);
             $table->decimal('amount_ttc', 15, 3)->default(0);
