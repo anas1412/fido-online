@@ -17,7 +17,8 @@ return new class extends Migration
             $table->foreignId('invoice_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('honoraire_id')->nullable()->constrained()->nullOnDelete();
             
-            $table->string('debit_number')->unique();
+            $table->string('debit_number');
+            $table->unique(['tenant_id', 'debit_number']);
             $table->text('object')->nullable(); // "Objet"
             $table->date('issue_date');
 
